@@ -1,6 +1,12 @@
 ﻿using Banana.Uow.Models;
 using System;
 using System.Collections.Generic;
+/***********************************
+ * Coder：EminemJK
+ * Date：2018-11-16
+ **********************************/
+
+
 using System.Text;
 using System.Data;
 using Banana.Uow.Interface;
@@ -8,8 +14,6 @@ using Banana.Uow.Interface;
 namespace Banana.Uow
 {
     /// <summary>
-    /// Coder：EminemJK 
-    /// Date：2018-11-16
     /// 工作单元基类
     /// </summary>
     public class UnitOfWork : IUnitOfWork
@@ -46,6 +50,10 @@ namespace Banana.Uow
         }
         #endregion
 
+        /// <summary>
+        /// 工作单元基类
+        /// </summary>
+        /// <param name="context"></param>
         public UnitOfWork(IDbConnection context = null)
         {
             this.context = context;

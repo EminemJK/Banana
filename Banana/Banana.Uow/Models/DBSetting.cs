@@ -1,10 +1,14 @@
-﻿using System;
+﻿/***********************************
+ * Coder：EminemJK
+ * Date：2018-11-16
+ **********************************/
+
+
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 /// <summary>
-/// Coder：EminemJK 
-/// Date：2018-11-16
 /// 数据库链接实体
 /// </summary>
 namespace Banana.Uow.Models
@@ -16,6 +20,9 @@ namespace Banana.Uow.Models
         /// </summary>
         public string ConnectionString { get; set; }
 
+        /// <summary>
+        /// 数据库类型
+        /// </summary>
         public DBType DBType { get; set; }
     }
 }

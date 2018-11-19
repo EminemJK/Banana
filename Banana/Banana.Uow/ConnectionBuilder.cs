@@ -1,4 +1,8 @@
-﻿
+﻿/***********************************
+ * Coder：EminemJK
+ * Date：2018-11-16
+ **********************************/
+
 using Banana.Uow.Models;
 using MySql.Data.MySqlClient;
 using System;
@@ -12,8 +16,6 @@ using System.Threading.Tasks;
 namespace Banana.Uow
 {
     /// <summary>
-    /// Coder：EminemJK 
-    /// Date：2018-11-16
     /// 创建基础链接
     /// </summary>
     public class ConnectionBuilder

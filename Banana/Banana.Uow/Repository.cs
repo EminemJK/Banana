@@ -1,4 +1,9 @@
-﻿using System;
+﻿/***********************************
+ * Coder：EminemJK
+ * Date：2018-11-16
+ **********************************/
+
+using System;
 using System.Collections.Generic;
 using Dapper;
 using System.Data;
@@ -11,8 +16,6 @@ using Banana.Uow.Interface;
 namespace Banana.Uow
 {
     /// <summary>
-    /// Coder：EminemJK 
-    /// Date：2018-11-16
     /// 仓储基类
     /// </summary>
     public class Repository<T> : IRepository<T> where T : class, IEntity

@@ -6,17 +6,16 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Banana.Uow.Models
 {
     /// <summary>
-    /// 数据库类型
+    /// 模型基类
     /// </summary>
-    public enum DBType
+    public class BaseModel:IEntity
     {
-        SqlServer,
-        MySQL,
-        SQLite
     }
 }
