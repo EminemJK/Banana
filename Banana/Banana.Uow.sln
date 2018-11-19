@@ -5,9 +5,11 @@ VisualStudioVersion = 15.0.28307.102
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Banana.Uow", "Banana.Uow\Banana.Uow.csproj", "{3183C2CF-74FC-4429-A291-53DDF5FCE1D9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Banana.Utility", "Banana.Utility\Banana.Utility.csproj", "{308A90BE-DC17-4CAA-8CBB-61BCC9E489FB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Banana.Utility", "Banana.Utility\Banana.Utility.csproj", "{308A90BE-DC17-4CAA-8CBB-61BCC9E489FB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetCore_TestApp", "DotNetCore_TestApp\DotNetCore_TestApp.csproj", "{27BEA97C-8F4C-4960-9EBC-2D77A3723705}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotNetCore_TestApp", "DotNetCore_TestApp\DotNetCore_TestApp.csproj", "{27BEA97C-8F4C-4960-9EBC-2D77A3723705}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetFramework_TestApp", "DotNetFramework_TestApp\DotNetFramework_TestApp.csproj", "{5106AA6B-DBC9-46DC-A4F1-5422F64AFEAD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{27BEA97C-8F4C-4960-9EBC-2D77A3723705}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{27BEA97C-8F4C-4960-9EBC-2D77A3723705}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{27BEA97C-8F4C-4960-9EBC-2D77A3723705}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5106AA6B-DBC9-46DC-A4F1-5422F64AFEAD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5106AA6B-DBC9-46DC-A4F1-5422F64AFEAD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5106AA6B-DBC9-46DC-A4F1-5422F64AFEAD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5106AA6B-DBC9-46DC-A4F1-5422F64AFEAD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

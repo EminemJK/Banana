@@ -3,6 +3,7 @@ using Banana.Uow;
 using Dapper.Contrib.Extensions;
 using Banana.Uow.Models;
 using System.Collections.Generic;
+using Banana.Uow.Extension;
 
 /***********************************
  * Coder：EminemJK
@@ -18,7 +19,13 @@ namespace DotNetCore_TestApp
         {
             ConnectionBuilder.ConfigRegist(strConn, Banana.Uow.Models.DBType.SqlServer);
 
-            //var repo = new Repository<Student>();
+            var repo = new Repository<Category>();
+
+            SQLServerExtension sQLServer = new SQLServerExtension();
+
+            var sb = sQLServer.GetPageSQL(repo, 1, 10, "ParentNamePath like @ParentNamePath", new { ParentNamePath = "%,电气设备,%" });
+
+            var data = repo.QueryList(" where ParentNamePath like @ParentNamePath", new { ParentNamePath = "%,电气设备,%" });
             //var model = repo.Query(2);
 
             //var modelAll = repo.QueryAll();
@@ -57,48 +64,6 @@ namespace DotNetCore_TestApp
             }
             Console.WriteLine("Hello World!");
             Console.ReadKey();
-        }
-    }
-
-
-    [Table("T_Student")]
-    public class Student : BaseModel
-    {
-        [Key]
-        public int Id { get; set; }
-
-
-        public string Name { get; set; }
-
-        public int Sex { get; set; }
-
-        public int ClassId { get; set; }
-
-        public Student()
-        { }
-
-        public Student(string name, int i, int classId)
-        {
-            this.Name = name;
-            this.Sex = i;
-            this.ClassId = classId;
-        }
-
-    }
-
-    [Table("T_Class")]
-    public class MClass : BaseModel
-    {
-        [Key]
-        public int Id { get; set; }
-
-
-        public string Name { get; set; }
-        public MClass() { }
-
-        public MClass(string name)
-        {
-            this.Name = name;
         }
     }
 }

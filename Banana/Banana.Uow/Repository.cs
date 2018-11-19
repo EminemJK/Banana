@@ -38,11 +38,18 @@ namespace Banana.Uow
             private set { this._dbConnection = value; }
         }
 
+        /// <summary>
+        /// 仓储
+        /// </summary>
         public Repository()
         {
-            _dbConnection = ConnectionBuilder.OpenConnection();
+            _dbConnection = ConnectionBuilder.OpenConnection(); 
         }
 
+
+        /// <summary>
+        /// 仓储
+        /// </summary>
         public Repository(IDbConnection dbConnection, IDbTransaction dbTransaction = null)
         {
             this._dbConnection = dbConnection;
@@ -72,8 +79,19 @@ namespace Banana.Uow
         public IDbTransaction OpenTransaction()
         {
             _dbTransaction = DBConnection.BeginTransaction();
+            TrancationState = ETrancationState.Opened;
             return _dbTransaction;
         }
+
+        /// <summary>
+        /// 事务状态
+        /// </summary>
+        public ETrancationState TrancationState { get; private set; } = ETrancationState.Closed;
+
+        /// <summary>
+        /// 对象类型
+        /// </summary>
+        public Type EntityType => typeof(T);
 
         /// <summary>
         /// 删除实体
@@ -106,11 +124,26 @@ namespace Banana.Uow
         }
 
         /// <summary>
-        /// 查询全部
+        /// 查询列表
         /// </summary>
-        public List<T> QueryAll()
+        /// <param name="whereString">where 语句如： name like @name (使用参数化)</param>
+        /// <param name="param">参数，语句如：new { name = "%李%" }</param>
+        /// <returns></returns>
+        public List<T> QueryList(string whereString = null, object param = null)
         {
-            return DBConnection.GetAll<T>().ToList();
+            if (string.IsNullOrEmpty(whereString))
+            {
+                return DBConnection.GetAll<T>().ToList();
+            }
+            else
+            {
+                if (!whereString.TrimStart().ToLower().StartsWith("where"))
+                {
+                    whereString = " where " + whereString;
+                }
+                string sql = string.Format("select * from {0} {1}", TableName, whereString);
+                return DBConnection.Query<T>(sql, param).ToList();
+            }
         }
 
         /// <summary>
@@ -121,7 +154,7 @@ namespace Banana.Uow
         /// <param name="order">按照</param>
         /// <param name="asc"></param>
         /// <returns></returns>
-        public List<T> QueryAll(int pageNum, int pagesize, string order = null, bool asc = false)
+        public List<T> QueryList(int pageNum, int pagesize, string whereString = null, object param = null, string order = null, bool asc = false)
         {
             throw new NotImplementedException();
         }
@@ -132,9 +165,9 @@ namespace Banana.Uow
         /// <param name="entity"></param>
         /// <param name="dbTransaction"></param>
         /// <returns></returns>
-        public bool Update(T entity, IDbTransaction dbTransaction = null)
+        public bool Update(T entity)
         {
-            return DBConnection.Update<T>(entity, dbTransaction);
+            return DBConnection.Update<T>(entity, _dbTransaction);
         }
 
         /// <summary>
@@ -164,25 +197,23 @@ namespace Banana.Uow
                     if (res > 0)
                     {
                         trans.Commit();
+                        TrancationState = ETrancationState.Closed;
                         return true;
                     }
                     else
                     {
                         trans.Rollback();
+                        TrancationState = ETrancationState.Closed;
                         return false;
                     }
                 }
                 catch(Exception ex)
                 {
                     trans.Rollback();
+                    TrancationState = ETrancationState.Closed;
                     return false;
                 }
             }
-        }
-
-        public bool Update(T entity)
-        {
-            throw new NotImplementedException();
         }
     }
 }

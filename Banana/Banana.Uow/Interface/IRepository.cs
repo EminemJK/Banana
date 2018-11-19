@@ -40,10 +40,16 @@ namespace Banana.Uow.Interface
         /// <returns></returns>
         int Execute(string sql, dynamic parms = null);
 
+
+        /// <summary>
+        /// 查询对象
+        /// </summary>
+        T Query(int id);
+
         /// <summary>
         /// 查询对象集合
         /// </summary>
-        List<T> QueryAll();
+        List<T> QueryList(string whereString = null, object param = null);
 
         /// <summary>
         /// 查询对象集合
@@ -54,15 +60,27 @@ namespace Banana.Uow.Interface
         /// <param name="asc"></param>
         /// <param name="express"></param>
         /// <returns></returns>
-        List<T> QueryAll(int pageNum, int pagesize, string order = null, bool asc = false);
+        List<T> QueryList(int pageNum, int pagesize, string whereString = null, object param = null, string order = null, bool asc = false);
 
         /// <summary>
-        /// 查询对象
+        /// 表名
         /// </summary>
-        T Query(int id);
-
         string TableName { get; }
 
+        /// <summary>
+        /// 开启事务
+        /// </summary>
+        /// <returns></returns>
         IDbTransaction OpenTransaction();
+
+        /// <summary>
+        /// 事务状态
+        /// </summary>
+        ETrancationState TrancationState { get; }
+
+        /// <summary>
+        /// 对象类型
+        /// </summary>
+        Type EntityType { get; }
     }
 }

@@ -26,8 +26,8 @@
     <PackageReference Include="System.Xml.XmlDocument" Version="4.3.0" /> 
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="MySql.Data"  Version="8.0.13" />
+    <PackageReference Include="MySql.Data" Version="8.0.13" />
     <PackageReference Include="Dapper.Contrib" Version="1.50.5" />
-    <PackageReference Include="System.Data.SQLite" Version="1.0.109.2" />
+    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.109.2" />
   </ItemGroup>
 </Project>
