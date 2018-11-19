@@ -31,6 +31,8 @@ namespace Banana.Uow
                     {
                         repositories.Clear();
                     }
+                    if (context.State != ConnectionState.Closed)
+                        context.Close();
                 }
             }
 
@@ -44,16 +46,18 @@ namespace Banana.Uow
         }
         #endregion
 
-        public UnitOfWork()
-        {
-            context =  ConnectionBuilder.OpenConnection();
-            transaction = context.BeginTransaction();
-        }
-
-        public UnitOfWork(IDbConnection context)
+        public UnitOfWork(IDbConnection context = null)
         {
             this.context = context;
-            transaction = context.BeginTransaction();
+            if (this.context == null)
+            {
+                this.context = ConnectionBuilder.OpenConnection();
+            }
+            if (this.context.State == ConnectionState.Closed)
+            {
+                this.context.Open();
+            }
+            transaction = this.context.BeginTransaction();
         }
 
         /// <summary>
@@ -75,7 +79,7 @@ namespace Banana.Uow
         /// <summary>
         /// 获取仓储
         /// </summary> 
-        public IRepository<T> Repository<T>(T entity) where T : class, IEntity
+        public IRepository<T> Repository<T>() where T : class, IEntity
         { 
             if (repositories == null)
             {
@@ -85,7 +89,7 @@ namespace Banana.Uow
             if (!repositories.ContainsKey(type))
             {
                 var repositoryType = typeof(Repository<>);
-                var repositoryInstance = Activator.CreateInstance(repositoryType.MakeGenericType(typeof(T)), context);
+                var repositoryInstance = Activator.CreateInstance(repositoryType.MakeGenericType(typeof(T)), context, transaction);
                 repositories.Add(type, repositoryInstance);
             } 
             return (Repository<T>)repositories[type];

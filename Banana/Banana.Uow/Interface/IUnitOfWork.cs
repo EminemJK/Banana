@@ -15,5 +15,7 @@ namespace Banana.Uow.Interface
         void Commit();
 
         void Rollback();
+
+        IRepository<T> Repository<T>() where T : class, IEntity;
     }
 }

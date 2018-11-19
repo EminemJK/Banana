@@ -1,0 +1,12 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Banana.Utility</PackageId>
+    <PackageTags>Common;Tools</PackageTags>
+    <Title>Banana.Utility</Title>
+    <Description>Common</Description>
+    <Authors>EminemJK</Authors>
+    <TargetFrameworks>net452;netstandard2.0</TargetFrameworks>
+  </PropertyGroup>
+
+</Project>

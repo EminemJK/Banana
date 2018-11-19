@@ -16,18 +16,26 @@ namespace Banana.Uow.Interface
         /// 插入对象
         /// </summary>
         /// <param name="entity"></param>
-        long Insert(T entity, IDbTransaction dbTransaction = null);
+        long Insert(T entity);
 
         /// <summary>
         /// 更新对象
         /// </summary>
         /// <param name="entity"></param>
-        bool Update(T entity, IDbTransaction dbTransaction = null);
+        bool Update(T entity);
 
         /// <summary>
         /// 删除对象
         /// </summary>
-        bool Delete(T entity, IDbTransaction dbTransaction = null);
+        bool Delete(T entity);
+
+        /// <summary>
+        /// 执行SQL语句
+        /// </summary>
+        /// <param name="sql">SQL语句</param>
+        /// <param name="parms">参数</param>
+        /// <returns></returns>
+        int Execute(string sql, dynamic parms = null);
 
         /// <summary>
         /// 查询对象集合
@@ -52,6 +60,6 @@ namespace Banana.Uow.Interface
 
         string TableName { get; }
 
-        IDbTransaction OpenTransaction { get; }
+        IDbTransaction OpenTransaction();
     }
 }

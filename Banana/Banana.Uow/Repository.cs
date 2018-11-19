@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using Dapper;
 using System.Data;
 using Dapper.Contrib.Extensions;
@@ -17,17 +16,60 @@ namespace Banana.Uow
     /// 仓储基类
     /// </summary>
     public class Repository<T> : IRepository<T> where T : class, IEntity
-    { 
-        public IDbConnection DBConnection { get; private set; }
+    {
+        private IDbConnection _dbConnection;
+        public IDbConnection DBConnection
+        {
+            get
+            {
+                if (_dbConnection == null)
+                {
+                    _dbConnection = ConnectionBuilder.OpenConnection();
+                }
+                if (_dbConnection.State == ConnectionState.Closed)
+                {
+                    _dbConnection.Open();
+                }
+                return _dbConnection;
+            }
+            private set { this._dbConnection = value; }
+        }
 
         public Repository()
         {
-            DBConnection = ConnectionBuilder.OpenConnection();
+            _dbConnection = ConnectionBuilder.OpenConnection();
         }
 
-        public Repository(IDbConnection dbConnection)
+        public Repository(IDbConnection dbConnection, IDbTransaction dbTransaction = null)
         {
-            this.DBConnection = DBConnection;
+            this._dbConnection = dbConnection;
+            this._dbTransaction = dbTransaction;
+        }
+
+        private string _tableName;
+        /// <summary>
+        /// 表名
+        /// </summary>
+        public string TableName
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(_tableName))
+                {
+                    _tableName = ((TableAttribute)typeof(T).GetCustomAttribute(typeof(TableAttribute))).Name;
+                }
+                return _tableName;
+            }
+        }
+
+        private IDbTransaction _dbTransaction;
+        /// <summary>
+        /// 开启事务
+        /// </summary>
+        public IDbTransaction OpenTransaction()
+        {
+            _dbTransaction = DBConnection.BeginTransaction();
+            return _dbTransaction;
         }
 
         /// <summary>
@@ -35,9 +77,9 @@ namespace Banana.Uow
         /// </summary>
         /// <param name="entity">实体</param>
         /// <param name="dbTransaction">事务</param>
-        public bool Delete(T entity, IDbTransaction dbTransaction = null)
+        public bool Delete(T entity)
         {
-            return DBConnection.Delete(entity, dbTransaction);
+            return DBConnection.Delete(entity, _dbTransaction);
         }
 
         /// <summary>
@@ -46,9 +88,9 @@ namespace Banana.Uow
         /// <param name="entity">实体</param>
         /// <param name="dbTransaction">事务</param>
         /// <returns></returns>
-        public long Insert(T entity, IDbTransaction dbTransaction = null)
+        public long Insert(T entity)
         {
-            return DBConnection.Insert(entity, dbTransaction);
+            return DBConnection.Insert(entity, _dbTransaction);
         }
 
         /// <summary>
@@ -99,9 +141,9 @@ namespace Banana.Uow
         /// <param name="parms"></param>
         /// <param name="dbTransaction">事务</param>
         /// <returns></returns>
-        public virtual int Execute(string sql, dynamic parms, IDbTransaction dbTransaction = null)
+        public int Execute(string sql, dynamic parms)
         {
-            return DBConnection.Execute(sql, (object)parms, transaction: dbTransaction);
+            return DBConnection.Execute(sql, (object)parms, transaction: _dbTransaction);
         }
 
         /// <summary>
@@ -111,12 +153,11 @@ namespace Banana.Uow
         /// <param name="sql">sql语句</param>
         public virtual bool InsertBatch(string sql, IEnumerable<T> entities)
         {
-            using (IDbTransaction trans = OpenTransaction)
+            using (IDbTransaction trans = OpenTransaction())
             {
                 try
                 {
-                    int res = Execute(sql, entities, trans);
-                    trans.Commit();
+                    int res = Execute(sql, entities); 
                     if (res > 0)
                     {
                         trans.Commit();
@@ -128,7 +169,7 @@ namespace Banana.Uow
                         return false;
                     }
                 }
-                catch
+                catch(Exception ex)
                 {
                     trans.Rollback();
                     return false;
@@ -136,21 +177,9 @@ namespace Banana.Uow
             }
         }
 
-        /// <summary>
-        /// 表名
-        /// </summary>
-        public string TableName
+        public bool Update(T entity)
         {
-            get
-            {
-                TableAttribute attr = (TableAttribute)typeof(T).GetCustomAttribute(typeof(TableAttribute));
-                return attr.Name;
-            }
+            throw new NotImplementedException();
         }
-
-        /// <summary>
-        /// 开启事务
-        /// </summary>
-        public IDbTransaction OpenTransaction { get => DBConnection.BeginTransaction(); }
     }
 }
