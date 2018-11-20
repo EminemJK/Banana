@@ -20,10 +20,10 @@ namespace DotNetCore_TestApp
             ConnectionBuilder.ConfigRegist(strConn, Banana.Uow.Models.DBType.SqlServer);
 
             var repo = new Repository<Category>(); 
-            var list = repo.QueryList("where ParentNamePath like @ParentNamePath", new { ParentNamePath = "%,电气设备,%" });
-            int id = (int)repo.InsertBatch(new Category() { Id = 7, Name = "EminemJK" });
-            var page = repo.QueryList(1, 10, "where ParentNamePath like @ParentNamePath", new { ParentNamePath = "%,电气设备,%" }, "id", false);
-            var data = repo.QueryList(" where ParentNamePath like @ParentNamePath", new { ParentNamePath = "%,电气设备,%" });
+
+            var list = repo.QueryList("where ParentNamePath like @ParentNamePath", new { ParentNamePath = "%,电气设备,%" }); 
+
+            var page = repo.QueryList(1, 10, "where ParentNamePath like @ParentNamePath", new { ParentNamePath = "%,电气设备,%" }, "id", false); 
 
             //var model = repo.Query(2);
 
