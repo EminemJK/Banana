@@ -6,8 +6,12 @@
     <Description>基于Dapper二次封装的仓储、工作单元</Description>
     <Authors>EminemJK</Authors>
     <TargetFrameworks>net452;netstandard2.0</TargetFrameworks>
-    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0.html</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/EminemJK/Banana.git</PackageProjectUrl>
+    <PackageIconUrl>https://github.com/EminemJK/Banana/blob/master/Banana/Doc/banana_logo.ico</PackageIconUrl>
+    <RepositoryUrl></RepositoryUrl>
   </PropertyGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net452'">
     <Reference Include="System" />
@@ -26,6 +30,15 @@
     <PackageReference Include="System.Reflection.Emit" Version="4.3.0" />
     <PackageReference Include="System.Runtime.InteropServices" Version="4.3.0" />
     <PackageReference Include="System.Xml.XmlDocument" Version="4.3.0" /> 
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Packages\**" />
+    <EmbeddedResource Remove="Packages\**" />
+    <None Remove="Packages\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Banana.Uow.nuspec" />
+    <None Remove="NuGet.exe" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="MySql.Data" Version="8.0.13" />

@@ -10,3 +10,4 @@
 /Banana/Banana.Uow/*.user
 /Banana/Banana.Uow/Banana.Uow.nuspec
 /Banana/Banana.Uow/NuGet.exe
+*.nupkg
