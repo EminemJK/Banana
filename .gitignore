@@ -8,3 +8,5 @@
 /Banana/DotNetCore_TestApp/obj
 /Banana/DotNetCore_TestApp/bin
 /Banana/Banana.Uow/*.user
+/Banana/Banana.Uow/Banana.Uow.nuspec
+/Banana/Banana.Uow/NuGet.exe
