@@ -26,8 +26,9 @@ namespace Banana.Uow
         private static readonly Dictionary<DBType, IAdapter> AdapterDictionary
         = new Dictionary<DBType, IAdapter>
         {
-            {DBType.SqlServer,new SQLServerExtension() },
-            {DBType.MySQL,  new MySQLExtension()}
+            { DBType.SqlServer, new SQLServerExtension() },
+            { DBType.MySQL,  new MySQLExtension() },
+            { DBType.SQLite,  new SQLiteExtension() }
         };
         /// <summary>
         /// 注册链接
