@@ -16,12 +16,21 @@ using System.Threading.Tasks;
 
 namespace Banana.Uow.Extension
 {
+    /// <summary>
+    /// 数据库语句
+    /// </summary>
     public class SqlBuilder
     {
+        /// <summary>
+        /// 数据库语句
+        /// </summary>
         public SqlBuilder()
         {
         }
 
+        /// <summary>
+        /// 数据库语句
+        /// </summary>
         public SqlBuilder(string sql, params object[] args)
         {
             _sql = sql;

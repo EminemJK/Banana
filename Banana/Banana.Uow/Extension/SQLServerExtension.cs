@@ -18,6 +18,9 @@ namespace Banana.Uow.Extension
     /// </summary>
     public class SQLServerExtension : IAdapter
     {
+        /// <summary>
+        /// SQL Server 扩展
+        /// </summary>
         public SQLServerExtension() { }
 
         /// <summary>
