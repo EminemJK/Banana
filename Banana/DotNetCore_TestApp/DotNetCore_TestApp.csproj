@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Banana.Uow\Banana.Uow.csproj" />
+    <PackageReference Include="Banana.Uow" Version="1.0.0" />
   </ItemGroup>
 
 </Project>
