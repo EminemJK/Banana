@@ -11,7 +11,7 @@
     <PackageProjectUrl>https://github.com/EminemJK/Banana.git</PackageProjectUrl>
     <PackageIconUrl>https://www.cnblogs.com/images/cnblogs_com/EminemJK/1345488/o_banana_logo.png</PackageIconUrl>
     <RepositoryUrl></RepositoryUrl>
-    <Version>1.0.1</Version>
+    <Version>1.0.2</Version>
     <PackageReleaseNotes>1.增加XML注释
 2.更新Logo</PackageReleaseNotes>
     <SignAssembly>true</SignAssembly>
