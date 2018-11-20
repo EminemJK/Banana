@@ -1,0 +1,314 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Banana.Uow</name>
+    </assembly>
+    <members>
+        <member name="T:Banana.Uow.ConnectionBuilder">
+            <summary>
+            创建基础链接
+            </summary>
+        </member>
+        <member name="M:Banana.Uow.ConnectionBuilder.ConfigRegist(System.String,Banana.Uow.Models.DBType)">
+            <summary>
+            注册链接
+            </summary>
+            <param name="strConn">链接串</param>
+            <param name="dBType">数据库类型</param>
+        </member>
+        <member name="M:Banana.Uow.ConnectionBuilder.ConfigRegist(Banana.Uow.Models.DBSetting)">
+            <summary>
+            注册链接
+            </summary>
+        </member>
+        <member name="M:Banana.Uow.ConnectionBuilder.OpenConnection">
+            <summary>
+            创建连接串
+            </summary>
+        </member>
+        <member name="T:Banana.Uow.Extension.MySQLExtension">
+            <summary>
+            MySQL 扩展
+            </summary>
+        </member>
+        <member name="T:Banana.Uow.Extension.SqlBuilder">
+            <summary>
+            数据库语句
+            </summary>
+        </member>
+        <member name="M:Banana.Uow.Extension.SqlBuilder.#ctor">
+            <summary>
+            数据库语句
+            </summary>
+        </member>
+        <member name="M:Banana.Uow.Extension.SqlBuilder.#ctor(System.String,System.Object[])">
+            <summary>
+            数据库语句
+            </summary>
+        </member>
+        <member name="T:Banana.Uow.Extension.SQLiteExtension">
+            <summary>
+            SQLite 扩展
+            </summary>
+        </member>
+        <!-- 对于成员“M:Banana.Uow.Extension.SQLiteExtension.#ctor”忽略有格式错误的 XML 注释 -->
+        <member name="T:Banana.Uow.Extension.SQLServerExtension">
+            <summary>
+            SQL Server 扩展
+            </summary>
+        </member>
+        <member name="M:Banana.Uow.Extension.SQLServerExtension.#ctor">
+            <summary>
+            SQL Server 扩展
+            </summary>
+        </member>
+        <member name="M:Banana.Uow.Extension.SQLServerExtension.GetPageList``1(Banana.Uow.Interface.IRepository{``0},System.Int32,System.Int32,System.String,System.Object,System.Object,System.Boolean)">
+            <summary>
+            分页
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="repository"></param>
+            <param name="pageNum">页码</param>
+            <param name="pageSize">页大小</param>
+            <param name="whereString">where语句，不需要携带where</param>
+            <param name="param">where 参数</param>
+            <param name="order"></param>
+            <param name="asc"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Banana.Uow.Interface.IAdapter">
+            <summary>
+            数据库各数据的适配扩展接口
+            </summary>
+        </member>
+        <!-- 对于成员“T:Banana.Uow.Interface.IRepository`1”忽略有格式错误的 XML 注释 -->
+        <member name="M:Banana.Uow.Interface.IRepository`1.Insert(`0)">
+            <summary>
+            插入对象
+            </summary>
+            <param name="entity"></param>
+        </member>
+        <member name="M:Banana.Uow.Interface.IRepository`1.Update(`0)">
+            <summary>
+            更新对象
+            </summary>
+            <param name="entity"></param>
+        </member>
+        <member name="M:Banana.Uow.Interface.IRepository`1.Delete(`0)">
+            <summary>
+            删除对象
+            </summary>
+        </member>
+        <member name="M:Banana.Uow.Interface.IRepository`1.Execute(System.String,System.Object)">
+            <summary>
+            执行SQL语句
+            </summary>
+            <param name="sql">SQL语句</param>
+            <param name="parms">参数</param>
+            <returns></returns>
+        </member>
+        <member name="M:Banana.Uow.Interface.IRepository`1.Query(System.Int32)">
+            <summary>
+            查询对象
+            </summary>
+        </member>
+        <member name="M:Banana.Uow.Interface.IRepository`1.QueryList(System.String,System.Object)">
+            <summary>
+            查询对象集合
+            </summary>
+        </member>
+        <member name="M:Banana.Uow.Interface.IRepository`1.QueryList(System.Int32,System.Int32,System.String,System.Object,System.String,System.Boolean)">
+            <summary>
+            查询对象集合
+            </summary>
+            <param name="pageNum"></param>
+            <param name="pageSize"></param>
+            <param name="order"></param>
+            <param name="asc"></param>
+            <param name="express"></param>
+            <returns></returns>
+        </member>
+        <member name="P:Banana.Uow.Interface.IRepository`1.TableName">
+            <summary>
+            表名
+            </summary>
+        </member>
+        <member name="M:Banana.Uow.Interface.IRepository`1.OpenTransaction">
+            <summary>
+            开启事务
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:Banana.Uow.Interface.IRepository`1.TrancationState">
+            <summary>
+            事务状态
+            </summary>
+        </member>
+        <member name="P:Banana.Uow.Interface.IRepository`1.EntityType">
+            <summary>
+            对象类型
+            </summary>
+        </member>
+        <member name="T:Banana.Uow.Interface.IUnitOfWork">
+            <summary>
+            工作单元接口
+            </summary>
+        </member>
+        <member name="T:Banana.Uow.Models.BaseModel">
+            <summary>
+            模型基类
+            </summary>
+        </member>
+        <member name="P:Banana.Uow.Models.DBSetting.ConnectionString">
+            <summary>
+            数据库链接串
+            </summary>
+        </member>
+        <member name="P:Banana.Uow.Models.DBSetting.DBType">
+            <summary>
+            数据库类型
+            </summary>
+        </member>
+        <member name="T:Banana.Uow.Models.DBType">
+            <summary>
+            数据库类型
+            </summary>
+        </member>
+        <member name="T:Banana.Uow.Models.ETrancationState">
+            <summary>
+            事务状态
+            </summary>
+        </member>
+        <member name="T:Banana.Uow.Models.IEntity">
+            <summary>
+            模型接口
+            </summary>
+        </member>
+        <member name="T:Banana.Uow.Repository`1">
+            <summary>
+            仓储基类
+            </summary>
+        </member>
+        <member name="M:Banana.Uow.Repository`1.#ctor">
+            <summary>
+            仓储
+            </summary>
+        </member>
+        <member name="M:Banana.Uow.Repository`1.#ctor(System.Data.IDbConnection,System.Data.IDbTransaction)">
+            <summary>
+            仓储
+            </summary>
+        </member>
+        <member name="P:Banana.Uow.Repository`1.TableName">
+            <summary>
+            表名
+            </summary>
+        </member>
+        <member name="M:Banana.Uow.Repository`1.OpenTransaction">
+            <summary>
+            开启事务
+            </summary>
+        </member>
+        <member name="P:Banana.Uow.Repository`1.TrancationState">
+            <summary>
+            事务状态
+            </summary>
+        </member>
+        <member name="P:Banana.Uow.Repository`1.EntityType">
+            <summary>
+            对象类型
+            </summary>
+        </member>
+        <member name="M:Banana.Uow.Repository`1.Delete(`0)">
+            <summary>
+            删除实体
+            </summary>
+            <param name="entity">实体</param>
+            <param name="dbTransaction">事务</param>
+        </member>
+        <member name="M:Banana.Uow.Repository`1.Insert(`0)">
+            <summary>
+            插入实体
+            </summary>
+            <param name="entity">实体</param>
+            <param name="dbTransaction">事务</param>
+            <returns></returns>
+        </member>
+        <member name="M:Banana.Uow.Repository`1.Query(System.Int32)">
+            <summary>
+            查询单个实体
+            </summary>
+            <param name="id">Id</param>
+        </member>
+        <member name="M:Banana.Uow.Repository`1.QueryList(System.String,System.Object)">
+            <summary>
+            查询列表
+            </summary>
+            <param name="whereString">where 语句如： name like @name (使用参数化)</param>
+            <param name="param">参数，语句如：new { name = "%李%" }</param>
+            <returns></returns>
+        </member>
+        <member name="M:Banana.Uow.Repository`1.QueryList(System.Int32,System.Int32,System.String,System.Object,System.String,System.Boolean)">
+            <summary>
+            分页查询
+            </summary>
+            <param name="pageNum">页码</param>
+            <param name="pageSize">页大小</param>
+            <param name="whereString">where语句，无效携带where关键字</param>
+            <param name="param">参数</param>
+            <param name="order">排序</param>
+            <param name="asc">是否</param>
+            <returns></returns>
+        </member>
+        <member name="M:Banana.Uow.Repository`1.Update(`0)">
+            <summary>
+            更新
+            </summary>
+            <param name="entity"></param>
+            <param name="dbTransaction"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Banana.Uow.Repository`1.Execute(System.String,System.Object)">
+            <summary>
+            执行单条语句
+            </summary>
+            <param name="sql"></param>
+            <param name="parms"></param>
+            <param name="dbTransaction">事务</param>
+            <returns></returns>
+        </member>
+        <member name="M:Banana.Uow.Repository`1.InsertBatch(System.String,System.Collections.Generic.IEnumerable{`0})">
+            <summary>
+            批量插入数据
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="sql">sql语句</param>
+        </member>
+        <member name="T:Banana.Uow.UnitOfWork">
+            <summary>
+            工作单元基类
+            </summary>
+        </member>
+        <member name="M:Banana.Uow.UnitOfWork.#ctor(System.Data.IDbConnection)">
+            <summary>
+            工作单元基类
+            </summary>
+            <param name="context"></param>
+        </member>
+        <member name="M:Banana.Uow.UnitOfWork.Commit">
+            <summary>
+            提交
+            </summary>
+        </member>
+        <member name="M:Banana.Uow.UnitOfWork.Rollback">
+            <summary>
+            回滚
+            </summary>
+        </member>
+        <member name="M:Banana.Uow.UnitOfWork.Repository``1">
+            <summary>
+            获取仓储
+            </summary> 
+        </member>
+    </members>
+</doc>
