@@ -1,4 +1,9 @@
-﻿using Dapper;
+﻿/***********************************
+ * Coder：EminemJK
+ * Date：2018-11-20
+ **********************************/
+
+using Dapper;
 using Dapper.Contrib.Extensions;
 using System;
 using System.Collections.Concurrent;
@@ -27,20 +32,26 @@ namespace Banana.Uow.Extension
         private readonly object[] _args;
         private SqlBuilder _rhs;
         private string _sqlFinal;
-        private object[] _argsFinal;
+        private object _argsFinal;
 
         private void Build()
         {
-            // already built?
             if (_sqlFinal != null)
                 return;
-
-            // Build it
+            
             var sb = new StringBuilder();
-            var args = new List<object>();
-            Build(sb, args, null);
+
+            Dictionary<string, object> argsObj = new Dictionary<string, object>();
+            Build(sb, argsObj, null);
             _sqlFinal = sb.ToString();
-            _argsFinal = args.ToArray();
+
+            //动态创建对象
+            dynamic obj = new System.Dynamic.ExpandoObject(); 
+            foreach (KeyValuePair<string, object> item in argsObj)
+            {
+                ((IDictionary<string, object>)obj).Add(item.Key, item.Value);
+            } 
+            _argsFinal = obj;
         }
 
         public string SQL
@@ -52,7 +63,7 @@ namespace Banana.Uow.Extension
             }
         }
 
-        public object[] Arguments
+        public object Arguments
         {
             get
             {
@@ -76,25 +87,43 @@ namespace Banana.Uow.Extension
             return Append(new SqlBuilder(sql, args));
         }
 
+        public SqlBuilder IsAse(bool ase)
+        {
+            if (ase)
+            {
+                return Append(new SqlBuilder("ASE"));
+            }
+            else
+            {
+                return Append(new SqlBuilder("DESC"));
+            }
+        }
+
         public SqlBuilder Where(string sql, params object[] args)
         {
+            sql = RevomeFlag(sql, "WHERE");
             return Append(new SqlBuilder("WHERE " + sql, args));
         }
 
         public SqlBuilder OrderBy(params object[] args)
         {
-            return Append(new SqlBuilder("ORDER BY " + string.Join(", ",  args )));
+            return Append(new SqlBuilder("ORDER BY " + string.Join(", ", (from x in args select RevomeFlag(x.ToString(), "ORDER BY")).ToArray())));
         }
 
         public SqlBuilder Select(params object[] args)
         {
-            return Append(new SqlBuilder("SELECT " + string.Join(", ", (from x in args select x.ToString()).ToArray())));
+            return Append(new SqlBuilder("SELECT " + string.Join(", ", (from x in args select RevomeFlag(x.ToString(),"SELECT")).ToArray())));
         }
 
         public SqlBuilder Select(Type type)
         {
-            var column = TypePropertiesCache(type).Select(p=>p.Name);  
-            return Select(column);
+            var column = TypePropertiesCache(type).Select(p => p.Name).ToList();
+            object[] obj = new object[column.Count];
+            for (int idx = 0; idx < column.Count; idx++)
+            {
+                obj[idx] = column[idx];
+            } 
+            return Select(obj);
         }
 
         public SqlBuilder From(params object[] args)
@@ -107,17 +136,17 @@ namespace Banana.Uow.Extension
             return sql?._sql != null && sql._sql.StartsWith(sqltype, StringComparison.InvariantCultureIgnoreCase);
         }
 
-        public void Build(StringBuilder sb, List<object> args, SqlBuilder lhs)
+        public void Build(StringBuilder sb, Dictionary<string, object> argsObj, SqlBuilder lhs)
         {
             if (!string.IsNullOrEmpty(_sql))
             {
-                // Add SQL to the string
                 if (sb.Length > 0)
                 {
                     sb.Append("\n");
+                    sb.Append(" ");
                 }
 
-                var sql = ProcessParams(_sql, _args, args);
+                var sql = ProcessParams(_sql, _args, argsObj);
 
                 if (Is(lhs, "WHERE ") && Is(this, "WHERE "))
                     sql = "AND " + sql.Substring(6);
@@ -126,43 +155,55 @@ namespace Banana.Uow.Extension
 
                 sb.Append(sql);
             }
-
-            // Now do rhs
-            _rhs?.Build(sb, args, this);
+            
+            _rhs?.Build(sb, argsObj, this);
         } 
 
-        private static readonly Regex rxParams = new Regex(@"(?<!@)@\w+", RegexOptions.Compiled);
-        private static string ProcessParams(string _sql, object[] args_src, List<object> args_dest)
+        private static readonly Regex rxParams = new Regex(@"(?<!@)@\w+", RegexOptions.Compiled); 
+        private static string ProcessParams(string _sql, object[] args_src, Dictionary<string, object> temp)
         {
             return rxParams.Replace(_sql, m =>
             {
                 string param = m.Value.Substring(1);
 
+                bool found = false;
                 if (int.TryParse(param, out int paramIndex))
                 { 
                     if (paramIndex < 0 || paramIndex >= args_src.Length)
-                        throw new ArgumentOutOfRangeException(string.Format("参数 '@{0}' 已指定，但只提供了参数 {1} (sql: `{2}`)", paramIndex, args_src.Length, _sql));
-                    args_dest.Add(args_src[paramIndex]);
+                        throw new ArgumentOutOfRangeException(string.Format("参数 '@{0}' 已指定，但只提供了参数 {1} (sql: `{2}`)", paramIndex, args_src.Length, _sql)); 
+                    var o = args_src[paramIndex]; 
+                    var pi = o.GetType().GetProperty(param);
+                    if (pi != null)
+                    {
+                        if (temp.ContainsKey(pi.Name))
+                        {
+                            throw new ArgumentOutOfRangeException("参数重名：" + pi.Name);
+                        }
+                        temp.Add(pi.Name, pi.GetValue(o, null));
+                        found = true; 
+                    } 
                 }
                 else
-                { 
-                    bool found = false;
+                {  
                     foreach (var o in args_src)
                     {
-                        var pi = o.GetType().GetProperty(param);
+                        var pi = o.GetType().GetProperty(param); 
                         if (pi != null)
                         {
-                            args_dest.Add(pi.GetValue(o, null));
+                            if (temp.ContainsKey(pi.Name))
+                            {
+                                throw new ArgumentOutOfRangeException("参数重名：" + pi.Name);
+                            }
+                            temp.Add(pi.Name, pi.GetValue(o, null)); 
                             found = true;
                             break;
                         }
-                    }
-
-                    if (!found)
-                        throw new ArgumentException(string.Format("参数 '@{0}' 已指定， 但传递的参数中没有一个具有该名称的属性 (sql: '{1}')", param, _sql));
+                    }  
                 }
-
-                return "@" + (args_dest.Count - 1).ToString();
+                if (!found)
+                    throw new ArgumentException(string.Format("参数 '@{0}' 已指定， 但传递的参数中没有一个具有该名称的属性 (sql: '{1}')", param, _sql));
+                //return "@" + (args_dest.Count - 1).ToString();
+                return "@" + param;
             }
             );
         }
@@ -189,6 +230,17 @@ namespace Banana.Uow.Extension
 
             var writeAttribute = (WriteAttribute)attributes[0];
             return writeAttribute.Write;
+        }
+
+        public static string RevomeFlag(string OldString, string flag)
+        {
+            var temp = OldString.ToUpper();
+            flag = flag.ToUpper();
+            if (temp.StartsWith(flag))
+            {
+                return OldString.Substring(flag.Length);
+            }
+            return OldString;
         }
     }
 }

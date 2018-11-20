@@ -20,12 +20,11 @@ namespace DotNetCore_TestApp
             ConnectionBuilder.ConfigRegist(strConn, Banana.Uow.Models.DBType.SqlServer);
 
             var repo = new Repository<Category>();
+            var ls = repo.QueryList("where ParentNamePath like @ParentNamePath", new { ParentNamePath = "%,电气设备,%" });
 
-            SQLServerExtension sQLServer = new SQLServerExtension();
-
-            var sb = sQLServer.GetPageSQL(repo, 1, 10, "ParentNamePath like @ParentNamePath", new { ParentNamePath = "%,电气设备,%" });
-
+            var page = repo.QueryList(1, 10, "where ParentNamePath like @ParentNamePath", new { ParentNamePath = "%,电气设备,%" }, "id", false);
             var data = repo.QueryList(" where ParentNamePath like @ParentNamePath", new { ParentNamePath = "%,电气设备,%" });
+
             //var model = repo.Query(2);
 
             //var modelAll = repo.QueryAll();

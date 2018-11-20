@@ -3,6 +3,8 @@
  * Date：2018-11-16
  **********************************/
 
+using Banana.Uow.Extension;
+using Banana.Uow.Interface;
 using Banana.Uow.Models;
 using MySql.Data.MySqlClient;
 using System;
@@ -20,7 +22,13 @@ namespace Banana.Uow
     /// </summary>
     public class ConnectionBuilder
     {
-        internal static DBSetting dBSetting;
+        private static DBSetting dBSetting;
+        private static readonly Dictionary<DBType, IAdapter> AdapterDictionary
+        = new Dictionary<DBType, IAdapter>
+        {
+            {DBType.SqlServer,new SQLServerExtension() },
+            {DBType.MySQL,  new MySQLExtension()}
+        };
         /// <summary>
         /// 注册链接
         /// </summary>
@@ -63,6 +71,10 @@ namespace Banana.Uow
             } 
         }
 
+        public static IAdapter GetAdapter()
+        {
+            return AdapterDictionary[dBSetting.DBType];
+        }
 
     }
 }

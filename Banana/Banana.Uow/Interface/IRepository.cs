@@ -55,12 +55,12 @@ namespace Banana.Uow.Interface
         /// 查询对象集合
         /// </summary>
         /// <param name="pageNum"></param>
-        /// <param name="pagesize"></param>
+        /// <param name="pageSize"></param>
         /// <param name="order"></param>
         /// <param name="asc"></param>
         /// <param name="express"></param>
         /// <returns></returns>
-        List<T> QueryList(int pageNum, int pagesize, string whereString = null, object param = null, string order = null, bool asc = false);
+        List<T> QueryList(int pageNum, int pageSize, string whereString = null, object param = null, string order = null, bool asc = false);
 
         /// <summary>
         /// 表名

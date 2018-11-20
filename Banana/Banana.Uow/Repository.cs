@@ -137,12 +137,9 @@ namespace Banana.Uow
             }
             else
             {
-                if (!whereString.TrimStart().ToLower().StartsWith("where"))
-                {
-                    whereString = " where " + whereString;
-                }
-                string sql = string.Format("select * from {0} {1}", TableName, whereString);
-                return DBConnection.Query<T>(sql, param).ToList();
+                IAdapter adapter = ConnectionBuilder.GetAdapter();
+                var sqlbuilder = adapter.GetPageList(this, whereString: whereString, param: param); 
+                return DBConnection.Query<T>(sqlbuilder.SQL, sqlbuilder.Arguments).ToList();
             }
         }
 
@@ -150,13 +147,17 @@ namespace Banana.Uow
         /// 分页查询
         /// </summary>
         /// <param name="pageNum">页码</param>
-        /// <param name="pagesize">页大小</param>
-        /// <param name="order">按照</param>
-        /// <param name="asc"></param>
+        /// <param name="pageSize">页大小</param>
+        /// <param name="whereString">where语句，无效携带where关键字</param>
+        /// <param name="param">参数</param>
+        /// <param name="order">排序</param>
+        /// <param name="asc">是否</param>
         /// <returns></returns>
-        public List<T> QueryList(int pageNum, int pagesize, string whereString = null, object param = null, string order = null, bool asc = false)
+        public List<T> QueryList(int pageNum, int pageSize, string whereString = null, object param = null, string order = null, bool asc = false)
         {
-            throw new NotImplementedException();
+            IAdapter adapter = ConnectionBuilder.GetAdapter();
+            var sqlbuilder = adapter.GetPageList(this, pageNum, pageSize, whereString, param, order, asc); 
+            return DBConnection.Query<T>(sqlbuilder.SQL, sqlbuilder.Arguments).ToList();
         }
 
         /// <summary>
