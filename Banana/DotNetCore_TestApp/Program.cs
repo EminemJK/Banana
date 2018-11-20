@@ -4,6 +4,7 @@ using Dapper.Contrib.Extensions;
 using Banana.Uow.Models;
 using System.Collections.Generic;
 using Banana.Uow.Extension;
+using Dapper;
 
 /***********************************
  * Coder：EminemJK
@@ -19,7 +20,8 @@ namespace DotNetCore_TestApp
         {
             ConnectionBuilder.ConfigRegist(strConn, Banana.Uow.Models.DBType.SqlServer);
 
-            var repo = new Repository<Category>(); 
+            var repo = new Repository<Category>()
+                
 
             var list = repo.QueryList("where ParentNamePath like @ParentNamePath", new { ParentNamePath = "%,电气设备,%" }); 
 

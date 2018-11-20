@@ -15,6 +15,7 @@
     <Version>1.0.1</Version>
     <PackageReleaseNotes>1.增加XML注释
 2.更新Logo</PackageReleaseNotes>
+    <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net452|AnyCPU'">
     <DocumentationFile>D:\Projects\MyGit\OSChina\Banana\Banana.Uow\Banana.Uow.xml</DocumentationFile>

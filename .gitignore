@@ -11,3 +11,6 @@
 /Banana/Banana.Uow/Banana.Uow.nuspec
 /Banana/Banana.Uow/NuGet.exe
 *.nupkg
+/Banana/packages
+/Banana/DotNetFramework_TestApp/bin
+/Banana/DotNetFramework_TestApp/obj

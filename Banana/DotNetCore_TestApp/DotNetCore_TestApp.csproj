@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Banana.Uow" Version="1.0.0" />
+    <PackageReference Include="Banana.Uow" Version="1.0.1" />
   </ItemGroup>
 
 </Project>
