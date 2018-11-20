@@ -18,7 +18,8 @@
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net452|AnyCPU'">
-    <DocumentationFile>D:\Projects\MyGit\OSChina\Banana\Banana.Uow\Banana.Uow.xml</DocumentationFile>
+    <DocumentationFile>bin\Release\Banana.Uow.xml</DocumentationFile>
+    <OutputPath>bin\Release\</OutputPath>
   </PropertyGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net452'">
     <Reference Include="System" />
@@ -37,16 +38,6 @@
     <PackageReference Include="System.Reflection.Emit" Version="4.3.0" />
     <PackageReference Include="System.Runtime.InteropServices" Version="4.3.0" />
     <PackageReference Include="System.Xml.XmlDocument" Version="4.3.0" /> 
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Remove="Packages\**" />
-    <EmbeddedResource Remove="Packages\**" />
-    <None Remove="Packages\**" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Remove="Banana.Uow.nuspec" />
-    <None Remove="Banana.Uow.xml" />
-    <None Remove="NuGet.exe" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="MySql.Data" Version="8.0.13" />
