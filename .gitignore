@@ -7,3 +7,4 @@
 /Banana/Banana.Utility/bin
 /Banana/DotNetCore_TestApp/obj
 /Banana/DotNetCore_TestApp/bin
+/Banana/Banana.Uow/*.user

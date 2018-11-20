@@ -1,5 +1,6 @@
 # Banana.Uow
-![avatar](https://github.com/EminemJK/Banana/blob/master/Banana/Doc/banana_logo.ico)
+![image](https://github.com/EminemJK/Banana/blob/master/Banana/Doc/banana_logo.png)
+
 Coder：EminemJK
 
 ### 项目介绍
