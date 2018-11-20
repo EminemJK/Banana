@@ -1,4 +1,5 @@
 # Banana.Uow
+![avatar](https://github.com/EminemJK/Banana/blob/master/Banana/Doc/banana_logo.ico)
 Coder：EminemJK
 
 ### 项目介绍
@@ -28,7 +29,7 @@ using Dapper.Contrib.Extensions;
         [Computed]
        public DateTime Createtime { get; set; }
    }
-   
+
 特性说明：
 · Table：指定实体对应地数据库表名，如果类名和数据库表名不同，需要设置
 · Key：指定此列为自动增长主键
