@@ -1,5 +1,5 @@
 # Banana.Uow
-![image](https://github.com/EminemJK/Banana/blob/master/Banana/Doc/banana_logo.png)
+![image](https://github.com/EminemJK/Banana/blob/master/Banana/Doc/banana_logo.ico)
 
 Coder：EminemJK
 
