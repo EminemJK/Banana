@@ -17,6 +17,7 @@ namespace DotNetCore_TestApp
 
         public int Sex { get; set; }
 
+        [ExplicitKey]
         public int ClassId { get; set; }
 
         public Student()

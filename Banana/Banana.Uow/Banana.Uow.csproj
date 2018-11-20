@@ -3,9 +3,11 @@
     <PackageId>Banana.Uow</PackageId>
     <PackageTags>orm;sql;micro-orm;Dapper;Uow;Repository</PackageTags>
     <Title>Dapper</Title>
-    <Description>Uow and Repository</Description>
+    <Description>基于Dapper二次封装的仓储、工作单元</Description>
     <Authors>EminemJK</Authors>
     <TargetFrameworks>net452;netstandard2.0</TargetFrameworks>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
   </PropertyGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net452'">
     <Reference Include="System" />
