@@ -88,11 +88,19 @@ using (UnitOfWork uow = new UnitOfWork())
 ```
 # Banana.Utility
 ## 公用库
-#### RedisUtils        —— 基于StackExchange.Redis二次封装
-#### PinYin            —— 拼音帮助类
-#### JavaDate          —— 时间戳
-#### ModelConvertUtil  —— 模型拷贝
-#### PagingUtil        —— 分页
-#### HttpHelper        —— Get & Post
-#### EnumDescription   —— 枚举特性说明
+#### RedisUtils        
+基于StackExchange.Redis二次封装
+#### PinYin           
+拼音帮助类
+#### JavaDate         
+时间戳
+#### ModelConvertUtil  
+模型拷贝
+#### PagingUtil        
+分页
+#### HttpHelper        
+Get & Post
+#### EnumDescription   
+枚举特性说明
+
 👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍
