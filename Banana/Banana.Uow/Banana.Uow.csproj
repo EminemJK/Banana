@@ -41,6 +41,7 @@
   <ItemGroup>
     <PackageReference Include="MySql.Data" Version="8.0.13" />
     <PackageReference Include="Dapper.Contrib" Version="1.50.5" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.5.1" />
     <PackageReference Include="System.Data.SQLite.Core" Version="1.0.109.2" />
   </ItemGroup>
 </Project>

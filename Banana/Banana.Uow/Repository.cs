@@ -97,7 +97,6 @@ namespace Banana.Uow
         /// 删除实体
         /// </summary>
         /// <param name="entity">实体</param>
-        /// <param name="dbTransaction">事务</param>
         public bool Delete(T entity)
         {
             return DBConnection.Delete(entity, _dbTransaction);
@@ -107,8 +106,6 @@ namespace Banana.Uow
         /// 插入实体
         /// </summary>
         /// <param name="entity">实体</param>
-        /// <param name="dbTransaction">事务</param>
-        /// <returns></returns>
         public long Insert(T entity)
         {
             return DBConnection.Insert(entity, _dbTransaction);
@@ -128,7 +125,6 @@ namespace Banana.Uow
         /// </summary>
         /// <param name="whereString">where 语句如： name like @name (使用参数化)</param>
         /// <param name="param">参数，语句如：new { name = "%李%" }</param>
-        /// <returns></returns>
         public List<T> QueryList(string whereString = null, object param = null)
         {
             if (string.IsNullOrEmpty(whereString))
@@ -164,8 +160,6 @@ namespace Banana.Uow
         /// 更新
         /// </summary>
         /// <param name="entity"></param>
-        /// <param name="dbTransaction"></param>
-        /// <returns></returns>
         public bool Update(T entity)
         {
             return DBConnection.Update<T>(entity, _dbTransaction);
@@ -176,8 +170,6 @@ namespace Banana.Uow
         /// </summary>
         /// <param name="sql"></param>
         /// <param name="parms"></param>
-        /// <param name="dbTransaction">事务</param>
-        /// <returns></returns>
         public int Execute(string sql, dynamic parms)
         {
             return DBConnection.Execute(sql, (object)parms, transaction: _dbTransaction);
@@ -186,8 +178,9 @@ namespace Banana.Uow
         /// <summary>
         /// 批量插入数据
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="sql">sql语句</param>
+        /// <param name="sql">SQL</param>
+        /// <param name="entities">entityList</param>
+        /// <returns></returns>
         public virtual bool InsertBatch(string sql, IEnumerable<T> entities)
         {
             using (IDbTransaction trans = OpenTransaction())

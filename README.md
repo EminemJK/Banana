@@ -52,13 +52,13 @@ using Dapper.Contrib.Extensions;
 
     //删除
     boo b = repo.Delete(model);
-    boo b = repo.Delete(new Category(){Id =7});
+    boo b = repo.Delete(new Category(){ Id =7 });
 
     //更新
     bool model = repo.Update(model);
 
     //插入
-    int id = (int)repo.Insert(new Category() { Id = 7, Name = "EminemJK" });
+    int id = (int)repo.Insert(new Category() { Name = "EminemJK" });
 
     //批量插入
     bool b = repo.InsertBatch(sql,List);
