@@ -2,11 +2,25 @@
 
   <PropertyGroup>
     <PackageId>Banana.Utility</PackageId>
-    <PackageTags>Common;Tools</PackageTags>
+    <PackageTags>Common;Tools;Redis;PinYin</PackageTags>
     <Title>Banana.Utility</Title>
-    <Description>Common</Description>
+    <Description></Description>
     <Authors>EminemJK</Authors>
-    <TargetFrameworks>net452;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>net461;netstandard2.0</TargetFrameworks>
+    <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0.html</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/EminemJK/Banana.git</PackageProjectUrl>
+    <PackageIconUrl>https://www.cnblogs.com/images/cnblogs_com/EminemJK/1345488/o_banana_logo.png</PackageIconUrl>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net461|AnyCPU'">
+    <DocumentationFile>bin\Release\Banana.Utility.xml</DocumentationFile>
+    <OutputPath>bin\Release\</OutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+    <PackageReference Include="StackExchange.Redis" Version="2.0.513" />
+  </ItemGroup>
 
 </Project>

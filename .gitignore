@@ -15,3 +15,5 @@
 /Banana/DotNetFramework_TestApp/bin
 /Banana/DotNetFramework_TestApp/obj
 /Banana/Banana.Uow/Properties/PublishProfiles
+/Banana/Banana.Utility/Properties/PublishProfiles
+/Banana/Banana.Utility/Banana.Utility.csproj.user
