@@ -4,7 +4,7 @@
     <PackageId>Banana.Utility</PackageId>
     <PackageTags>Common;Tools;Redis;PinYin</PackageTags>
     <Title>Banana.Utility</Title>
-    <Description></Description>
+    <Description>工具类库</Description>
     <Authors>EminemJK</Authors>
     <TargetFrameworks>net461;netstandard2.0</TargetFrameworks>
     <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0.html</PackageLicenseUrl>
