@@ -5,6 +5,7 @@ using Banana.Uow.Models;
 using System.Collections.Generic;
 using Banana.Uow.Extension;
 using Dapper;
+using System.Linq;
 
 /***********************************
  * Coder：EminemJK
@@ -15,10 +16,14 @@ namespace DotNetCore_TestApp
 {
     class Program
     {
-        static string strConn = @"Data Source=.;Initial Catalog = LoadDB;User ID=sa;Password =mimashi123";
+        static string strConn = @"Data Source=.;Initial Catalog = AdminLTE.Net.DB;User ID=sa;Password =mimashi123";
         static void Main(string[] args)
         {
             ConnectionBuilder.ConfigRegist(strConn, Banana.Uow.Models.DBType.SqlServer);
+
+
+            var repoUserInfo = new Repository<UserInfo>();
+            var info = repoUserInfo.QueryList("UserName=@userName and Password =@psw", new { userName = "admin", psw= "25d55ad283aa400af464c76d713c07ad" }).FirstOrDefault();
 
             var repo = new Repository<Category>();
                 
@@ -65,5 +70,25 @@ namespace DotNetCore_TestApp
             Console.WriteLine("Hello World!");
             Console.ReadKey();
         }
+    }
+
+    [Table("T_User")]
+    public class UserInfo : BaseModel
+    {
+        [Key]
+        public int Id { get; set; }
+
+        public string UserName { get; set; }
+        public string Password { get; set; }
+
+        public string Name { get; set; }
+
+        public string Phone { get; set; }
+
+        public int Sex { get; set; }
+
+        public int Enable { get; set; }
+
+        public DateTime CreateTime { get; set; }
     }
 }

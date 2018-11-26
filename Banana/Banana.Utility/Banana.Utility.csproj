@@ -2,15 +2,16 @@
 
   <PropertyGroup>
     <PackageId>Banana.Utility</PackageId>
-    <PackageTags>Common;Tools;Redis;PinYin</PackageTags>
+    <PackageTags>Common;Tools;Redis;PinYin;加密</PackageTags>
     <Title>Banana.Utility</Title>
-    <Description>工具类库</Description>
+    <Description>Banana工具类库</Description>
     <Authors>EminemJK</Authors>
     <TargetFrameworks>net461;netstandard2.0</TargetFrameworks>
     <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0.html</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/EminemJK/Banana.git</PackageProjectUrl>
     <PackageIconUrl>https://www.cnblogs.com/images/cnblogs_com/EminemJK/1345488/o_banana_logo.png</PackageIconUrl>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>1.0.1</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net461|AnyCPU'">
