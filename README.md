@@ -69,22 +69,22 @@ using Dapper.Contrib.Extensions;
 #### 工作单元
 ``` csharp
 using (UnitOfWork uow = new UnitOfWork())
-           {
-               var studentRepo = uow.Repository<Student>();
-               var model = new Student("啊啊", 1, 1);
-               var sid = studentRepo.Insert(model);
+{
+       var studentRepo = uow.Repository<Student>();
+       var model = new Student("啊啊", 1, 1);
+       var sid = studentRepo.Insert(model);
 
-               var classRepo = uow.Repository<MClass>();
-               var cid = classRepo.Insert(new MClass("五年级"));
-               if (sid > 0 && cid > 0)
-               {
-                   uow.Commit();
-               }
-               else
-               {
-                   uow.Rollback();
-               }
-           }
+       var classRepo = uow.Repository<MClass>();
+       var cid = classRepo.Insert(new MClass("五年级"));
+       if (sid > 0 && cid > 0)
+       {
+            uow.Commit();
+       }
+       else
+       {
+            uow.Rollback();
+       }
+}
 ```
 # Banana.Utility
 ## 公用库
