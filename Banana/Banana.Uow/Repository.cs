@@ -121,6 +121,21 @@ namespace Banana.Uow
         }
 
         /// <summary>
+        /// 查询总数
+        /// </summary>
+        public int QueryCount(string whereString = null, object param = null)
+        {
+            Extension.SqlBuilder sb = new Extension.SqlBuilder();
+            sb.Select("Count(*)");
+            sb.From(TableName);
+            if (!string.IsNullOrEmpty(whereString))
+            {
+                sb.Where(whereString, param);
+            }
+            return DBConnection.QueryFirst<int>(sb.SQL, sb.Arguments);
+        }
+
+        /// <summary>
         /// 查询列表
         /// </summary>
         /// <param name="whereString">where 语句如： name like @name (使用参数化)</param>
@@ -149,11 +164,14 @@ namespace Banana.Uow
         /// <param name="order">排序</param>
         /// <param name="asc">是否</param>
         /// <returns></returns>
-        public List<T> QueryList(int pageNum, int pageSize, string whereString = null, object param = null, string order = null, bool asc = false)
+        public Paging<T> QueryList(int pageNum, int pageSize, string whereString = null, object param = null, string order = null, bool asc = false)
         {
+            Paging<T> paging = new Paging<T>(pageNum, pageSize);
             IAdapter adapter = ConnectionBuilder.GetAdapter();
-            var sqlbuilder = adapter.GetPageList(this, pageNum, pageSize, whereString, param, order, asc); 
-            return DBConnection.Query<T>(sqlbuilder.SQL, sqlbuilder.Arguments).ToList();
+            var sqlbuilder = adapter.GetPageList(this, pageNum, pageSize, whereString, param, order, asc);
+            paging.data = DBConnection.Query<T>(sqlbuilder.SQL, sqlbuilder.Arguments).ToList();
+            paging.pageCount = QueryCount();
+            return paging;
         }
 
         /// <summary>
@@ -208,6 +226,6 @@ namespace Banana.Uow
                     return false;
                 }
             }
-        }
+        } 
     }
 }

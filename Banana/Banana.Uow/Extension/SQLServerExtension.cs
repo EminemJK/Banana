@@ -47,11 +47,11 @@ namespace Banana.Uow.Extension
                 if (!string.IsNullOrEmpty(whereString))
                 {
                     sqlBuilder.Where(whereString, param);
-                    sqlBuilder.Append(" and t.rowid>@numMin and t.rowid<=@numMax", new { numMin, numMax });
+                    sqlBuilder.Append(" and t.rowid>=@numMin and t.rowid<=@numMax", new { numMin, numMax });
                 }
                 else
                 {
-                    sqlBuilder.Where("t.rowid>@numMin and t.rowid<=@numMax", new { numMin, numMax });
+                    sqlBuilder.Where("t.rowid>=@numMin and t.rowid<=@numMax", new { numMin, numMax });
                 }
             }
             else

@@ -47,6 +47,11 @@ namespace Banana.Uow.Interface
         T Query(int id);
 
         /// <summary>
+        /// 查询总数
+        /// </summary>
+        int QueryCount(string whereString = null, object param = null);
+
+        /// <summary>
         /// 查询对象集合
         /// </summary>
         List<T> QueryList(string whereString = null, object param = null);
@@ -60,7 +65,7 @@ namespace Banana.Uow.Interface
         /// <param name="asc"></param>
         /// <param name="express"></param>
         /// <returns></returns>
-        List<T> QueryList(int pageNum, int pageSize, string whereString = null, object param = null, string order = null, bool asc = false);
+        Paging<T> QueryList(int pageNum, int pageSize, string whereString = null, object param = null, string order = null, bool asc = false);
 
         /// <summary>
         /// 表名
