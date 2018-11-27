@@ -5,15 +5,14 @@
     <Description>基于Dapper二次封装的仓储、工作单元</Description>
     <Authors>EminemJK</Authors>
     <TargetFrameworks>net452;netstandard2.0</TargetFrameworks>
-    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0.html</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/EminemJK/Banana.git</PackageProjectUrl>
     <PackageIconUrl>https://www.cnblogs.com/images/cnblogs_com/EminemJK/1345488/o_banana_logo.png</PackageIconUrl>
     <RepositoryUrl></RepositoryUrl>
-    <Version>1.0.2</Version>
-    <PackageReleaseNotes>1.增加XML注释
-2.更新Logo</PackageReleaseNotes>
+    <Version>1.0.3</Version>
+    <PackageReleaseNotes>1.fix paging bug</PackageReleaseNotes>
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net452|AnyCPU'">
