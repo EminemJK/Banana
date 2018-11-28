@@ -41,9 +41,10 @@ namespace Banana.Uow.Extension
                 sqlBuilder.IsAse(asc);
             }
 
-            if (pageNum > 0 && pageSize > 0)
+            if (pageNum >= 0 && pageSize > 0)
             {
-                sqlBuilder.Append($" limit {pageNum},{pageSize}");
+                int numMin = (pageNum - 1) * pageSize;
+                sqlBuilder.Append($" limit {numMin},{pageSize}");
             }
             return sqlBuilder;
         }

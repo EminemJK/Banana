@@ -42,8 +42,11 @@ namespace Banana.Uow.Extension
             sqlBuilder.Select(repository.EntityType);
             if (pageNum > 0 && pageSize > 0)
             {
-                sqlBuilder.From($"(SELECT ROW_NUMBER() OVER(ORDER BY ID ASC) AS rowid,* FROM { repository.TableName }) as t");
-                int numMin = pageNum, numMax = pageSize;
+                sqlBuilder.From($"(SELECT ROW_NUMBER() OVER(ORDER BY ID ASC) AS rowid,* FROM { repository.TableName }) as t"); 
+
+                if (pageNum <= 0)
+                    pageNum = 1;
+                int numMin = (pageNum - 1) * pageSize + 1, numMax = pageNum * pageSize;
                 if (!string.IsNullOrEmpty(whereString))
                 {
                     sqlBuilder.Where(whereString, param);

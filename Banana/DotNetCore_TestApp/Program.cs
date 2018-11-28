@@ -20,10 +20,14 @@ namespace DotNetCore_TestApp
         static void Main(string[] args)
         {
             ConnectionBuilder.ConfigRegist(strConn, Banana.Uow.Models.DBType.SqlServer);
-            Dos();
+            //Dos();
 
             var repoUserInfo = new Repository<UserInfo>();
-            var page = repoUserInfo.QueryList(1, 8);
+            var page1 = repoUserInfo.QueryList(1, 10);
+            var page2 = repoUserInfo.QueryList(2, 10);
+            var page3 = repoUserInfo.QueryList(3, 10);
+
+
             var info = repoUserInfo.QueryList("UserName=@userName and Password =@psw", new { userName = "admin", psw= "25d55ad283aa400af464c76d713c07ad" }).FirstOrDefault();
 
             var repo = new Repository<Category>();
