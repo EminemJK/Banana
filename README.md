@@ -46,9 +46,9 @@ using Dapper.Contrib.Extensions;
    //查询单个
    var model = repo.Query(7);
    //查询列表
-   var list = repo.QueryList("where ParentNamePath like @ParentNamePath", new { ParentNamePath = "%,电气设备,%" });
+   var list = repo.QueryList("where ParentNamePath like @ParentNamePath", new { ParentNamePath = "%,EminemJK,%" });
    //分页查询
-   var page = repo.QueryList(1, 10, "where ParentNamePath like @ParentNamePath", new { ParentNamePath = "%,电气设备,%" }, "id", false);
+   var page = repo.QueryList(1, 10, "where ParentNamePath like @ParentNamePath", new { ParentNamePath = "%,EminemJK,%" }, "id", false);
 
     //删除
     boo b = repo.Delete(model);
@@ -71,11 +71,11 @@ using Dapper.Contrib.Extensions;
 using (UnitOfWork uow = new UnitOfWork())
 {
        var studentRepo = uow.Repository<Student>();
-       var model = new Student("啊啊", 1, 1);
+       var model = new Student("EminemJK", 1, 1);
        var sid = studentRepo.Insert(model);
 
        var classRepo = uow.Repository<MClass>();
-       var cid = classRepo.Insert(new MClass("五年级"));
+       var cid = classRepo.Insert(new MClass("Fifth Grade"));
        if (sid > 0 && cid > 0)
        {
             uow.Commit();

@@ -37,25 +37,24 @@ namespace Banana.Uow.Extension
         /// <returns></returns>
         public SqlBuilder GetPageList<T>(IRepository<T> repository, int pageNum = 0, int pageSize = 0, string whereString = null, object param = null, object order = null, bool asc = false)
             where T : class, IEntity
-        {
+        { 
             SqlBuilder sqlBuilder = new SqlBuilder();
             sqlBuilder.Select(repository.EntityType);
-            if (pageNum > 0 && pageSize > 0)
+            if (pageSize > 0)
             {
-                sqlBuilder.From($"(SELECT ROW_NUMBER() OVER(ORDER BY ID ASC) AS rowid,* FROM { repository.TableName }) as t"); 
+                SqlBuilder sqlBuilderRows = new SqlBuilder();
+                sqlBuilderRows.Select("SELECT ROW_NUMBER() OVER(ORDER BY ID ASC) AS rowid,*");
+                sqlBuilderRows.From(repository.TableName);
+                if (!string.IsNullOrEmpty(whereString))
+                {
+                    sqlBuilderRows.Where(whereString, param);
+                }
+                sqlBuilder.Append($"From ({sqlBuilderRows.SQL}) as t", sqlBuilderRows.Arguments);
 
                 if (pageNum <= 0)
                     pageNum = 1;
                 int numMin = (pageNum - 1) * pageSize + 1, numMax = pageNum * pageSize;
-                if (!string.IsNullOrEmpty(whereString))
-                {
-                    sqlBuilder.Where(whereString, param);
-                    sqlBuilder.Append(" and t.rowid>=@numMin and t.rowid<=@numMax", new { numMin, numMax });
-                }
-                else
-                {
-                    sqlBuilder.Where("t.rowid>=@numMin and t.rowid<=@numMax", new { numMin, numMax });
-                }
+                sqlBuilder.Where("t.rowid>=@numMin and t.rowid<=@numMax", new { numMin, numMax });
             }
             else
             {

@@ -170,7 +170,7 @@ namespace Banana.Uow
             IAdapter adapter = ConnectionBuilder.GetAdapter();
             var sqlbuilder = adapter.GetPageList(this, pageNum, pageSize, whereString, param, order, asc);
             paging.data = DBConnection.Query<T>(sqlbuilder.SQL, sqlbuilder.Arguments).ToList();
-            paging.pageCount = QueryCount();
+            paging.pageCount = QueryCount(whereString, param);
             return paging;
         }
 

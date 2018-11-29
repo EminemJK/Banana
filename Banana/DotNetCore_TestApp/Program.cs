@@ -23,9 +23,9 @@ namespace DotNetCore_TestApp
             //Dos();
 
             var repoUserInfo = new Repository<UserInfo>();
-            var page1 = repoUserInfo.QueryList(1, 10);
-            var page2 = repoUserInfo.QueryList(2, 10);
-            var page3 = repoUserInfo.QueryList(3, 10);
+            var page1 = repoUserInfo.QueryList(1, 10, "sex=@sex", new { sex = 1 });
+            var page2 = repoUserInfo.QueryList(2, 10, "sex=@sex", new { sex = 1 });
+            var page3 = repoUserInfo.QueryList(3, 10, "sex=@sex", new { sex = 1 });
 
 
             var info = repoUserInfo.QueryList("UserName=@userName and Password =@psw", new { userName = "admin", psw= "25d55ad283aa400af464c76d713c07ad" }).FirstOrDefault();

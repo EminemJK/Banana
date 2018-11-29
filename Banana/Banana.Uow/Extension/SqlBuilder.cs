@@ -195,16 +195,30 @@ namespace Banana.Uow.Extension
                 else
                 {  
                     foreach (var o in args_src)
-                    {
-                        var pi = o.GetType().GetProperty(param); 
+                    { 
+                        var pi = o.GetType().GetProperty(param);
                         if (pi != null)
                         {
                             if (temp.ContainsKey(pi.Name))
                             {
                                 throw new ArgumentOutOfRangeException("参数重名：" + pi.Name);
                             }
-                            temp.Add(pi.Name, pi.GetValue(o, null)); 
+                            temp.Add(pi.Name, pi.GetValue(o, null));
                             found = true;
+                            break;
+                        }
+                        else if (o is System.Dynamic.ExpandoObject)
+                        {
+                            IDictionary<string, object> dic = o as System.Dynamic.ExpandoObject;
+                            foreach (var key in dic.Keys)
+                            {
+                                if (temp.ContainsKey(key))
+                                {
+                                    throw new ArgumentOutOfRangeException("参数重名：" + key);
+                                }
+                                found = true;
+                                temp.Add(key, dic[key]);
+                            } 
                             break;
                         }
                     }  
