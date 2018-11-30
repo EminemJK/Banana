@@ -23,7 +23,7 @@ namespace DotNetCore_TestApp
             //Dos();
 
             var repoUserInfo = new Repository<UserInfo>();
-            var page1 = repoUserInfo.QueryList(1, 10, "sex=@sex", new { sex = 1 });
+            var page1 = repoUserInfo.QueryList(1, 10, "sex=@sex", new { sex = 1 }, order: "createTime", asc: false);
             var page2 = repoUserInfo.QueryList(2, 10, "sex=@sex", new { sex = 1 });
             var page3 = repoUserInfo.QueryList(3, 10, "sex=@sex", new { sex = 1 });
 

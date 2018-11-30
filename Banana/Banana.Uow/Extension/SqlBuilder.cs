@@ -96,11 +96,11 @@ namespace Banana.Uow.Extension
             return Append(new SqlBuilder(sql, args));
         }
 
-        public SqlBuilder IsAse(bool ase)
+        public SqlBuilder IsAse(bool asc)
         {
-            if (ase)
+            if (asc)
             {
-                return Append(new SqlBuilder("ASE"));
+                return Append(new SqlBuilder("ASC"));
             }
             else
             {
@@ -138,6 +138,11 @@ namespace Banana.Uow.Extension
         public SqlBuilder From(params object[] args)
         {
             return Append(new SqlBuilder("FROM " + string.Join(", ", (from x in args select x.ToString()).ToArray())));
+        }
+
+        public static string GetArgsString(string fix, params object[] args)
+        {
+            return string.Join(", ", (from x in args select RevomeFlag(x.ToString(), fix)).ToArray());
         }
 
         private static bool Is(SqlBuilder sql, string sqltype)

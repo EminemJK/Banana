@@ -43,13 +43,27 @@ namespace Banana.Uow.Extension
             if (pageSize > 0)
             {
                 SqlBuilder sqlBuilderRows = new SqlBuilder();
-                sqlBuilderRows.Select("SELECT ROW_NUMBER() OVER(ORDER BY ID ASC) AS rowid,*");
+                string ascSql = " asc";
+                if (!asc)
+                {
+                    ascSql = " desc";
+                }
+                string orderSql = "ID";
+                if (order != null)
+                {
+                    orderSql = SqlBuilder.GetArgsString("ORDER BY", order);
+                }
+
+                sqlBuilderRows.Select("SELECT ROW_NUMBER() OVER(ORDER BY " + order + " " + ascSql + ") AS rowid,*");
                 sqlBuilderRows.From(repository.TableName);
                 if (!string.IsNullOrEmpty(whereString))
                 {
                     sqlBuilderRows.Where(whereString, param);
                 }
+                
+
                 sqlBuilder.Append($"From ({sqlBuilderRows.SQL}) as t", sqlBuilderRows.Arguments);
+                
 
                 if (pageNum <= 0)
                     pageNum = 1;
@@ -63,12 +77,13 @@ namespace Banana.Uow.Extension
                 {
                     sqlBuilder.Where(whereString, param);
                 }
+                if (order != null)
+                {
+                    sqlBuilder.OrderBy(order);
+                    sqlBuilder.IsAse(asc);
+                }
             } 
-            if (order != null)
-            {
-                sqlBuilder.OrderBy(order);
-                sqlBuilder.IsAse(asc); 
-            }
+            
 
             return sqlBuilder;
         }
