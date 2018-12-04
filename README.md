@@ -1,5 +1,7 @@
 # Banana.Uow
 ![image](https://github.com/EminemJK/Banana/blob/master/Banana/Doc/banana_logo.ico)
+[![Banana](https://img.shields.io/nuget/dt/Banana.Uow.svg)](https://www.nuget.org/packages/Banana.Uow/)
+[![Banana](https://img.shields.io/nuget/vpre/Banana.Uow.svg)](https://www.nuget.org/packages/Banana.Uow/)
 
 Coder：EminemJK
 
@@ -87,6 +89,8 @@ using (UnitOfWork uow = new UnitOfWork())
 }
 ```
 # Banana.Utility
+[![Banana.Utility](https://img.shields.io/nuget/dt/Banana.Utility.svg)](https://www.nuget.org/packages/Banana.Utility/)
+[![Banana.Utility](https://img.shields.io/nuget/vpre/Banana.Utility.svg)](https://www.nuget.org/packages/Banana.Utility/)
 ## 公用库
 #### RedisUtils
 ```
@@ -115,7 +119,7 @@ using (UnitOfWork uow = new UnitOfWork())
 #### EnumDescription
 ```
 枚举特性说明
-``` 
+```
 
 ## To Be Continued
 👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍
