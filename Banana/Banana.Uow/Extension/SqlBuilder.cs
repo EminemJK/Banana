@@ -116,12 +116,12 @@ namespace Banana.Uow.Extension
 
         public SqlBuilder OrderBy(params object[] args)
         {
-            return Append(new SqlBuilder("ORDER BY " + string.Join(", ", (from x in args select RevomeFlag(x.ToString(), "ORDER BY")).ToArray())));
+            return Append(new SqlBuilder("ORDER BY " + GetArgsString("ORDER BY", args)));
         }
 
         public SqlBuilder Select(params object[] args)
         {
-            return Append(new SqlBuilder("SELECT " + string.Join(", ", (from x in args select RevomeFlag(x.ToString(),"SELECT")).ToArray())));
+            return Append(new SqlBuilder("SELECT " + GetArgsString("SELECT", args)));
         }
 
         public SqlBuilder Select(Type type)
@@ -138,12 +138,7 @@ namespace Banana.Uow.Extension
         public SqlBuilder From(params object[] args)
         {
             return Append(new SqlBuilder("FROM " + string.Join(", ", (from x in args select x.ToString()).ToArray())));
-        }
-
-        public static string GetArgsString(string fix, params object[] args)
-        {
-            return string.Join(", ", (from x in args select RevomeFlag(x.ToString(), fix)).ToArray());
-        }
+        } 
 
         private static bool Is(SqlBuilder sql, string sqltype)
         {
@@ -171,8 +166,13 @@ namespace Banana.Uow.Extension
             }
             
             _rhs?.Build(sb, argsObj, this);
-        } 
+        }
 
+        public static string GetArgsString(string fix, params object[] args)
+        {
+            return string.Join(", ", (from x in args select RevomeFlag(x.ToString(), fix)).ToArray());
+        }
+        
         private static readonly Regex rxParams = new Regex(@"(?<!@)@\w+", RegexOptions.Compiled); 
         private static string ProcessParams(string _sql, object[] args_src, Dictionary<string, object> temp)
         {

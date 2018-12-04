@@ -1,65 +1,67 @@
 ﻿/***********************************
  * Coder：EminemJK
- * Date：2018-11-16
+ * Date：2018-12-04
  **********************************/
 
 using Banana.Uow.Models;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Banana.Uow.Interface
 {
     /// <summary>
-    /// 仓储接口
-    public interface IRepository<T> where T : class, IEntity
+    /// 异步仓储接口
+    /// </summary>
+    public interface IRepositoryAsync<T> where T : class, IEntity
     {
         /// <summary>
-        /// 插入对象
+        /// 插入实体
         /// </summary>
-        long Insert(T entity);
-
-        /// <summary>
-        /// 更新对象
-        /// </summary>
-        bool Update(T entity);
+        Task<int> InsertAsync(T entity);
 
         /// <summary>
         /// 删除对象
         /// </summary>
-        bool Delete(T entity);
+        Task<bool> DeleteAsync(T entity);
 
         /// <summary>
         /// 删除全部
         /// </summary>
-        bool DeleteAll();
+        Task<bool> DeleteAllAsync();
 
         /// <summary>
-        /// 执行SQL语句
+        /// 更新对象
         /// </summary>
-        int Execute(string sql, dynamic parms = null);
-
+        Task<bool> UpdateAsync(T entity);
 
         /// <summary>
-        /// 查询对象
+        /// 查询
         /// </summary>
-        T Query(int id);
+        Task<T> QueryAsync(int id);
 
         /// <summary>
         /// 查询总数
         /// </summary>
-        int QueryCount(string whereString = null, object param = null);
+        Task<int> QueryCountAsync(string whereString = null, object param = null);
 
         /// <summary>
         /// 查询对象集合
         /// </summary>
-        List<T> QueryList(string whereString = null, object param = null);
+        Task<IEnumerable<T>> QueryListAsync(string whereString = null, object param = null);
 
         /// <summary>
         /// 查询对象集合
         /// </summary>
-        Paging<T> QueryList(int pageNum, int pageSize, string whereString = null, object param = null, string order = null, bool asc = false);
+        Task<Paging<T>> QueryListAsync(int pageNum, int pageSize, string whereString = null, object param = null, string order = null, bool asc = false);
+
+        /// <summary>
+        /// 执行SQL语句
+        /// </summary>
+        Task<int> ExecuteAsync(string sql, dynamic parms = null);
 
         /// <summary>
         /// 表名

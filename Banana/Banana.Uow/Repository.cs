@@ -12,32 +12,15 @@ using System.Linq;
 using System.Reflection;
 using Banana.Uow.Models;
 using Banana.Uow.Interface;
+using System.Threading.Tasks;
 
 namespace Banana.Uow
 {
     /// <summary>
     /// 仓储基类
     /// </summary>
-    public class Repository<T> : IRepository<T> where T : class, IEntity
-    {
-        private IDbConnection _dbConnection;
-        public IDbConnection DBConnection
-        {
-            get
-            {
-                if (_dbConnection == null)
-                {
-                    _dbConnection = ConnectionBuilder.OpenConnection();
-                }
-                if (_dbConnection.State == ConnectionState.Closed)
-                {
-                    _dbConnection.Open();
-                }
-                return _dbConnection;
-            }
-            private set { this._dbConnection = value; }
-        }
-
+    public class Repository<T> : IRepository<T>, IRepositoryAsync<T> where T : class, IEntity
+    { 
         /// <summary>
         /// 仓储
         /// </summary>
@@ -54,6 +37,28 @@ namespace Banana.Uow
         {
             this._dbConnection = dbConnection;
             this._dbTransaction = dbTransaction;
+        }
+
+        #region Method Properties
+        private IDbConnection _dbConnection;
+        /// <summary>
+        /// IDbConnection
+        /// </summary>
+        public IDbConnection DBConnection
+        {
+            get
+            {
+                if (_dbConnection == null)
+                {
+                    _dbConnection = ConnectionBuilder.OpenConnection();
+                }
+                if (_dbConnection.State == ConnectionState.Closed)
+                {
+                    _dbConnection.Open();
+                }
+                return _dbConnection;
+            }
+            private set { this._dbConnection = value; }
         }
 
         private string _tableName;
@@ -91,8 +96,10 @@ namespace Banana.Uow
         /// <summary>
         /// 对象类型
         /// </summary>
-        public Type EntityType => typeof(T);
+        public Type EntityType => typeof(T); 
+        #endregion
 
+        #region Sync
         /// <summary>
         /// 删除实体
         /// </summary>
@@ -149,7 +156,7 @@ namespace Banana.Uow
             else
             {
                 IAdapter adapter = ConnectionBuilder.GetAdapter();
-                var sqlbuilder = adapter.GetPageList(this, whereString: whereString, param: param); 
+                var sqlbuilder = adapter.GetPageList(this, whereString: whereString, param: param);
                 return DBConnection.Query<T>(sqlbuilder.SQL, sqlbuilder.Arguments).ToList();
             }
         }
@@ -205,7 +212,7 @@ namespace Banana.Uow
             {
                 try
                 {
-                    int res = Execute(sql, entities); 
+                    int res = Execute(sql, entities);
                     if (res > 0)
                     {
                         trans.Commit();
@@ -219,13 +226,124 @@ namespace Banana.Uow
                         return false;
                     }
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     trans.Rollback();
                     TrancationState = ETrancationState.Closed;
                     return false;
                 }
             }
+        }
+
+        #endregion
+
+        #region Async
+        /// <summary>
+        /// 插入
+        /// </summary>
+        public async Task<int> InsertAsync(T entity)
+        {
+            return await DBConnection.InsertAsync(entity, _dbTransaction);
+        }
+
+        /// <summary>
+        /// 删除
+        /// </summary>
+        public async Task<bool> DeleteAsync(T entity)
+        {
+            return await DBConnection.DeleteAsync(entity, _dbTransaction);
+        }
+
+        /// <summary>
+        /// 更新
+        /// </summary>
+        public async Task<bool> UpdateAsync(T entity)
+        {
+            return await DBConnection.UpdateAsync(entity, _dbTransaction);
+        }
+
+        /// <summary>
+        /// 查询
+        /// </summary>
+        public async Task<T> QueryAsync(int id)
+        {
+            return await DBConnection.GetAsync<T>(id);
+        }
+
+        /// <summary>
+        /// 异步总数
+        /// </summary>
+        public async Task<int> QueryCountAsync(string whereString = null, object param = null)
+        {
+            Extension.SqlBuilder sb = new Extension.SqlBuilder();
+            sb.Select("Count(*)");
+            sb.From(TableName);
+            if (!string.IsNullOrEmpty(whereString))
+            {
+                sb.Where(whereString, param);
+            }
+            return await DBConnection.QueryFirstAsync<int>(sb.SQL, sb.Arguments);
+        }
+
+        /// <summary>
+        /// 异步获取列表
+        /// </summary>
+        public async Task<IEnumerable<T>> QueryListAsync(string whereString = null, object param = null)
+        {
+            if (string.IsNullOrEmpty(whereString))
+            {
+                return await DBConnection.GetAllAsync<T>();
+            }
+            else
+            {
+                IAdapter adapter = ConnectionBuilder.GetAdapter();
+                var sqlbuilder = adapter.GetPageList(this, whereString: whereString, param: param);
+                return await DBConnection.QueryAsync<T>(sqlbuilder.SQL, sqlbuilder.Arguments);
+            }
+        }
+
+        /// <summary>
+        /// 异步分页获取
+        /// </summary>
+        public async Task<Paging<T>> QueryListAsync(int pageNum, int pageSize, string whereString = null, object param = null, string order = null, bool asc = false)
+        {
+            return await Task.Run(() =>
+            {
+                Paging<T> paging = new Paging<T>(pageNum, pageSize);
+                IAdapter adapter = ConnectionBuilder.GetAdapter();
+                var sqlbuilder = adapter.GetPageList(this, pageNum, pageSize, whereString, param, order, asc);
+                paging.data = DBConnection.Query<T>(sqlbuilder.SQL, sqlbuilder.Arguments).ToList();
+                paging.pageCount = QueryCount(whereString, param);
+                return paging;
+            }); ;
+        }
+
+        /// <summary>
+        /// 执行单条语句
+        /// </summary>
+        /// <param name="sql"></param>
+        /// <param name="parms"></param>
+        public async Task<int> ExecuteAsync(string sql, dynamic parms)
+        {
+            return await DBConnection.ExecuteAsync(sql, (object)parms, transaction: _dbTransaction);
+        }
+
+        /// <summary>
+        /// 删除全部
+        /// </summary>
+        /// <returns></returns>
+        public bool DeleteAll()
+        {
+            return DBConnection.DeleteAll<T>(_dbTransaction);
+        }
+
+        /// <summary>
+        /// 删除全部
+        /// </summary>
+        public async Task<bool> DeleteAllAsync()
+        {
+            return await DBConnection.DeleteAllAsync<T>(_dbTransaction);
         } 
+        #endregion
     }
 }

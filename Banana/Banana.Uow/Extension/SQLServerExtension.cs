@@ -54,17 +54,14 @@ namespace Banana.Uow.Extension
                     orderSql = SqlBuilder.GetArgsString("ORDER BY", order);
                 }
 
-                sqlBuilderRows.Select("SELECT ROW_NUMBER() OVER(ORDER BY " + order + " " + ascSql + ") AS rowid,*");
+                sqlBuilderRows.Select("SELECT ROW_NUMBER() OVER(ORDER BY " + orderSql + " " + ascSql + ") AS rowid,*");
                 sqlBuilderRows.From(repository.TableName);
                 if (!string.IsNullOrEmpty(whereString))
                 {
                     sqlBuilderRows.Where(whereString, param);
                 }
-                
-
                 sqlBuilder.Append($"From ({sqlBuilderRows.SQL}) as t", sqlBuilderRows.Arguments);
                 
-
                 if (pageNum <= 0)
                     pageNum = 1;
                 int numMin = (pageNum - 1) * pageSize + 1, numMax = pageNum * pageSize;
