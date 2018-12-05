@@ -29,6 +29,11 @@ namespace Banana.Uow.Interface
         Task<bool> DeleteAsync(T entity);
 
         /// <summary>
+        /// 删除对象
+        /// </summary>
+        Task<bool> DeleteAsync(string whereString, object param);
+
+        /// <summary>
         /// 删除全部
         /// </summary>
         Task<bool> DeleteAllAsync();

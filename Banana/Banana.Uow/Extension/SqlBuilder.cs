@@ -8,6 +8,7 @@ using Dapper.Contrib.Extensions;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -55,7 +56,7 @@ namespace Banana.Uow.Extension
             _sqlFinal = sb.ToString();
 
             //动态创建对象
-            dynamic obj = new System.Dynamic.ExpandoObject(); 
+            dynamic obj = new ExpandoObject(); 
             foreach (KeyValuePair<string, object> item in argsObj)
             {
                 ((IDictionary<string, object>)obj).Add(item.Key, item.Value);

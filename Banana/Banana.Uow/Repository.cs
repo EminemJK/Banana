@@ -13,6 +13,7 @@ using System.Reflection;
 using Banana.Uow.Models;
 using Banana.Uow.Interface;
 using System.Threading.Tasks;
+using Banana.Uow.Extension;
 
 namespace Banana.Uow
 {
@@ -26,7 +27,7 @@ namespace Banana.Uow
         /// </summary>
         public Repository()
         {
-            _dbConnection = ConnectionBuilder.OpenConnection(); 
+            _dbConnection = ConnectionBuilder.CreateConnection(); 
         }
 
 
@@ -50,7 +51,7 @@ namespace Banana.Uow
             {
                 if (_dbConnection == null)
                 {
-                    _dbConnection = ConnectionBuilder.OpenConnection();
+                    _dbConnection = ConnectionBuilder.CreateConnection();
                 }
                 if (_dbConnection.State == ConnectionState.Closed)
                 {
@@ -235,6 +236,17 @@ namespace Banana.Uow
             }
         }
 
+
+        /// <summary>
+        /// 删除
+        /// </summary>
+        public bool Delete(string whereString, object param)
+        {
+            SqlBuilder sb = new SqlBuilder();
+            sb.Append("DELETE FROM " + TableName);
+            sb.Where(whereString, param);
+            return Execute(sb.SQL, sb.Arguments) > 0;
+        }
         #endregion
 
         #region Async
@@ -343,7 +355,18 @@ namespace Banana.Uow
         public async Task<bool> DeleteAllAsync()
         {
             return await DBConnection.DeleteAllAsync<T>(_dbTransaction);
-        } 
+        }
+
+        /// <summary>
+        /// 删除
+        /// </summary>
+        public async Task<bool> DeleteAsync(string whereString, object param)
+        {
+            SqlBuilder sb = new SqlBuilder();
+            sb.Append("DELETE FROM " + TableName);
+            sb.Where(whereString, param);
+            return await ExecuteAsync(sb.SQL, sb.Arguments) > 0;
+        }
         #endregion
     }
 }

@@ -14,6 +14,7 @@ using System.Data.SqlClient;
 using System.Data.SQLite;
 using System.Linq;
 using System.Threading.Tasks;
+using static Dapper.Contrib.Extensions.SqlMapperExtensions;
 
 namespace Banana.Uow
 {
@@ -23,13 +24,16 @@ namespace Banana.Uow
     public class ConnectionBuilder
     {
         private static DBSetting dBSetting;
-        private static readonly Dictionary<DBType, IAdapter> AdapterDictionary
-        = new Dictionary<DBType, IAdapter>
+
+        private static readonly IAdapter DefaultAdapter = new SQLServerExtension();
+        private static readonly Dictionary<string, IAdapter> AdapterDictionary
+        = new Dictionary<string, IAdapter>
         {
-            { DBType.SqlServer, new SQLServerExtension() },
-            { DBType.MySQL,  new MySQLExtension() },
-            { DBType.SQLite,  new SQLiteExtension() }
+            { "sqlconnection", new SQLServerExtension() },
+            { "mysqlconnection",  new MySQLExtension() },
+            { "sqliteconnection",  new SQLiteExtension() }
         };
+
         /// <summary>
         /// 注册链接
         /// </summary>
@@ -51,7 +55,7 @@ namespace Banana.Uow
         /// <summary>
         /// 创建连接串
         /// </summary>
-        public static IDbConnection OpenConnection()
+        public static IDbConnection CreateConnection()
         {
             try
             {
@@ -69,12 +73,18 @@ namespace Banana.Uow
             catch
             {
                 throw new Exception("未注册数据库链接，请调用ConnectionBuilder.ConfigRegist");
-            } 
+            }
         }
-
-        public static IAdapter GetAdapter()
+        
+        public static GetDatabaseTypeDelegate GetDatabaseType;
+        internal static IAdapter GetAdapter()
         {
-            return AdapterDictionary[dBSetting.DBType];
+            var name = GetDatabaseType?.Invoke(CreateConnection()).ToLower()
+                       ?? CreateConnection().GetType().Name.ToLower();
+
+            return !AdapterDictionary.ContainsKey(name)
+                ? DefaultAdapter
+                : AdapterDictionary[name];
         }
 
     }

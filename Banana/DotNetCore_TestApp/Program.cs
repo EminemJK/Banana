@@ -21,10 +21,13 @@ namespace DotNetCore_TestApp
         {
             ConnectionBuilder.ConfigRegist(strConn, Banana.Uow.Models.DBType.SqlServer);
             //Dos();
-            TestAsync();
-            
+            //TestAsync();
+            TestDapperExtensions();
+
             var repoUserInfo = new Repository<UserInfo>(); 
             var lists = repoUserInfo.QueryList();
+
+
             var page1 = repoUserInfo.QueryList(1, 10, "sex=@sex", new { sex = 1 }, order: "createTime", asc: false);
             var page2 = repoUserInfo.QueryList(2, 10, "sex=@sex", new { sex = 1 });
             var page3 = repoUserInfo.QueryList(3, 10, "sex=@sex", new { sex = 1 });
@@ -90,6 +93,9 @@ namespace DotNetCore_TestApp
             Show(info);
             Show(DateTime.Now.ToString());
             Show("Count："+count);
+
+
+            var deleteAsync = await repoUserInfo.DeleteAsync("HeaderImg is Null", null);
         }
 
         static void Show(IEnumerable<UserInfo> infos)
@@ -127,6 +133,17 @@ namespace DotNetCore_TestApp
             ls.Add(new UserInfo() { Name = "甚平", Phone = "15655479960", Password = "12345678", Sex = 1, UserName = "Jinbe", CreateTime = DateTime.Now, Enable = 1 });
             Repository.InsertBatch("INSERT INTO dbo.T_User( UserName ,Password ,Name ,Sex,Phone ,Enable ,CreateTime) VALUES  ( @UserName ,@Password ,@Name ,@Sex ,@Phone ,@Enable ,@CreateTime)", ls);
         }
+
+        static void TestDapperExtensions()
+        {
+            var repoUserInfo = new Repository<UserInfo>();
+
+            var model = repoUserInfo.Query(47);
+            model.Phone = "12345678";
+            repoUserInfo.Update(model);
+
+            model = repoUserInfo.Query(47);
+        }
     }
 
     [Table("T_User")]
@@ -140,6 +157,8 @@ namespace DotNetCore_TestApp
 
         public string Name { get; set; }
 
+        [Computed]
+        [Write(false)]
         public string Phone { get; set; }
 
         public int Sex { get; set; }

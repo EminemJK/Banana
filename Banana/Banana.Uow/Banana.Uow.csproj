@@ -11,8 +11,9 @@
     <PackageProjectUrl>https://github.com/EminemJK/Banana.git</PackageProjectUrl>
     <PackageIconUrl>https://www.cnblogs.com/images/cnblogs_com/EminemJK/1345488/o_banana_logo.png</PackageIconUrl>
     <RepositoryUrl></RepositoryUrl>
-    <Version>1.0.9</Version>
-    <PackageReleaseNotes>1.Add Asybc</PackageReleaseNotes>
+    <Version>1.1.0</Version>
+    <PackageReleaseNotes>1.Add Async
+2.Delete where</PackageReleaseNotes>
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net452|AnyCPU'">

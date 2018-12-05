@@ -31,6 +31,11 @@ namespace Banana.Uow.Interface
         bool Delete(T entity);
 
         /// <summary>
+        /// 删除对象
+        /// </summary>
+        bool Delete(string whereString, object param);
+
+        /// <summary>
         /// 删除全部
         /// </summary>
         bool DeleteAll();
@@ -39,7 +44,6 @@ namespace Banana.Uow.Interface
         /// 执行SQL语句
         /// </summary>
         int Execute(string sql, dynamic parms = null);
-
 
         /// <summary>
         /// 查询对象

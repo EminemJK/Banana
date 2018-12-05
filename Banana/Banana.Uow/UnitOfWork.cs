@@ -58,7 +58,7 @@ namespace Banana.Uow
             this.context = context;
             if (this.context == null)
             {
-                this.context = ConnectionBuilder.OpenConnection();
+                this.context = ConnectionBuilder.CreateConnection();
             }
             if (this.context.State == ConnectionState.Closed)
             {
