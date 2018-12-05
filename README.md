@@ -1,11 +1,9 @@
 # Banana.Uow
 ![image](https://github.com/EminemJK/Banana/blob/master/Banana/Doc/banana_logo.ico)
-[![Banana](https://img.shields.io/nuget/dt/Banana.Uow.svg)](https://www.nuget.org/packages/Banana.Uow/)
-[![Banana](https://img.shields.io/nuget/vpre/Banana.Uow.svg)](https://www.nuget.org/packages/Banana.Uow/)
 
-Coder：EminemJK
-
-Nuget：https://www.nuget.org/packages/Banana.Uow/
+| Package | NuGet Stable | NuGet Pre-release | Downloads |
+| ------- | ------------ | ----------------- | --------- |
+| [Banana.Uow](https://www.nuget.org/packages/Banana.Uow/) | ![Banana.Uow](https://img.shields.io/nuget/v/Banana.Uow.svg)](https://www.nuget.org/packages/Banana.Uow/)  | [![Banana.Uow](https://img.shields.io/nuget/vpre/Banana.Uow.svg)](https://www.nuget.org/packages/Banana.Uow/) | [![Banana.Uow](https://img.shields.io/nuget/dt/Banana.Uow.svg)](https://www.nuget.org/packages/Banana.Uow/) |
 
 ### 项目介绍
 基于Dapper二次封装的仓储、工作单元
@@ -89,8 +87,9 @@ using (UnitOfWork uow = new UnitOfWork())
 }
 ```
 # Banana.Utility
-[![Banana.Utility](https://img.shields.io/nuget/dt/Banana.Utility.svg)](https://www.nuget.org/packages/Banana.Utility/)
-[![Banana.Utility](https://img.shields.io/nuget/vpre/Banana.Utility.svg)](https://www.nuget.org/packages/Banana.Utility/)
+| Package | NuGet Stable | NuGet Pre-release | Downloads |
+| ------- | ------------ | ----------------- | --------- |
+| [Banana.Utility](https://www.nuget.org/packages/Banana.Utility/) | ![Banana.Utility](https://img.shields.io/nuget/v/Banana.Utility.svg)](https://www.nuget.org/packages/Banana.Utility/)  | [![Banana.Utility](https://img.shields.io/nuget/vpre/Banana.Utility.svg)](https://www.nuget.org/packages/Banana.Utility/) | [![Banana.Utility](https://img.shields.io/nuget/dt/Banana.Utility.svg)](https://www.nuget.org/packages/Banana.Utility/) |
 ## 公用库
 #### RedisUtils
 ```
