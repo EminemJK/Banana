@@ -22,7 +22,7 @@ namespace DotNetCore_TestApp
             ConnectionBuilder.ConfigRegist(strConn, Banana.Uow.Models.DBType.SqlServer);
             //Dos();
             //TestAsync();
-            TestDapperExtensions();
+            //TestDapperExtensions();
 
             var repoUserInfo = new Repository<UserInfo>(); 
             var lists = repoUserInfo.QueryList();
@@ -31,7 +31,8 @@ namespace DotNetCore_TestApp
             var page1 = repoUserInfo.QueryList(1, 10, "sex=@sex", new { sex = 1 }, order: "createTime", asc: false);
             var page2 = repoUserInfo.QueryList(2, 10, "sex=@sex", new { sex = 1 });
             var page3 = repoUserInfo.QueryList(3, 10, "sex=@sex", new { sex = 1 });
-
+            var page4 = repoUserInfo.QueryList(2, 5);
+            var page5 = repoUserInfo.QueryList(3, 5);
 
             var userModel = repoUserInfo.QueryList("UserName=@userName and Password =@psw", new { userName = "admin", psw= "25d55ad283aa400af464c76d713c07ad" }).FirstOrDefault();
             //var repo = new Repository<Category>();
@@ -147,7 +148,7 @@ namespace DotNetCore_TestApp
     }
 
     [Table("T_User")]
-    public class UserInfo : BaseModel
+    public class UserInfo : IEntity
     {
         [Key]
         public int Id { get; set; }
