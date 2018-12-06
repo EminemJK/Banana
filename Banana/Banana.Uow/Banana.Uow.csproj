@@ -15,7 +15,7 @@
     <PackageReleaseNotes>1.</PackageReleaseNotes>
     <SignAssembly>true</SignAssembly>
     <RepositoryType>git</RepositoryType>
-    <Copyright>2018 Lio.Huang</Copyright>
+    <Copyright>Copyright (c) Lio.Huang. All rights reserved.</Copyright>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net452|AnyCPU'">
     <DocumentationFile>bin\Release\Banana.Uow.xml</DocumentationFile>
