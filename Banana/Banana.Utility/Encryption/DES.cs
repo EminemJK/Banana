@@ -16,7 +16,7 @@ namespace Banana.Utility.Encryption
     /// <summary>
     /// DES加密解密类
     /// </summary>
-    public class DigestHelper
+    public class DES
     {
         /// <summary>
         /// 密钥 8位
@@ -36,7 +36,7 @@ namespace Banana.Utility.Encryption
         /// <summary>
         /// DES 加密
         /// </summary>
-        public static string DesEncrypt(string sourceString, string key = KEY, string iv = IV)
+        public static string Encrypt(string sourceString, string key = KEY, string iv = IV)
         {
             try
             {
@@ -77,7 +77,7 @@ namespace Banana.Utility.Encryption
         /// <summary>
         /// DES 解密
         /// </summary>
-        public static string DesDecrypt(string encryptedString, string key = KEY, string iv = IV)
+        public static string Decrypt(string encryptedString, string key = KEY, string iv = IV)
         {
             byte[] btKey = Encoding.UTF8.GetBytes(key);
 

@@ -9,11 +9,11 @@
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0.html</PackageLicenseUrl>
     <PackageProjectUrl></PackageProjectUrl>
-    <PackageIconUrl>https://www.cnblogs.com/images/cnblogs_com/EminemJK/1345488/o_banana_logo.png</PackageIconUrl>
+    <PackageIconUrl>https://www.cnblogs.com/images/cnblogs_com/EminemJK/1345488/o_banana.uow.png</PackageIconUrl>
     <RepositoryUrl>https://github.com/EminemJK/Banana.git</RepositoryUrl>
-    <Version>1.1.2</Version>
-    <PackageReleaseNotes>1、IRepositoryFactory、IPage
-2、Delete Test Model</PackageReleaseNotes>
+    <Version>1.2.0-alpha</Version>
+    <PackageReleaseNotes>1、Remove redundant dependencies
+2、Update logo，From my girlfriend's design</PackageReleaseNotes>
     <SignAssembly>true</SignAssembly>
     <RepositoryType>git</RepositoryType>
     <Copyright>Copyright (c) Lio.Huang. All rights reserved.</Copyright>
@@ -22,28 +22,10 @@
     <DocumentationFile>bin\Release\Banana.Uow.xml</DocumentationFile>
     <OutputPath>bin\Release\</OutputPath>
   </PropertyGroup>
-  <ItemGroup Condition="'$(TargetFramework)' == 'net452'">
-    <Reference Include="System" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="Microsoft.CSharp" />
-  </ItemGroup>
-  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0'">
-    <PackageReference Include="System.Data.SqlClient" Version="4.4.0" />
-    <PackageReference Include="System.Reflection.Emit.Lightweight" Version="4.3.0" />
-    <PackageReference Include="System.Reflection.TypeExtensions" Version="4.4.0" />
-    <PackageReference Include="System.Collections.Concurrent" Version="4.3.0" />
-    <PackageReference Include="System.Collections.NonGeneric" Version="4.3.0" />
-    <PackageReference Include="System.Dynamic.Runtime" Version="4.3.0" />
-    <PackageReference Include="System.Reflection.Emit" Version="4.3.0" />
-    <PackageReference Include="System.Runtime.InteropServices" Version="4.3.0" />
-    <PackageReference Include="System.Xml.XmlDocument" Version="4.3.0" /> 
-  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="MySql.Data" Version="8.0.13" />
     <PackageReference Include="Dapper.Contrib" Version="1.50.5" />
-    <PackageReference Include="System.Data.SqlClient" Version="4.5.1" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.6.0" />
     <PackageReference Include="System.Data.SQLite.Core" Version="1.0.109.2" />
   </ItemGroup>
 </Project>
