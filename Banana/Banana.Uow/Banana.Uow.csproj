@@ -11,9 +11,8 @@
     <PackageProjectUrl>https://github.com/EminemJK/Banana.git</PackageProjectUrl>
     <PackageIconUrl>https://www.cnblogs.com/images/cnblogs_com/EminemJK/1345488/o_banana_logo.png</PackageIconUrl>
     <RepositoryUrl>https://github.com/EminemJK/Banana.git</RepositoryUrl>
-    <Version>1.1.0</Version>
-    <PackageReleaseNotes>1.Add Async
-2.Delete where</PackageReleaseNotes>
+    <Version>1.1.1</Version>
+    <PackageReleaseNotes>1.</PackageReleaseNotes>
     <SignAssembly>true</SignAssembly>
     <RepositoryType>git</RepositoryType>
     <Copyright>2018 Lio.Huang</Copyright>

@@ -20,7 +20,7 @@ namespace Banana.Uow
     /// <summary>
     /// 仓储基类
     /// </summary>
-    public class Repository<T> : IRepository<T>, IRepositoryAsync<T> where T : class, IEntity
+    public class Repository<T> : IRepository<T> where T : class, IEntity
     { 
         /// <summary>
         /// 仓储
@@ -133,7 +133,7 @@ namespace Banana.Uow
         /// </summary>
         public int QueryCount(string whereString = null, object param = null)
         {
-            Extension.SqlBuilder sb = new Extension.SqlBuilder();
+            SqlBuilder sb = new SqlBuilder();
             sb.Select("Count(*)");
             sb.From(TableName);
             if (!string.IsNullOrEmpty(whereString))
@@ -172,9 +172,9 @@ namespace Banana.Uow
         /// <param name="order">排序</param>
         /// <param name="asc">是否</param>
         /// <returns></returns>
-        public Paging<T> QueryList(int pageNum, int pageSize, string whereString = null, object param = null, string order = null, bool asc = false)
+        public IPage<T> QueryList(int pageNum, int pageSize, string whereString = null, object param = null, string order = null, bool asc = false)
         {
-            Paging<T> paging = new Paging<T>(pageNum, pageSize);
+            IPage<T> paging = new Paging<T>(pageNum, pageSize);
             IAdapter adapter = ConnectionBuilder.GetAdapter();
             var sqlbuilder = adapter.GetPageList(this, pageNum, pageSize, whereString, param, order, asc);
             paging.data = DBConnection.Query<T>(sqlbuilder.SQL, sqlbuilder.Arguments).ToList();
@@ -287,7 +287,7 @@ namespace Banana.Uow
         /// </summary>
         public async Task<int> QueryCountAsync(string whereString = null, object param = null)
         {
-            Extension.SqlBuilder sb = new Extension.SqlBuilder();
+            SqlBuilder sb = new SqlBuilder();
             sb.Select("Count(*)");
             sb.From(TableName);
             if (!string.IsNullOrEmpty(whereString))
@@ -317,11 +317,11 @@ namespace Banana.Uow
         /// <summary>
         /// 异步分页获取
         /// </summary>
-        public async Task<Paging<T>> QueryListAsync(int pageNum, int pageSize, string whereString = null, object param = null, string order = null, bool asc = false)
+        public async Task<IPage<T>> QueryListAsync(int pageNum, int pageSize, string whereString = null, object param = null, string order = null, bool asc = false)
         {
             return await Task.Run(() =>
             {
-                Paging<T> paging = new Paging<T>(pageNum, pageSize);
+                IPage<T> paging = new Paging<T>(pageNum, pageSize);
                 IAdapter adapter = ConnectionBuilder.GetAdapter();
                 var sqlbuilder = adapter.GetPageList(this, pageNum, pageSize, whereString, param, order, asc);
                 paging.data = DBConnection.Query<T>(sqlbuilder.SQL, sqlbuilder.Arguments).ToList();

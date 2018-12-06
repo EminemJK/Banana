@@ -10,7 +10,7 @@ namespace Banana.Uow.Models
     /// 分页数据
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class Paging<T>
+    public class Paging<T>: IPage<T>
     {
         /// <summary>
         /// 总页数

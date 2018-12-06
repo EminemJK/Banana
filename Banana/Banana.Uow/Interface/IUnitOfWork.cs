@@ -15,10 +15,21 @@ namespace Banana.Uow.Interface
     /// </summary>
     public interface IUnitOfWork : IDisposable 
     {
+        /// <summary>
+        /// Commit
+        /// </summary>
         void Commit();
 
+        /// <summary>
+        /// Rollback
+        /// </summary>
         void Rollback();
 
-        IRepository<T> Repository<T>() where T : class, IEntity;
+        /// <summary>
+        /// Get Repository
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        IRepository<T> GetRepository<T>() where T : class, IEntity;
     }
 }

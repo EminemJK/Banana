@@ -21,8 +21,8 @@ using Dapper.Contrib.Extensions;
 ```
 创建模型：
 ``` csharp
-  [Table("T_Student")]
-   public class Student : BaseModel
+   [Table("T_Student")]
+   public class Student : IEntity
    {
        [Key]
        public int Id { get; set; }

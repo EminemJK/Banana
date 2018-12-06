@@ -86,7 +86,7 @@ namespace Banana.Uow
         /// <summary>
         /// 获取仓储
         /// </summary> 
-        public IRepository<T> Repository<T>() where T : class, IEntity
+        public IRepository<T> GetRepository<T>() where T : class, IEntity
         { 
             if (repositories == null)
             {
