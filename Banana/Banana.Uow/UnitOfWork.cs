@@ -15,7 +15,7 @@ namespace Banana.Uow
     /// <summary>
     /// 工作单元基类
     /// </summary>
-    public class UnitOfWork : IUnitOfWork
+    public class UnitOfWork : IUnitOfWork, IRepositoryFactory
     {
         private Dictionary<Type, object> repositories;
         private readonly IDbConnection context;

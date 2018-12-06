@@ -11,8 +11,9 @@
     <PackageProjectUrl></PackageProjectUrl>
     <PackageIconUrl>https://www.cnblogs.com/images/cnblogs_com/EminemJK/1345488/o_banana_logo.png</PackageIconUrl>
     <RepositoryUrl>https://github.com/EminemJK/Banana.git</RepositoryUrl>
-    <Version>1.1.1</Version>
-    <PackageReleaseNotes>1.</PackageReleaseNotes>
+    <Version>1.1.2</Version>
+    <PackageReleaseNotes>1、IRepositoryFactory、IPage
+2、Delete Test Model</PackageReleaseNotes>
     <SignAssembly>true</SignAssembly>
     <RepositoryType>git</RepositoryType>
     <Copyright>Copyright (c) Lio.Huang. All rights reserved.</Copyright>

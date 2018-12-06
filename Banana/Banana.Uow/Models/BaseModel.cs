@@ -14,7 +14,7 @@ namespace Banana.Uow.Models
     /// <summary>
     /// 模型基类
     /// </summary>
-    public class BaseModel:IEntity
+    public class BaseModel : IEntity
     {
     }
 }
