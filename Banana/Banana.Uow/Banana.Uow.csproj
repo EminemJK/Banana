@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <PackageId>Banana.Uow</PackageId>
-    <PackageTags>orm;sql;micro-orm;Dapper;Uow;Repository</PackageTags>
-    <Description>基于Dapper二次封装的仓储、工作单元</Description>
+    <PackageTags>orm;sql;micro-orm;Dapper;UnitOfWork;Repository</PackageTags>
+    <Description>基于Dapper二次封装的仓储、工作单元，支持SQL Server, MySQL, Sqlite...</Description>
     <Authors>EminemJK</Authors>
     <TargetFrameworks>net452;netstandard2.0</TargetFrameworks>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -10,11 +10,13 @@
     <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0.html</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/EminemJK/Banana.git</PackageProjectUrl>
     <PackageIconUrl>https://www.cnblogs.com/images/cnblogs_com/EminemJK/1345488/o_banana_logo.png</PackageIconUrl>
-    <RepositoryUrl></RepositoryUrl>
+    <RepositoryUrl>https://github.com/EminemJK/Banana.git</RepositoryUrl>
     <Version>1.1.0</Version>
     <PackageReleaseNotes>1.Add Async
 2.Delete where</PackageReleaseNotes>
     <SignAssembly>true</SignAssembly>
+    <RepositoryType>git</RepositoryType>
+    <Copyright>2018 Lio.Huang</Copyright>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net452|AnyCPU'">
     <DocumentationFile>bin\Release\Banana.Uow.xml</DocumentationFile>
