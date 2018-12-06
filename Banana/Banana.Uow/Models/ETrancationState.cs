@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿/***********************************
+ * Coder：EminemJK
+ * Date：2018-12-06
+ **********************************/
 
 namespace Banana.Uow.Models
 {

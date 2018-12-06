@@ -5,11 +5,6 @@
 
 using Banana.Uow.Interface;
 using Banana.Uow.Models;
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Text;
 
 namespace Banana.Uow.Extension
 {

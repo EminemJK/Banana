@@ -1,15 +1,10 @@
-﻿using Banana.Uow.Interface;
-using Banana.Uow.Models;
-/***********************************
+﻿/***********************************
 * Coder：EminemJK
 * Date：2018-11-20
 **********************************/
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Banana.Uow.Interface;
+using Banana.Uow.Models;
 
 namespace Banana.Uow.Extension
 {
