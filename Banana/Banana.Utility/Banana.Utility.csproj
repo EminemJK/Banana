@@ -11,7 +11,7 @@
     <PackageProjectUrl>https://github.com/EminemJK/Banana.git</PackageProjectUrl>
     <PackageIconUrl>https://www.cnblogs.com/images/cnblogs_com/EminemJK/1345488/o_banana.uow.png</PackageIconUrl>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.0.1</Version>
+    <Version>1.0.2</Version>
     <PackageReleaseNotes>1、Add RSA
 2、Update logo，From my girlfriend's design</PackageReleaseNotes>
   </PropertyGroup>
