@@ -6,7 +6,7 @@
 | [Banana.Uow](https://www.nuget.org/packages/Banana.Uow/) | [![Banana.Uow](https://img.shields.io/nuget/v/Banana.Uow.svg)](https://www.nuget.org/packages/Banana.Uow/)  | [![Banana.Uow](https://img.shields.io/nuget/vpre/Banana.Uow.svg)](https://www.nuget.org/packages/Banana.Uow/) | [![Banana.Uow](https://img.shields.io/nuget/dt/Banana.Uow.svg)](https://www.nuget.org/packages/Banana.Uow/) |
 
 ### 项目介绍
-基于Dapper二次封装的仓储、工作单元
+基于Dapper二次封装的仓储、工作单元，支持SQL Server, MySQL, Sqlite，Postgresql...
 
 ### 使用说明
 #### 注册链接
