@@ -1,6 +1,6 @@
 ﻿/***********************************
  * Coder：EminemJK
- * Date：2018-11-20
+ * Date：2018-12-07
  **********************************/
 
 using Banana.Uow.Interface;
@@ -9,16 +9,16 @@ using Banana.Uow.Models;
 namespace Banana.Uow.Extension
 {
     /// <summary>
-    /// MySQL 扩展
+    /// Postgres分页扩展
     /// </summary>
-    public class MySQLExtension : IAdapter
+    public class PostgresExtension : IAdapter
     {
         /// <summary>
-        /// MySQL 扩展
+        /// Postgres分页扩展
         /// </summary>
-        public MySQLExtension() { }
+        public PostgresExtension() { }
 
-        public SqlBuilder GetPageList<T>(IRepository<T> repository, int pageNum = 0, int pageSize = 0, string whereString = null, object param = null, object order = null, bool asc = false) 
+        public SqlBuilder GetPageList<T>(IRepository<T> repository, int pageNum = 0, int pageSize = 0, string whereString = null, object param = null, object order = null, bool asc = false)
             where T : class, IEntity
         {
             SqlBuilder sqlBuilder = new SqlBuilder();
@@ -28,7 +28,7 @@ namespace Banana.Uow.Extension
             if (!string.IsNullOrEmpty(whereString))
             {
                 sqlBuilder.Where(whereString, param);
-            } 
+            }
             if (order != null)
             {
                 sqlBuilder.OrderBy(order);
@@ -37,8 +37,8 @@ namespace Banana.Uow.Extension
 
             if (pageNum >= 0 && pageSize > 0)
             {
-                int numMin = (pageNum - 1) * pageSize ;
-                sqlBuilder.Append($" limit {numMin},{pageSize}");
+                int numMin = (pageNum - 1) * pageSize;
+                sqlBuilder.Append($" limit {pageSize} offset {numMin}");
             }
             return sqlBuilder;
         }

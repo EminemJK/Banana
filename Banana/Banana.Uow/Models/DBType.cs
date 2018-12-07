@@ -15,7 +15,11 @@ namespace Banana.Uow.Models
     public enum DBType
     {
         SqlServer,
+
         MySQL,
-        SQLite
+
+        SQLite,
+
+        Postgres
     }
 }

@@ -17,8 +17,6 @@ namespace DotNetCore_TestApp
 
         public string Name { get; set; }
 
-        [Computed]
-        [Write(false)]
         public string Phone { get; set; }
 
         public int Sex { get; set; }

@@ -12,6 +12,8 @@ using Banana.Uow.Extension;
 using Dapper;
 using System.Linq;
 using System.Threading.Tasks;
+using Banana.Utility.Common;
+
 namespace DotNetCore_TestApp
 {
     class Program
@@ -19,56 +21,7 @@ namespace DotNetCore_TestApp
         static string strConn = @"Data Source=.;Initial Catalog = AdminLTE.Net.DB;User ID=sa;Password =mimashi123";
         static void Main(string[] args)
         {
-            ConnectionBuilder.ConfigRegist(strConn, Banana.Uow.Models.DBType.SqlServer);
-            //Dos();
-            //TestAsync();
-            //TestDapperExtensions();
-
-            var repoUserInfo = new Repository<UserInfo>(); 
-            var lists = repoUserInfo.QueryList();
-
-
-            var page1 = repoUserInfo.QueryList(1, 10, "sex=@sex", new { sex = 1 }, order: "createTime", asc: false);
-            var page2 = repoUserInfo.QueryList(2, 10, "sex=@sex", new { sex = 1 });
-            var page3 = repoUserInfo.QueryList(3, 10, "sex=@sex", new { sex = 1 });
-            var page4 = repoUserInfo.QueryList(2, 5);
-            var page5 = repoUserInfo.QueryList(3, 5);
-
-            var userModel = repoUserInfo.QueryList("UserName=@userName and Password =@psw", new { userName = "admin", psw= "25d55ad283aa400af464c76d713c07ad" }).FirstOrDefault();
-            //var repo = new Repository<Category>();
-            //var list = repo.QueryList("where ParentNamePath like @ParentNamePath", new { ParentNamePath = "%,电气设备,%" });
-
-
-
-            //var model2 = repo.Query(2);
-
-            //var modelAll = repo.QueryAll();
-
-            //var id = repo.Insert(new Student("EminemJK", 1, 2));
-
-            //var ok = repo.Delete(model);
-
-            //var model3 = repo.Query(3);
-            //model.Name = "Banana" + DateTime.Now.ToShortTimeString();
-            //var upOk = repo.Update(model);
- 
-            //using (UnitOfWork uow = new UnitOfWork())
-            //{
-            //    var studentRepo = uow.Repository<Student>();
-            //    var model = new Student("啊啊", 1, 1);
-            //    var sid = studentRepo.Insert(model);
-
-            //    var classRepo = uow.Repository<MClass>();
-            //    var cid = classRepo.Insert(new MClass("五年级"));
-            //    if (sid > 0 && cid < 0)
-            //    {
-            //        uow.Commit();
-            //    }
-            //    else
-            //    {
-            //        uow.Rollback();
-            //    }
-            //}
+            TestPostgres();
             Console.WriteLine("Hello World!");
             Console.ReadKey();
         }
@@ -93,14 +46,14 @@ namespace DotNetCore_TestApp
             Show(DateTime.Now.ToString());
             Show(info);
             Show(DateTime.Now.ToString());
-            Show("Count："+count);
-
+            Show("Count："+count); 
 
             var deleteAsync = await repoUserInfo.DeleteAsync("HeaderImg is Null", null);
         }
 
+        #region Show
         static void Show(IEnumerable<UserInfo> infos)
-        { 
+        {
             foreach (var info in infos)
             {
                 Show(info);
@@ -108,42 +61,112 @@ namespace DotNetCore_TestApp
         }
 
         static void Show(UserInfo info)
-        { 
+        {
             Show(info.ToString());
         }
 
         static void Show(string info)
         {
             Console.WriteLine(info);
+        } 
+        #endregion
+
+
+        static List<UserInfo> TestData()
+        { 
+            List<UserInfo> data = new List<UserInfo>();
+
+            data.Add(new UserInfo() { Name = "Monkey D. Luffy", Phone = "15878451111", Password = "12345678", Sex = 1, UserName = "Luffy", CreateTime = DateTime.Now, Enable = 1 });
+            data.Add(new UserInfo() { Name = "索隆", Phone = "13355526663", Password = "12345678", Sex = 1, UserName = "Zoro", CreateTime = DateTime.Now, Enable =1 });
+            data.Add(new UserInfo() { Name = "娜美", Phone = "15878451111", Password = "12345678", Sex = 0, UserName = "Nami", CreateTime = DateTime.Now, Enable = 1 });
+            data.Add(new UserInfo() { Name = "山治", Phone = "17755602229", Password = "12345678", Sex = 1, UserName = "Sanji", CreateTime = DateTime.Now, Enable = 1 });
+            data.Add(new UserInfo() { Name = "乌索普", Phone = "14799995555", Password = "12345678", Sex = 1, UserName = "Usopp", CreateTime = DateTime.Now, Enable = 1 });
+
+            data.Add(new UserInfo() { Name = "乔巴", Phone = "18966660000", Password = "12345678", Sex = 1, UserName = "Chopper", CreateTime = DateTime.Now, Enable = 1 });
+            data.Add(new UserInfo() { Name = "罗宾", Phone = "13122227878", Password = "12345678", Sex = 0, UserName = "Robin", CreateTime = DateTime.Now, Enable = 1 });
+            data.Add(new UserInfo() { Name = "弗兰奇", Phone = "15962354412", Password = "12345678", Sex = 1, UserName = "Franky", CreateTime = DateTime.Now, Enable = 1 });
+            data.Add(new UserInfo() { Name = "布鲁克", Phone = "14322221111", Password = "12345678", Sex = 1, UserName = "Brook", CreateTime = DateTime.Now, Enable = 1 });
+            data.Add(new UserInfo() { Name = "甚平", Phone = "15655479960", Password = "12345678", Sex = 1, UserName = "Jinbe", CreateTime = DateTime.Now, Enable = 1 });
+            return data;
         }
 
-
-        static void TestData()
+        static void TestSQLServer()
         {
-            var Repository = new Repository<UserInfo>();
-            List<UserInfo> ls = new List<UserInfo>();
-            ls.Add(new UserInfo() { Name = "Monkey D. Luffy", Phone = "15878451111", Password = "12345678", Sex = 1, UserName = "Luffy", CreateTime = DateTime.Now, Enable = 1 });
-            ls.Add(new UserInfo() { Name = "索隆", Phone = "13355526663", Password = "12345678", Sex = 1, UserName = "Zoro", CreateTime = DateTime.Now, Enable =1 });
-            ls.Add(new UserInfo() { Name = "娜美", Phone = "15878451111", Password = "12345678", Sex = 0, UserName = "Nami", CreateTime = DateTime.Now, Enable = 1 });
-            ls.Add(new UserInfo() { Name = "山治", Phone = "17755602229", Password = "12345678", Sex = 1, UserName = "Sanji", CreateTime = DateTime.Now, Enable = 1 });
-            ls.Add(new UserInfo() { Name = "乌索普", Phone = "14799995555", Password = "12345678", Sex = 1, UserName = "Usopp", CreateTime = DateTime.Now, Enable = 1 });
-            ls.Add(new UserInfo() { Name = "乔巴", Phone = "18966660000", Password = "12345678", Sex = 1, UserName = "Chopper", CreateTime = DateTime.Now, Enable = 1 });
-            ls.Add(new UserInfo() { Name = "罗宾", Phone = "13122227878", Password = "12345678", Sex = 0, UserName = "Robin", CreateTime = DateTime.Now, Enable = 1 });
-            ls.Add(new UserInfo() { Name = "弗兰奇", Phone = "15962354412", Password = "12345678", Sex = 1, UserName = "Franky", CreateTime = DateTime.Now, Enable = 1 });
-            ls.Add(new UserInfo() { Name = "布鲁克", Phone = "14322221111", Password = "12345678", Sex = 1, UserName = "Brook", CreateTime = DateTime.Now, Enable = 1 });
-            ls.Add(new UserInfo() { Name = "甚平", Phone = "15655479960", Password = "12345678", Sex = 1, UserName = "Jinbe", CreateTime = DateTime.Now, Enable = 1 });
-            Repository.InsertBatch("INSERT INTO dbo.T_User( UserName ,Password ,Name ,Sex,Phone ,Enable ,CreateTime) VALUES  ( @UserName ,@Password ,@Name ,@Sex ,@Phone ,@Enable ,@CreateTime)", ls);
-        }
-
-        static void TestDapperExtensions()
-        {
-            var repoUserInfo = new Repository<UserInfo>();
+            ConnectionBuilder.ConfigRegist(strConn, Banana.Uow.Models.DBType.SqlServer);
+            var repoUserInfo = new Repository<UserInfo>(); 
 
             var model = repoUserInfo.Query(47);
             model.Phone = "12345678";
-            repoUserInfo.Update(model);
-
+            repoUserInfo.Update(model); 
             model = repoUserInfo.Query(47);
+
+            var page1 = repoUserInfo.QueryList(1, 10, "sex=@sex", new { sex = 1 }, order: "createTime", asc: false);
+            var page2 = repoUserInfo.QueryList(2, 10, "sex=@sex", new { sex = 1 });
+            var page3 = repoUserInfo.QueryList(3, 10, "sex=@sex", new { sex = 1 });
+            var page4 = repoUserInfo.QueryList(2, 5);
+            var page5 = repoUserInfo.QueryList(3, 5);
+
+            var userModel = repoUserInfo.QueryList("UserName=@userName and Password =@psw", new { userName = "admin", psw = "25d55ad283aa400af464c76d713c07ad" }).FirstOrDefault();
+            //var repo = new Repository<Category>();
+            //var list = repo.QueryList("where ParentNamePath like @ParentNamePath", new { ParentNamePath = "%,电气设备,%" });
+        }
+
+
+        static void TestPostgres()
+        {
+            ConnectionBuilder.ConfigRegist("PORT=5432;DATABASE=postgres;HOST=localhost;PASSWORD=mimashi123;USER ID=postgres", Banana.Uow.Models.DBType.Postgres);
+            var repoUserInfo = new Repository<UserModel>();
+            //区分大小写，包括字段
+            //repoUserInfo.Execute( @"CREATE TABLE t_user( 
+            //                            id         SERIAL      PRIMARY KEY,
+            //                            username    CHAR(50)    NOT NULL,
+            //                            password    CHAR(50)    NOT NULL,
+            //                            name        CHAR(50), 
+            //                            phone       CHAR(11),
+            //                            sex int,enable int,
+            //                            createtime date); ", null);
+            //var models = ModelConvertUtil<UserInfo, UserModel>.ModelCopy(TestData());
+            //foreach (var data in models)
+            //{
+            //    repoUserInfo.Insert(data);
+            //}
+            var list = repoUserInfo.QueryList();
+
+            var page1 = repoUserInfo.QueryList(1, 5);
+            var page2 = repoUserInfo.QueryList(2, 5);
+            var page3 = repoUserInfo.QueryList(3, 5);
+
+            var model = repoUserInfo.Query(2);
+            //bool b = repoUserInfo.Delete(model);
+            //list = repoUserInfo.QueryList();
+
+            model = repoUserInfo.Query(3);
+            model.phone = "1234567";
+            bool ub = repoUserInfo.Update(model);
+            list = repoUserInfo.QueryList(order:"order by id");
+        }
+
+
+        static void TestUow()
+        {
+            //ConnectionBuilder.ConfigRegist(strConn, Banana.Uow.Models.DBType.SqlServer);
+            //using (UnitOfWork uow = new UnitOfWork())
+            //{
+            //    var studentRepo = uow.Repository<Student>();
+            //    var model = new Student("啊啊", 1, 1);
+            //    var sid = studentRepo.Insert(model);
+
+            //    var classRepo = uow.Repository<MClass>();
+            //    var cid = classRepo.Insert(new MClass("五年级"));
+            //    if (sid > 0 && cid < 0)
+            //    {
+            //        uow.Commit();
+            //    }
+            //    else
+            //    {
+            //        uow.Rollback();
+            //    }
+            //}
         }
     }
 }

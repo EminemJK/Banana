@@ -7,6 +7,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Banana.Uow\Banana.Uow.csproj" />
+    <ProjectReference Include="..\Banana.Utility\Banana.Utility.csproj" />
   </ItemGroup>
 
 </Project>

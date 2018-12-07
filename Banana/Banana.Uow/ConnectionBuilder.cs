@@ -12,8 +12,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Data.SQLite;
-using System.Linq;
-using System.Threading.Tasks;
+using Npgsql;
 using static Dapper.Contrib.Extensions.SqlMapperExtensions;
 
 namespace Banana.Uow
@@ -31,7 +30,8 @@ namespace Banana.Uow
         {
             { "sqlconnection", new SQLServerExtension() },
             { "mysqlconnection",  new MySQLExtension() },
-            { "sqliteconnection",  new SQLiteExtension() }
+            { "sqliteconnection",  new SQLiteExtension() },
+            { "npgsqlconnection",  new PostgresExtension() }
         };
 
         /// <summary>
@@ -59,14 +59,17 @@ namespace Banana.Uow
         {
             try
             {
+                var conn = dBSetting.ConnectionString;
                 switch (dBSetting.DBType)
                 {
                     case DBType.SqlServer:
-                        return new SqlConnection(dBSetting.ConnectionString);
+                        return new SqlConnection(conn);
                     case DBType.MySQL:
-                        return new MySqlConnection(dBSetting.ConnectionString);
+                        return new MySqlConnection(conn);
                     case DBType.SQLite:
-                        return new SQLiteConnection(dBSetting.ConnectionString);
+                        return new SQLiteConnection(conn);
+                    case DBType.Postgres:
+                        return new NpgsqlConnection(conn);
                 }
                 throw new Exception("未注册数据库链接，请调用ConnectionBuilder.ConfigRegist");
             }

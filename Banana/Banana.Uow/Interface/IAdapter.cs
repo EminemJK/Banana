@@ -18,6 +18,18 @@ namespace Banana.Uow.Interface
     /// </summary>
     public interface IAdapter
     {
+        /// <summary>
+        /// 分页
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="repository"></param>
+        /// <param name="pageNum"></param>
+        /// <param name="pageSize"></param>
+        /// <param name="whereString"></param>
+        /// <param name="param"></param>
+        /// <param name="order"></param>
+        /// <param name="asc"></param>
+        /// <returns></returns>
         SqlBuilder GetPageList<T>(IRepository<T> repository, int pageNum = 0, int pageSize = 0, string whereString = null, object param = null, object order = null, bool asc = false)
            where T : class, IEntity;
     }

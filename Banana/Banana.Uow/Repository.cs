@@ -147,17 +147,17 @@ namespace Banana.Uow
         /// 查询列表
         /// </summary>
         /// <param name="whereString">where 语句如： name like @name (使用参数化)</param>
-        /// <param name="param">参数，语句如：new { name = "%李%" }</param>
-        public List<T> QueryList(string whereString = null, object param = null)
+        /// <param name="param">参数，语句如：new { name = "%李%" }</param> 
+        public List<T> QueryList(string whereString = null, object param = null, string order = null, bool asc = false)
         {
-            if (string.IsNullOrEmpty(whereString))
+            if (string.IsNullOrEmpty(whereString) && string.IsNullOrEmpty(order))
             {
                 return DBConnection.GetAll<T>().ToList();
             }
             else
             {
                 IAdapter adapter = ConnectionBuilder.GetAdapter();
-                var sqlbuilder = adapter.GetPageList(this, whereString: whereString, param: param);
+                var sqlbuilder = adapter.GetPageList(this, whereString: whereString, param: param, order: order, asc: asc);
                 return DBConnection.Query<T>(sqlbuilder.SQL, sqlbuilder.Arguments).ToList();
             }
         }
@@ -300,16 +300,16 @@ namespace Banana.Uow
         /// <summary>
         /// 异步获取列表
         /// </summary>
-        public async Task<IEnumerable<T>> QueryListAsync(string whereString = null, object param = null)
+        public async Task<IEnumerable<T>> QueryListAsync(string whereString = null, object param = null, string order = null, bool asc = false)
         {
-            if (string.IsNullOrEmpty(whereString))
+            if (string.IsNullOrEmpty(whereString) && string.IsNullOrEmpty(order))
             {
                 return await DBConnection.GetAllAsync<T>();
             }
             else
             {
                 IAdapter adapter = ConnectionBuilder.GetAdapter();
-                var sqlbuilder = adapter.GetPageList(this, whereString: whereString, param: param);
+                var sqlbuilder = adapter.GetPageList(this, whereString: whereString, param: param, order: order, asc: asc);
                 return await DBConnection.QueryAsync<T>(sqlbuilder.SQL, sqlbuilder.Arguments);
             }
         }

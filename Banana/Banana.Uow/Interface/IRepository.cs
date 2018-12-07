@@ -60,7 +60,7 @@ namespace Banana.Uow.Interface
         /// <summary>
         /// 查询对象集合
         /// </summary>
-        List<T> QueryList(string whereString = null, object param = null);
+        List<T> QueryList(string whereString = null, object param = null, string order = null, bool asc = false);
 
         /// <summary>
         /// 查询对象集合
@@ -108,7 +108,7 @@ namespace Banana.Uow.Interface
         /// <summary>
         /// 查询对象集合
         /// </summary>
-        Task<IEnumerable<T>> QueryListAsync(string whereString = null, object param = null);
+        Task<IEnumerable<T>> QueryListAsync(string whereString = null, object param = null, string order = null, bool asc = false);
 
         /// <summary>
         /// 查询对象集合

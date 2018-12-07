@@ -2,7 +2,7 @@
   <PropertyGroup>
     <PackageId>Banana.Uow</PackageId>
     <PackageTags>orm;sql;micro-orm;Dapper;UnitOfWork;Repository</PackageTags>
-    <Description>基于Dapper二次封装的仓储、工作单元，支持SQL Server, MySQL, Sqlite...</Description>
+    <Description>基于Dapper二次封装的仓储、工作单元，支持SQL Server, MySQL, Sqlite，Postgresql...</Description>
     <Authors>EminemJK</Authors>
     <TargetFrameworks>net452;netstandard2.0</TargetFrameworks>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -11,9 +11,10 @@
     <PackageProjectUrl></PackageProjectUrl>
     <PackageIconUrl>https://www.cnblogs.com/images/cnblogs_com/EminemJK/1345488/o_banana.uow.png</PackageIconUrl>
     <RepositoryUrl>https://github.com/EminemJK/Banana.git</RepositoryUrl>
-    <Version>1.2.0-alpha</Version>
-    <PackageReleaseNotes>1、Remove redundant dependencies
-2、Update logo，From my girlfriend's design</PackageReleaseNotes>
+    <Version>1.2.0</Version>
+    <PackageReleaseNotes>1&gt;Add Postgresql;
+2&gt;Remove redundant dependencies;
+3&gt;Update logo，From my girlfriend's design.</PackageReleaseNotes>
     <SignAssembly>true</SignAssembly>
     <RepositoryType>git</RepositoryType>
     <Copyright>Copyright (c) Lio.Huang. All rights reserved.</Copyright>
@@ -25,6 +26,7 @@
   <ItemGroup>
     <PackageReference Include="MySql.Data" Version="8.0.13" />
     <PackageReference Include="Dapper.Contrib" Version="1.50.5" />
+    <PackageReference Include="Npgsql" Version="4.0.4" />
     <PackageReference Include="System.Data.SqlClient" Version="4.6.0" />
     <PackageReference Include="System.Data.SQLite.Core" Version="1.0.109.2" />
   </ItemGroup>
