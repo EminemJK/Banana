@@ -7,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using Dapper;
 using System.Data;
-using Dapper.Contrib.Extensions;
 using System.Linq;
 using System.Reflection;
 using Banana.Uow.Models;
@@ -61,20 +60,15 @@ namespace Banana.Uow
             }
             private set { this._dbConnection = value; }
         }
-
-        private string _tableName;
+         
         /// <summary>
         /// 表名
         /// </summary>
         public string TableName
         {
             get
-            {
-                if (string.IsNullOrEmpty(_tableName))
-                {
-                    _tableName = ((TableAttribute)typeof(T).GetCustomAttribute(typeof(TableAttribute))).Name;
-                }
-                return _tableName;
+            { 
+                return SqlMapperExtensions.GetTableName(typeof(T));
             }
         }
 
@@ -134,7 +128,7 @@ namespace Banana.Uow
         public int QueryCount(string whereString = null, object param = null)
         {
             SqlBuilder sb = new SqlBuilder();
-            sb.Select("Count(*)");
+            sb.Select(args: "Count(*)");
             sb.From(TableName);
             if (!string.IsNullOrEmpty(whereString))
             {
@@ -156,7 +150,7 @@ namespace Banana.Uow
             }
             else
             {
-                IAdapter adapter = ConnectionBuilder.GetAdapter();
+                ISqlAdapter adapter = ConnectionBuilder.GetAdapter();
                 var sqlbuilder = adapter.GetPageList(this, whereString: whereString, param: param, order: order, asc: asc);
                 return DBConnection.Query<T>(sqlbuilder.SQL, sqlbuilder.Arguments).ToList();
             }
@@ -175,7 +169,7 @@ namespace Banana.Uow
         public IPage<T> QueryList(int pageNum, int pageSize, string whereString = null, object param = null, string order = null, bool asc = false)
         {
             IPage<T> paging = new Paging<T>(pageNum, pageSize);
-            IAdapter adapter = ConnectionBuilder.GetAdapter();
+            ISqlAdapter adapter = ConnectionBuilder.GetAdapter();
             var sqlbuilder = adapter.GetPageList(this, pageNum, pageSize, whereString, param, order, asc);
             paging.data = DBConnection.Query<T>(sqlbuilder.SQL, sqlbuilder.Arguments).ToList();
             paging.pageCount = QueryCount(whereString, param);
@@ -288,7 +282,7 @@ namespace Banana.Uow
         public async Task<int> QueryCountAsync(string whereString = null, object param = null)
         {
             SqlBuilder sb = new SqlBuilder();
-            sb.Select("Count(*)");
+            sb.Select(args: "Count(*)");
             sb.From(TableName);
             if (!string.IsNullOrEmpty(whereString))
             {
@@ -308,7 +302,7 @@ namespace Banana.Uow
             }
             else
             {
-                IAdapter adapter = ConnectionBuilder.GetAdapter();
+                ISqlAdapter adapter = ConnectionBuilder.GetAdapter();
                 var sqlbuilder = adapter.GetPageList(this, whereString: whereString, param: param, order: order, asc: asc);
                 return await DBConnection.QueryAsync<T>(sqlbuilder.SQL, sqlbuilder.Arguments);
             }
@@ -322,7 +316,7 @@ namespace Banana.Uow
             return await Task.Run(() =>
             {
                 IPage<T> paging = new Paging<T>(pageNum, pageSize);
-                IAdapter adapter = ConnectionBuilder.GetAdapter();
+                ISqlAdapter adapter = ConnectionBuilder.GetAdapter();
                 var sqlbuilder = adapter.GetPageList(this, pageNum, pageSize, whereString, param, order, asc);
                 paging.data = DBConnection.Query<T>(sqlbuilder.SQL, sqlbuilder.Arguments).ToList();
                 paging.pageCount = QueryCount(whereString, param);

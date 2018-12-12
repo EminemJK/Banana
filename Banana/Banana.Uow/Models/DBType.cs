@@ -14,12 +14,14 @@ namespace Banana.Uow.Models
     /// </summary>
     public enum DBType
     {
-        SqlServer,
+        SqlServer = 0,
 
-        MySQL,
+        MySQL = 1,
 
-        SQLite,
+        SQLite = 2,
 
-        Postgres
+        Postgres = 3,
+
+        Oracle = 4
     }
 }

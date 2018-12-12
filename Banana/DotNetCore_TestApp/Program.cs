@@ -5,7 +5,6 @@
 
 using System;
 using Banana.Uow;
-using Dapper.Contrib.Extensions;
 using Banana.Uow.Models;
 using System.Collections.Generic;
 using Banana.Uow.Extension;
@@ -22,7 +21,7 @@ namespace DotNetCore_TestApp
         {
             //TestSQLServer();
 
-            //TestMySQL();
+            TestMySQL();
 
             //TestPostgres(); 
 
@@ -127,21 +126,21 @@ namespace DotNetCore_TestApp
             ConnectionBuilder.ConfigRegist("server=192.168.23.129;port=3306;database=tempdb;user=root;password=mimashi123;", DBType.MySQL);
 
             var repoUserInfo = new Repository<UserInfo>();
-            repoUserInfo.Execute(@"CREATE TABLE IF NOT EXISTS `T_User`(
-                                       `Id` int auto_increment primary key ,
-                                       `UserName` VARCHAR(100) NOT NULL,
-                                       `Password` VARCHAR(40) NOT NULL,
-                                       `Name` VARCHAR(20),
-                                       `Sex` int,
-                                       `Phone` VARCHAR(20),
-                                       `Enable` INT,
-                                       `CreateTime` DATETIME
-                                    )  CHARSET=utf8;", null);
-            var datas = TestData();
-            repoUserInfo.DBConnection.Insert(datas);
+            //repoUserInfo.Execute(@"CREATE TABLE IF NOT EXISTS `T_User`(
+            //                           `Id` int auto_increment primary key ,
+            //                           `UserName` VARCHAR(100) NOT NULL,
+            //                           `Password` VARCHAR(40) NOT NULL,
+            //                           `Name` VARCHAR(20),
+            //                           `Sex` int,
+            //                           `Phone` VARCHAR(20),
+            //                           `Enable` INT,
+            //                           `CreateTime` DATETIME
+            //                        )  CHARSET=utf8;", null);
+            //var datas = TestData();
+            //repoUserInfo.DBConnection.Insert(datas);
             var list = repoUserInfo.QueryList();
 
-            var page1 = repoUserInfo.QueryList(1, 5);
+            var page1 = repoUserInfo.QueryList(1, 5, "Phone is not null", order: "ID", asc: true);
             var page2 = repoUserInfo.QueryList(2, 5);
             var page3 = repoUserInfo.QueryList(3, 5);
 

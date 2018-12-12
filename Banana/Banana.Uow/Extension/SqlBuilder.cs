@@ -3,8 +3,8 @@
  * Date：2018-11-20
  **********************************/
 
+using Banana.Uow.Models;
 using Dapper;
-using Dapper.Contrib.Extensions;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -13,6 +13,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
+using static Banana.Uow.Extension.SqlMapperExtensions;
 
 namespace Banana.Uow.Extension
 {
@@ -116,23 +117,12 @@ namespace Banana.Uow.Extension
 
         public SqlBuilder OrderBy(params object[] args)
         {
-            return Append(new SqlBuilder("ORDER BY " + GetArgsString("ORDER BY", args)));
+            return Append(new SqlBuilder("ORDER BY " + GetArgsString("ORDER BY", args: args)));
         }
 
-        public SqlBuilder Select(params object[] args)
+        public SqlBuilder Select(string prefix = "",params object[] args)
         {
-            return Append(new SqlBuilder("SELECT " + GetArgsString("SELECT", args)));
-        }
-
-        public SqlBuilder Select(Type type)
-        {
-            var column = TypePropertiesCache(type).Select(p => p.Name).ToList();
-            object[] obj = new object[column.Count];
-            for (int idx = 0; idx < column.Count; idx++)
-            {
-                obj[idx] = column[idx];
-            } 
-            return Select(obj);
+            return Append(new SqlBuilder("SELECT " + GetArgsString("SELECT", prefix: prefix, args: args)));
         }
 
         public SqlBuilder From(params object[] args)
@@ -168,9 +158,9 @@ namespace Banana.Uow.Extension
             _rhs?.Build(sb, argsObj, this);
         }
 
-        public static string GetArgsString(string fix, params object[] args)
+        public static string GetArgsString(string dbKeywordFix, string prefix = "", params object[] args)
         {
-            return string.Join(", ", (from x in args select RevomeFlag(x.ToString(), fix)).ToArray());
+            return string.Join(", ", (from x in args select prefix + RevomeFlag(x.ToString(), dbKeywordFix)).ToArray());
         }
         
         private static readonly Regex rxParams = new Regex(@"(?<!@)@\w+", RegexOptions.Compiled); 
@@ -212,7 +202,7 @@ namespace Banana.Uow.Extension
                             found = true;
                             break;
                         }
-                        else if (o is System.Dynamic.ExpandoObject)
+                        else if (o is ExpandoObject)
                         {
                             IDictionary<string, object> dic = o as System.Dynamic.ExpandoObject;
                             foreach (var key in dic.Keys)
@@ -234,30 +224,6 @@ namespace Banana.Uow.Extension
                 return "@" + param;
             }
             );
-        }
-
-        private static readonly ConcurrentDictionary<RuntimeTypeHandle, IEnumerable<PropertyInfo>> TypeProperties = new ConcurrentDictionary<RuntimeTypeHandle, IEnumerable<PropertyInfo>>();
-
-        private static List<PropertyInfo> TypePropertiesCache(Type type)
-        {
-            if (TypeProperties.TryGetValue(type.TypeHandle, out IEnumerable<PropertyInfo> pis))
-            {
-                return pis.ToList();
-            }
-
-            var properties = type.GetProperties().Where(IsWriteable).ToArray();
-            TypeProperties[type.TypeHandle] = properties;
-            return properties.ToList();
-        }
-
-        public static bool IsWriteable(PropertyInfo pi)
-        {
-            var attributes = pi.GetCustomAttributes(typeof(WriteAttribute), false).AsList();
-            if (attributes.Count != 1)
-                return true;
-
-            var writeAttribute = (WriteAttribute)attributes[0];
-            return writeAttribute.Write;
         }
 
         public static string RevomeFlag(string OldString, string flag)

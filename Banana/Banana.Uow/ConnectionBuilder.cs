@@ -2,18 +2,18 @@
  * Coder：EminemJK
  * Date：2018-11-16
  **********************************/
-
-using Banana.Uow.Extension;
+ 
 using Banana.Uow.Interface;
 using Banana.Uow.Models;
 using MySql.Data.MySqlClient;
 using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Data.SQLite;
 using Npgsql;
-using static Dapper.Contrib.Extensions.SqlMapperExtensions;
+using Oracle.ManagedDataAccess.Client;
+using static Banana.Uow.Extension.SqlMapperExtensions;
+
 
 namespace Banana.Uow
 {
@@ -23,16 +23,6 @@ namespace Banana.Uow
     public class ConnectionBuilder
     {
         private static DBSetting dBSetting;
-
-        private static readonly IAdapter DefaultAdapter = new SQLServerExtension();
-        private static readonly Dictionary<string, IAdapter> AdapterDictionary
-        = new Dictionary<string, IAdapter>
-        {
-            { "sqlconnection", new SQLServerExtension() },
-            { "mysqlconnection",  new MySQLExtension() },
-            { "sqliteconnection",  new SQLiteExtension() },
-            { "npgsqlconnection",  new PostgresExtension() }
-        };
 
         /// <summary>
         /// 注册链接
@@ -70,6 +60,8 @@ namespace Banana.Uow
                         return new SQLiteConnection(conn);
                     case DBType.Postgres:
                         return new NpgsqlConnection(conn);
+                    case DBType.Oracle:
+                        return new OracleConnection(conn);
                 }
                 throw new Exception("未注册数据库链接，请调用ConnectionBuilder.ConfigRegist");
             }
@@ -77,18 +69,11 @@ namespace Banana.Uow
             {
                 throw new Exception("未注册数据库链接，请调用ConnectionBuilder.ConfigRegist");
             }
-        }
-        
-        public static GetDatabaseTypeDelegate GetDatabaseType;
-        internal static IAdapter GetAdapter()
+        } 
+
+        internal static ISqlAdapter GetAdapter()
         {
-            var name = GetDatabaseType?.Invoke(CreateConnection()).ToLower()
-                       ?? CreateConnection().GetType().Name.ToLower();
-
-            return !AdapterDictionary.ContainsKey(name)
-                ? DefaultAdapter
-                : AdapterDictionary[name];
+            return GetFormatter(CreateConnection());
         }
-
     }
 }

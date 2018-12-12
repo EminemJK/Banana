@@ -1,5 +1,4 @@
 ﻿using Banana.Uow.Models;
-using Dapper.Contrib.Extensions;
 using System;
 
 namespace DotNetCore_TestApp
