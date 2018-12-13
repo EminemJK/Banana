@@ -163,7 +163,7 @@ namespace Banana.Uow.Extension
             return string.Join(", ", (from x in args select prefix + RevomeFlag(x.ToString(), dbKeywordFix)).ToArray());
         }
         
-        private static readonly Regex rxParams = new Regex(@"(?<!@)@\w+", RegexOptions.Compiled); 
+        private static readonly Regex rxParams = new Regex(@"(?<!@)@\w+|(?<!:):\w+", RegexOptions.Compiled); 
         private static string ProcessParams(string _sql, object[] args_src, Dictionary<string, object> temp)
         {
             return rxParams.Replace(_sql, m =>
@@ -221,7 +221,7 @@ namespace Banana.Uow.Extension
                 if (!found)
                     throw new ArgumentException(string.Format("参数 '@{0}' 已指定， 但传递的参数中没有一个具有该名称的属性 (sql: '{1}')", param, _sql));
                 //return "@" + (args_dest.Count - 1).ToString();
-                return "@" + param;
+                return m.Value;
             }
             );
         }

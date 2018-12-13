@@ -192,15 +192,9 @@ namespace Banana.Uow.Extension
                     sbParameterList.Append(", ");
             }
 
-            if (!isList)    //single entity
-            {
-                return sqlAdapter.InsertAsync(connection, transaction, commandTimeout, name, sbColumnList.ToString(),
-                    sbParameterList.ToString(), keyProperties, entityToInsert);
-            }
 
-            //insert list of entities
-            var cmd = $"INSERT INTO {name} ({sbColumnList}) values ({sbParameterList})";
-            return connection.ExecuteAsync(cmd, entityToInsert, transaction, commandTimeout);
+            return sqlAdapter.InsertAsync(connection, transaction, commandTimeout, name, sbColumnList.ToString(),
+                sbParameterList.ToString(), keyProperties, entityToInsert, isList);
         }
 
         /// <summary>

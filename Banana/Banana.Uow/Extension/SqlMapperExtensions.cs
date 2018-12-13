@@ -183,18 +183,21 @@ namespace Banana.Uow.Extension
         public static T Get<T>(this IDbConnection connection, dynamic id, IDbTransaction transaction = null, int? commandTimeout = null) where T : class
         {
             var type = typeof(T);
+            var sb = new StringBuilder();
+            var adapter = GetFormatter(connection);
+            adapter.AppendParametr(sb, "id");
 
             if (!GetQueries.TryGetValue(type.TypeHandle, out string sql))
             {
                 var key = GetSingleKey<T>(nameof(Get));
                 var name = GetTableName(type);
 
-                sql = $"select * from {name} where {key.Name} = @id";
+                sql = $"select * from {name} where {key.Name} = " + sb;
                 GetQueries[type.TypeHandle] = sql;
             }
-
+            
             var dynParms = new DynamicParameters();
-            dynParms.Add("@id", id);
+            dynParms.Add(sb.ToString(), id);
 
             T obj;
 
@@ -387,18 +390,10 @@ namespace Banana.Uow.Extension
             int returnVal;
             var wasClosed = connection.State == ConnectionState.Closed;
             if (wasClosed) connection.Open();
-
-            if (!isList)    //single entity
-            {
-                returnVal = adapter.Insert(connection, transaction, commandTimeout, name, sbColumnList.ToString(),
-                    sbParameterList.ToString(), keyProperties, entityToInsert);
-            }
-            else
-            {
-                //insert list of entities
-                var cmd = $"insert into {name} ({sbColumnList}) values ({sbParameterList})";
-                returnVal = connection.Execute(cmd, entityToInsert, transaction, commandTimeout);
-            }
+            
+            returnVal = adapter.Insert(connection, transaction, commandTimeout, name, sbColumnList.ToString(),
+                sbParameterList.ToString(), keyProperties, entityToInsert, isList);
+            
             if (wasClosed) connection.Close();
             return returnVal;
         }

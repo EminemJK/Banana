@@ -33,7 +33,7 @@ namespace Banana.Uow.Interface
         /// <param name="keyProperties">The key columns in this table.</param>
         /// <param name="entityToInsert">The entity to insert.</param>
         /// <returns>The Id of the row created.</returns>
-        int Insert(IDbConnection connection, IDbTransaction transaction, int? commandTimeout, string tableName, string columnList, string parameterList, IEnumerable<PropertyInfo> keyProperties, object entityToInsert);
+        int Insert(IDbConnection connection, IDbTransaction transaction, int? commandTimeout, string tableName, string columnList, string parameterList, IEnumerable<PropertyInfo> keyProperties, object entityToInsert, bool isList);
 
         /// <summary>
         /// Inserts <paramref name="entityToInsert"/> into the database, returning the Id of the row created.
@@ -47,7 +47,7 @@ namespace Banana.Uow.Interface
         /// <param name="keyProperties">The key columns in this table.</param>
         /// <param name="entityToInsert">The entity to insert.</param>
         /// <returns>The Id of the row created.</returns>
-        Task<int> InsertAsync(IDbConnection connection, IDbTransaction transaction, int? commandTimeout, string tableName, string columnList, string parameterList, IEnumerable<PropertyInfo> keyProperties, object entityToInsert);
+        Task<int> InsertAsync(IDbConnection connection, IDbTransaction transaction, int? commandTimeout, string tableName, string columnList, string parameterList, IEnumerable<PropertyInfo> keyProperties, object entityToInsert, bool isList);
 
         /// <summary>
         /// Adds the name of a column.

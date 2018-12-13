@@ -65,7 +65,7 @@ namespace Banana.Uow
                 }
                 throw new Exception("未注册数据库链接，请调用ConnectionBuilder.ConfigRegist");
             }
-            catch
+            catch(Exception ex)
             {
                 throw new Exception("未注册数据库链接，请调用ConnectionBuilder.ConfigRegist");
             }

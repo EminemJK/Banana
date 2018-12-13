@@ -21,11 +21,12 @@ namespace DotNetCore_TestApp
         {
             //TestSQLServer();
 
-            TestMySQL();
+            //TestMySQL();
 
             //TestPostgres(); 
 
-            TestSQLite();
+            //TestSQLite();
+            TestOracle();
             Console.WriteLine("Hello World!");
             Console.ReadKey();
         } 
@@ -171,8 +172,7 @@ namespace DotNetCore_TestApp
         static void TestPostgres()
         {
             ConnectionBuilder.ConfigRegist("PORT=5432;DATABASE=postgres;HOST=192.168.23.129;PASSWORD=mimashi123;USER ID=postgres", DBType.Postgres);
-            var repoUserInfo = new Repository<UserModel>();
-            //区分大小写，包括字段，所以测试用另一个Model
+            var repoUserInfo = new Repository<UserModel>(); 
             //repoUserInfo.Execute(@"CREATE TABLE t_user( 
             //                            id         SERIAL      PRIMARY KEY,
             //                            username    CHAR(50)    NOT NULL,
@@ -306,40 +306,77 @@ namespace DotNetCore_TestApp
 
         static void TestOracle()
         {
-            ConnectionBuilder.ConfigRegist("Data Source=localhost/orcl;User ID=system;Password=sasa;", DBType.Oracle);
+            string conn = string.Concat(
+            @"Data Source=",
+            @"    (DESCRIPTION=",
+            @"        (ADDRESS_LIST=",
+            @"            (ADDRESS=",
+            @"                (PROTOCOL=TCP)",
+            @"                (HOST=172.16.3.62)",
+            @"                (PORT=1521)",
+            @"            )",
+            @"        )",
+            @"        (CONNECT_DATA=",
+            @"            (SERVICE_NAME=orcl.oracle.com)",
+            @"        )",
+            @"    );",
+            @"Persist Security Info=True;",
+            @"User Id=system;",
+            @"Password=manager;"
+            );
+
+            ConnectionBuilder.ConfigRegist(conn, DBType.Oracle);
 
             var repoUserInfo = new Repository<UserModel_Oracle>();
             //create table
-            repoUserInfo.Execute(@"CREATE TABLE T_User
-                                     (
-                                     Id number primary key,
-                                     UserName varchar2(50),
-                                     Password varchar2(50),
-                                     Name varchar2(50),
-                                     Sex INTEGER,
-                                     Phone varchar2(20),
-                                     Enable INTEGER,
-                                     CreateTime DATE
-                                     )", null);
+            //repoUserInfo.Execute(@"CREATE TABLE T_User
+            //                         (
+            //                         Id number primary key,
+            //                         UserName varchar2(50),
+            //                         Password varchar2(50),
+            //                         Name varchar2(50),
+            //                         Sex INTEGER,
+            //                         Phone varchar2(20),
+            //                         Enable INTEGER,
+            //                         CreateTime DATE
+            //                         )", null);
             //create sequence
-            repoUserInfo.Execute(@"CREATE SEQUENCE user_sequence
-                                    INCREMENT BY 1 -- 每次加几个
-                                    START WITH 1 -- 从1开始计数
-                                    NOMAXVALUE -- 不设置最大值
-                                    NOCYCLE -- 一直累加，不循环
-                                    NOCACHE -- 不建缓冲区", null);
-            //create tigger
-           
-            repoUserInfo.Execute(@"create trigger mem_trig before
-                                    insert on member for each row when (new.memberId is null)
-                                    begin
-                                     select user_sequence.nextval into:new.memberId from dual;
-                                     end;", null);
-            //datas 
-            var datas = TestData();
-            repoUserInfo.DBConnection.Insert(datas);
+            //repoUserInfo.Execute(@"CREATE SEQUENCE user_sequence
+            //                        INCREMENT BY 1
+            //                        START WITH 1
+            //                        NOMAXVALUE
+            //                        NOCYCLE
+            //                        NOCACHE", null);
 
+            //datas  
+            //var datas = ModelConvertUtil<UserInfo, UserModel_Oracle>.ModelCopy(TestData());
+            //repoUserInfo.DBConnection.Insert(datas);
 
+            var list = repoUserInfo.QueryList();
+
+            var page1 = repoUserInfo.QueryList(1, 5);
+            var page2 = repoUserInfo.QueryList(2, 5);
+            var page3 = repoUserInfo.QueryList(3, 5);
+
+            var model = repoUserInfo.Query(2);
+            bool b = repoUserInfo.Delete(model);
+            list = repoUserInfo.QueryList();
+
+            model = repoUserInfo.Query(3);
+            model.Phone = "1234567";
+            bool ub = repoUserInfo.Update(model);
+            list = repoUserInfo.QueryList(order: "order by id");
+            UserModel_Oracle newUser = new UserModel_Oracle()
+            {
+                Name = "eminemjk",
+                UserName = "eminemjk",
+                Phone = "12346578",
+                Enable = 1,
+                Password = "mimashi123",
+                Sex = 1,
+                CreateTime = DateTime.Now
+            };
+            int id = (int)repoUserInfo.Insert(newUser);
         }
     }
 }

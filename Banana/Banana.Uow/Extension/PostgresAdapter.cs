@@ -33,8 +33,14 @@ namespace Banana.Uow.Extension
         /// <param name="keyProperties">The key columns in this table.</param>
         /// <param name="entityToInsert">The entity to insert.</param>
         /// <returns>The Id of the row created.</returns>
-        public async Task<int> InsertAsync(IDbConnection connection, IDbTransaction transaction, int? commandTimeout, string tableName, string columnList, string parameterList, IEnumerable<PropertyInfo> keyProperties, object entityToInsert)
+        public async Task<int> InsertAsync(IDbConnection connection, IDbTransaction transaction, int? commandTimeout, string tableName, string columnList, string parameterList, IEnumerable<PropertyInfo> keyProperties, object entityToInsert, bool isList)
         {
+            string cmd = "";
+            if (isList)
+            {
+                cmd = $"insert into {tableName} ({columnList}) values ({parameterList})";
+                return await connection.ExecuteAsync(cmd, entityToInsert, transaction, commandTimeout);
+            }
             var sb = new StringBuilder();
             sb.AppendFormat("INSERT INTO {0} ({1}) VALUES ({2})", tableName, columnList, parameterList);
 
@@ -83,8 +89,14 @@ namespace Banana.Uow.Extension
         /// <param name="keyProperties">The key columns in this table.</param>
         /// <param name="entityToInsert">The entity to insert.</param>
         /// <returns>The Id of the row created.</returns>
-        public int Insert(IDbConnection connection, IDbTransaction transaction, int? commandTimeout, string tableName, string columnList, string parameterList, IEnumerable<PropertyInfo> keyProperties, object entityToInsert)
+        public int Insert(IDbConnection connection, IDbTransaction transaction, int? commandTimeout, string tableName, string columnList, string parameterList, IEnumerable<PropertyInfo> keyProperties, object entityToInsert, bool isList)
         {
+            string cmd = "";
+            if (isList)
+            {
+                cmd = $"insert into {tableName} ({columnList}) values ({parameterList})";
+                return connection.Execute(cmd, entityToInsert, transaction, commandTimeout);
+            }
             var sb = new StringBuilder();
             sb.AppendFormat("insert into {0} ({1}) values ({2})", tableName, columnList, parameterList);
 

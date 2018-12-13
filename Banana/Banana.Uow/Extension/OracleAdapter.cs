@@ -33,11 +33,8 @@ namespace Banana.Uow.Extension
         /// <param name="keyProperties">The key columns in this table.</param>
         /// <param name="entityToInsert">The entity to insert.</param>
         /// <returns>The Id of the row created.</returns>
-        public async Task<int> InsertAsync(IDbConnection connection, IDbTransaction transaction, int? commandTimeout, string tableName, string columnList, string parameterList, IEnumerable<PropertyInfo> keyProperties, object entityToInsert)
-        {
-            var cmd = $"insert into {tableName} ({columnList}) values ({parameterList})";
-            await connection.ExecuteAsync(cmd, entityToInsert, transaction, commandTimeout).ConfigureAwait(false);
-
+        public async Task<int> InsertAsync(IDbConnection connection, IDbTransaction transaction, int? commandTimeout, string tableName, string columnList, string parameterList, IEnumerable<PropertyInfo> keyProperties, object entityToInsert, bool isList)
+        { 
             var propertyInfos = keyProperties as PropertyInfo[] ?? keyProperties.ToArray();
             string oracleSequence =""; 
             for(int i = 0; i < propertyInfos.Length; i++)
@@ -51,16 +48,20 @@ namespace Banana.Uow.Extension
             }
             if (string.IsNullOrEmpty(oracleSequence))
                 throw new Exception("TableAttribute's OracleSequence is Null");
-
-
-            var r =  connection.Query($"SELECT \"{oracleSequence}\".\"NEXTVAL\" oracleSequence FROM \"DUAL\"", transaction: transaction, commandTimeout: commandTimeout);
-
-            var id = r.First().ID;
-            if (id == null) return 0;
-            if (propertyInfos.Length == 0) return Convert.ToInt32(id);
-
             var idp = propertyInfos[0];
+            string cmd = $"insert into {tableName} ({idp.Name},{columnList}) values ({oracleSequence}.Nextval,{parameterList})";
+            if (isList)
+            {
+                return await connection.ExecuteAsync(cmd, entityToInsert, transaction, commandTimeout);
+            }
+            var r = connection.Query($"SELECT {oracleSequence}.NEXTVAL ID FROM DUAL", transaction: transaction, commandTimeout: commandTimeout);
+            var id = r.First().ID;
+            if (id == null)
+                return 0;
+            if (propertyInfos.Length == 0)
+                return Convert.ToInt32(id);
             idp.SetValue(entityToInsert, Convert.ChangeType(id, idp.PropertyType), null);
+            await connection.ExecuteAsync(cmd, entityToInsert, transaction, commandTimeout);
 
             return Convert.ToInt32(id);
         }
@@ -77,11 +78,8 @@ namespace Banana.Uow.Extension
         /// <param name="keyProperties">The key columns in this table.</param>
         /// <param name="entityToInsert">The entity to insert.</param>
         /// <returns>The Id of the row created.</returns>
-        public int Insert(IDbConnection connection, IDbTransaction transaction, int? commandTimeout, string tableName, string columnList, string parameterList, IEnumerable<PropertyInfo> keyProperties, object entityToInsert)
-        {
-            var cmd = $"insert into {tableName} ({columnList}) values ({parameterList})";
-            connection.Execute(cmd, entityToInsert, transaction, commandTimeout);
-
+        public int Insert(IDbConnection connection, IDbTransaction transaction, int? commandTimeout, string tableName, string columnList, string parameterList, IEnumerable<PropertyInfo> keyProperties, object entityToInsert, bool isList)
+        { 
             var propertyInfos = keyProperties as PropertyInfo[] ?? keyProperties.ToArray();
             string oracleSequence = "";
             for (int i = 0; i < propertyInfos.Length; i++)
@@ -96,17 +94,20 @@ namespace Banana.Uow.Extension
             if (string.IsNullOrEmpty(oracleSequence))
                 throw new Exception("TableAttribute's OracleSequence is Null");
 
-
-            var r = connection.Query($"SELECT \"{oracleSequence}\".\"NEXTVAL\" oracleSequence FROM \"DUAL\"", transaction: transaction, commandTimeout: commandTimeout);
-
+            var idp = propertyInfos[0];
+            string cmd = $"insert into {tableName} ({idp.Name},{columnList}) values ({oracleSequence}.Nextval,{parameterList})";
+            if (isList)
+            {
+                return connection.Execute(cmd, entityToInsert, transaction, commandTimeout);
+            }
+            var r = connection.Query($"SELECT {oracleSequence}.NEXTVAL ID FROM DUAL", transaction: transaction, commandTimeout: commandTimeout);
             var id = r.First().ID;
             if (id == null)
                 return 0;
             if (propertyInfos.Length == 0)
                 return Convert.ToInt32(id);
-
-            var idp = propertyInfos[0];
             idp.SetValue(entityToInsert, Convert.ChangeType(id, idp.PropertyType), null);
+            connection.Execute(cmd, entityToInsert, transaction, commandTimeout);
 
             return Convert.ToInt32(id);
         }
@@ -157,10 +158,10 @@ namespace Banana.Uow.Extension
                 string orderSql = "ID";
                 if (order != null)
                 {
-                    orderSql = SqlBuilder.GetArgsString("ORDER BY", prefix: "t.", args: order);
+                    orderSql = SqlBuilder.GetArgsString("ORDER BY", prefix: repository.TableName, args: order);
                 }
 
-                sqlBuilderRows.Select(args: "SELECT ROW_NUMBER() OVER(ORDER BY " + orderSql + " " + ascSql + ") AS row_id,t.*");
+                sqlBuilderRows.Select(args: $"SELECT ROW_NUMBER() OVER(ORDER BY { orderSql}  {ascSql} ) AS row_id,{repository.TableName}.*");
                 sqlBuilderRows.From(repository.TableName);
                 if (!string.IsNullOrEmpty(whereString))
                 {
@@ -172,7 +173,7 @@ namespace Banana.Uow.Extension
                     pageNum = 1;
                 int numMin = (pageNum - 1) * pageSize + 1, 
                     numMax = pageNum * pageSize;
-                sqlBuilder.Where("TT.row_id between {0} and {1}", new { numMin, numMax });
+                sqlBuilder.Where("TT.row_id between :numMin and :numMax", new { numMin, numMax });
             }
             else
             {

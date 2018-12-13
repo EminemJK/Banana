@@ -55,7 +55,7 @@ namespace Banana.Uow
                 if (_dbConnection.State == ConnectionState.Closed)
                 {
                     _dbConnection.Open();
-                }
+                } 
                 return _dbConnection;
             }
             private set { this._dbConnection = value; }

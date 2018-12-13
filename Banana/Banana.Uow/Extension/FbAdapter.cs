@@ -33,9 +33,15 @@ namespace Banana.Uow.Extension
         /// <param name="keyProperties">The key columns in this table.</param>
         /// <param name="entityToInsert">The entity to insert.</param>
         /// <returns>The Id of the row created.</returns>
-        public async Task<int> InsertAsync(IDbConnection connection, IDbTransaction transaction, int? commandTimeout, string tableName, string columnList, string parameterList, IEnumerable<PropertyInfo> keyProperties, object entityToInsert)
+        public async Task<int> InsertAsync(IDbConnection connection, IDbTransaction transaction, int? commandTimeout, string tableName, string columnList, string parameterList, IEnumerable<PropertyInfo> keyProperties, object entityToInsert, bool isList)
         {
-            var cmd = $"insert into {tableName} ({columnList}) values ({parameterList})";
+            string cmd = "";
+            if (isList)
+            {
+                cmd = $"insert into {tableName} ({columnList}) values ({parameterList})";
+                return await connection.ExecuteAsync(cmd, entityToInsert, transaction, commandTimeout);
+            }
+            cmd = $"insert into {tableName} ({columnList}) values ({parameterList})";
             await connection.ExecuteAsync(cmd, entityToInsert, transaction, commandTimeout).ConfigureAwait(false);
 
             var propertyInfos = keyProperties as PropertyInfo[] ?? keyProperties.ToArray();
@@ -64,9 +70,15 @@ namespace Banana.Uow.Extension
         /// <param name="keyProperties">The key columns in this table.</param>
         /// <param name="entityToInsert">The entity to insert.</param>
         /// <returns>The Id of the row created.</returns>
-        public int Insert(IDbConnection connection, IDbTransaction transaction, int? commandTimeout, string tableName, string columnList, string parameterList, IEnumerable<PropertyInfo> keyProperties, object entityToInsert)
+        public int Insert(IDbConnection connection, IDbTransaction transaction, int? commandTimeout, string tableName, string columnList, string parameterList, IEnumerable<PropertyInfo> keyProperties, object entityToInsert, bool isList)
         {
-            var cmd = $"insert into {tableName} ({columnList}) values ({parameterList})";
+            string cmd = "";
+            if (isList)
+            {
+                cmd = $"insert into {tableName} ({columnList}) values ({parameterList})";
+                return connection.Execute(cmd, entityToInsert, transaction, commandTimeout);
+            }
+            cmd = $"insert into {tableName} ({columnList}) values ({parameterList})";
             connection.Execute(cmd, entityToInsert, transaction, commandTimeout);
 
             var propertyInfos = keyProperties as PropertyInfo[] ?? keyProperties.ToArray();
