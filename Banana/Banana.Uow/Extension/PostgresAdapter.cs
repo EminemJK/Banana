@@ -19,7 +19,7 @@ namespace Banana.Uow.Extension
     /// <summary>
     /// Postgres分页扩展
     /// </summary>
-    internal class PostgresAdapter : ISqlAdapter
+    internal partial class PostgresAdapter : ISqlAdapter
     {
         /// <summary>
         /// Inserts <paramref name="entityToInsert"/> into the database, returning the Id of the row created.

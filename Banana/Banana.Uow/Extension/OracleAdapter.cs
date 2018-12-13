@@ -39,8 +39,21 @@ namespace Banana.Uow.Extension
             await connection.ExecuteAsync(cmd, entityToInsert, transaction, commandTimeout).ConfigureAwait(false);
 
             var propertyInfos = keyProperties as PropertyInfo[] ?? keyProperties.ToArray();
-            var keyName = propertyInfos[0].Name;
-            var r = connection.Query($"SELECT {keyName} ID FROM {tableName} WHERE rowid = (SELECT max(rowid) from {tableName} )", transaction: transaction, commandTimeout: commandTimeout);
+            string oracleSequence =""; 
+            for(int i = 0; i < propertyInfos.Length; i++)
+            {
+                var sequencePropertyDescriptor = propertyInfos[i].GetCustomAttribute<KeyAttribute>();
+                if (sequencePropertyDescriptor != null)
+                {
+                    oracleSequence = sequencePropertyDescriptor.OracleSequence;
+                    break;
+                }
+            }
+            if (string.IsNullOrEmpty(oracleSequence))
+                throw new Exception("TableAttribute's OracleSequence is Null");
+
+
+            var r =  connection.Query($"SELECT \"{oracleSequence}\".\"NEXTVAL\" oracleSequence FROM \"DUAL\"", transaction: transaction, commandTimeout: commandTimeout);
 
             var id = r.First().ID;
             if (id == null) return 0;
@@ -70,11 +83,27 @@ namespace Banana.Uow.Extension
             connection.Execute(cmd, entityToInsert, transaction, commandTimeout);
 
             var propertyInfos = keyProperties as PropertyInfo[] ?? keyProperties.ToArray();
-            var keyName = propertyInfos[0].Name;
-            var r = connection.Query($"SELECT max( {keyName} ) ID FROM {tableName}", transaction: transaction, commandTimeout: commandTimeout);
+            string oracleSequence = "";
+            for (int i = 0; i < propertyInfos.Length; i++)
+            {
+                var sequencePropertyDescriptor = propertyInfos[i].GetCustomAttribute<KeyAttribute>();
+                if (sequencePropertyDescriptor != null)
+                {
+                    oracleSequence = sequencePropertyDescriptor.OracleSequence;
+                    break;
+                }
+            }
+            if (string.IsNullOrEmpty(oracleSequence))
+                throw new Exception("TableAttribute's OracleSequence is Null");
+
+
+            var r = connection.Query($"SELECT \"{oracleSequence}\".\"NEXTVAL\" oracleSequence FROM \"DUAL\"", transaction: transaction, commandTimeout: commandTimeout);
+
             var id = r.First().ID;
-            if (id == null) return 0;
-            if (propertyInfos.Length == 0) return Convert.ToInt32(id);
+            if (id == null)
+                return 0;
+            if (propertyInfos.Length == 0)
+                return Convert.ToInt32(id);
 
             var idp = propertyInfos[0];
             idp.SetValue(entityToInsert, Convert.ChangeType(id, idp.PropertyType), null);

@@ -303,5 +303,43 @@ namespace DotNetCore_TestApp
 
             var deleteAsync = await repoUserInfo.DeleteAsync("HeaderImg is Null", null);
         }
+
+        static void TestOracle()
+        {
+            ConnectionBuilder.ConfigRegist("Data Source=localhost/orcl;User ID=system;Password=sasa;", DBType.Oracle);
+
+            var repoUserInfo = new Repository<UserModel_Oracle>();
+            //create table
+            repoUserInfo.Execute(@"CREATE TABLE T_User
+                                     (
+                                     Id number primary key,
+                                     UserName varchar2(50),
+                                     Password varchar2(50),
+                                     Name varchar2(50),
+                                     Sex INTEGER,
+                                     Phone varchar2(20),
+                                     Enable INTEGER,
+                                     CreateTime DATE
+                                     )", null);
+            //create sequence
+            repoUserInfo.Execute(@"CREATE SEQUENCE user_sequence
+                                    INCREMENT BY 1 -- 每次加几个
+                                    START WITH 1 -- 从1开始计数
+                                    NOMAXVALUE -- 不设置最大值
+                                    NOCYCLE -- 一直累加，不循环
+                                    NOCACHE -- 不建缓冲区", null);
+            //create tigger
+           
+            repoUserInfo.Execute(@"create trigger mem_trig before
+                                    insert on member for each row when (new.memberId is null)
+                                    begin
+                                     select user_sequence.nextval into:new.memberId from dual;
+                                     end;", null);
+            //datas 
+            var datas = TestData();
+            repoUserInfo.DBConnection.Insert(datas);
+
+
+        }
     }
 }

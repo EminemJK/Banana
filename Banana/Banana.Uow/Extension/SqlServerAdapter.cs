@@ -159,7 +159,7 @@ namespace Banana.Uow.Extension
                     pageNum = 1;
                 int numMin = (pageNum - 1) * pageSize + 1, 
                     numMax = pageNum * pageSize;
-                sqlBuilder.Where("t.row_id>=@numMin and t.rowid<=@numMax", new { numMin, numMax });
+                sqlBuilder.Where("t.row_id>=@numMin and t.row_id<=@numMax", new { numMin, numMax });
             }
             else
             {

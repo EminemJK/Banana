@@ -19,7 +19,7 @@ namespace Banana.Uow.Extension
     /// <summary>
     /// MySQL 扩展
     /// </summary>
-    internal class MySqlAdapter : ISqlAdapter
+    internal partial class MySqlAdapter : ISqlAdapter
     {
         /// <summary>
         /// Inserts <paramref name="entityToInsert"/> into the database, returning the Id of the row created.

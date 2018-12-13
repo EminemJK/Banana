@@ -55,6 +55,7 @@ namespace Banana.Uow.Interface
         /// <param name="sb">The string builder  to append to.</param>
         /// <param name="columnName">The column name.</param>
         void AppendColumnName(StringBuilder sb, string columnName);
+
         /// <summary>
         /// Adds a column equality to a parameter.
         /// </summary>
