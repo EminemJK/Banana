@@ -43,13 +43,18 @@ using Banana.Uow.Models;
 ```
 #### 仓储使用
 ``` csharp
-   var repo = new Repository<Category>();
+   var repo = new Repository<Student>();
    //查询单个
    var model = repo.Query(7);
+
    //查询列表
-   var list = repo.QueryList("where ParentNamePath like @ParentNamePath", new { ParentNamePath = "%EminemJK%" });
+   var list = repo.QueryList("where Name like @Name", new { Name = "%EminemJK%" });
+
    //分页查询
-   var page = repo.QueryList(1, 10, "where ParentNamePath like @ParentNamePath", new { ParentNamePath = "%EminemJK%" }, "id", false);
+   var page1 = repo.QueryList(1,5);
+   var page2 = repo.QueryList(2,5);
+   … …
+   var page0 = repo.QueryList(1, 10, "where ID>@Id", new { Id = 2 }, "id", false);
 
     //删除
     boo b = repo.Delete(model);
@@ -59,7 +64,7 @@ using Banana.Uow.Models;
     bool model = repo.Update(model);
 
     //插入
-    int id = (int)repo.Insert(new Category() { Name = "EminemJK" });
+    int id = (int)repo.Insert(new Student() { Name = "EminemJK",… … });
 
     //批量插入
     bool b = repo.InsertBatch(sql,List);
@@ -71,11 +76,11 @@ using Banana.Uow.Models;
 ``` csharp
 using (UnitOfWork uow = new UnitOfWork())
 {
-       var studentRepo = uow.Repository<Student>();
-       var model = new Student("EminemJK", 1, 1);
+       var studentRepo = uow.GetRepository<Student>();
+       var model = new Student("EminemJK");
        var sid = studentRepo.Insert(model);
 
-       var classRepo = uow.Repository<MClass>();
+       var classRepo = uow.GetRepository<MClass>();
        var cid = classRepo.Insert(new MClass("Fifth Grade"));
        if (sid > 0 && cid > 0)
        {
