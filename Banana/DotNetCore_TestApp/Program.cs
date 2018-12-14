@@ -26,6 +26,7 @@ namespace DotNetCore_TestApp
             //TestPostgres(); 
 
             //TestSQLite();
+
             TestOracle();
             Console.WriteLine("Hello World!");
             Console.ReadKey();
@@ -304,6 +305,9 @@ namespace DotNetCore_TestApp
             var deleteAsync = await repoUserInfo.DeleteAsync("HeaderImg is Null", null);
         }
 
+        /// <summary>
+        /// Oracle
+        /// </summary>
         static void TestOracle()
         {
             string conn = string.Concat(
@@ -377,6 +381,7 @@ namespace DotNetCore_TestApp
                 CreateTime = DateTime.Now
             };
             int id = (int)repoUserInfo.Insert(newUser);
+            list = repoUserInfo.QueryList();
         }
     }
 }

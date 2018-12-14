@@ -46,23 +46,32 @@ namespace Banana.Uow.Extension
                     break;
                 }
             }
-            if (string.IsNullOrEmpty(oracleSequence))
-                throw new Exception("TableAttribute's OracleSequence is Null");
-            var idp = propertyInfos[0];
-            string cmd = $"insert into {tableName} ({idp.Name},{columnList}) values ({oracleSequence}.Nextval,{parameterList})";
+
+            string cmd = "";
+            dynamic id = 0;
+            if (propertyInfos.Length == 0)
+            {
+                cmd = $"insert into {tableName} ({columnList}) values ({parameterList})";
+            }
+            else
+            {
+                if (string.IsNullOrEmpty(oracleSequence))
+                    throw new Exception("KeyAttribute's OracleSequence is Null");
+                var idp = propertyInfos[0];
+               
+                var r = connection.Query($"SELECT {oracleSequence}.NEXTVAL ID FROM DUAL", transaction: transaction, commandTimeout: commandTimeout);
+                id = r.First().ID; 
+                if (id == null)
+                    return 0;
+                idp.SetValue(entityToInsert, Convert.ChangeType(id, idp.PropertyType), null);
+                //cmd = $"insert into {tableName} ({idp.Name},{columnList}) values ({oracleSequence}.Nextval,{parameterList})"; 
+                cmd = $"insert into {tableName} ({idp.Name},{columnList}) values ({id},{parameterList})";
+            }
             if (isList)
             {
                 return await connection.ExecuteAsync(cmd, entityToInsert, transaction, commandTimeout);
             }
-            var r = connection.Query($"SELECT {oracleSequence}.NEXTVAL ID FROM DUAL", transaction: transaction, commandTimeout: commandTimeout);
-            var id = r.First().ID;
-            if (id == null)
-                return 0;
-            if (propertyInfos.Length == 0)
-                return Convert.ToInt32(id);
-            idp.SetValue(entityToInsert, Convert.ChangeType(id, idp.PropertyType), null);
             await connection.ExecuteAsync(cmd, entityToInsert, transaction, commandTimeout);
-
             return Convert.ToInt32(id);
         }
 
@@ -91,24 +100,31 @@ namespace Banana.Uow.Extension
                     break;
                 }
             }
-            if (string.IsNullOrEmpty(oracleSequence))
-                throw new Exception("TableAttribute's OracleSequence is Null");
-
-            var idp = propertyInfos[0];
-            string cmd = $"insert into {tableName} ({idp.Name},{columnList}) values ({oracleSequence}.Nextval,{parameterList})";
+            
+            string cmd = "";
+            dynamic id = 0;
+            if (propertyInfos.Length == 0)
+            {
+                cmd = $"insert into {tableName} ({columnList}) values ({parameterList})";
+            }
+            else
+            {
+                if (string.IsNullOrEmpty(oracleSequence))
+                    throw new Exception("KeyAttribute's oracleSequence is Null");
+                var idp = propertyInfos[0];
+                
+                var r = connection.Query($"SELECT {oracleSequence}.NEXTVAL ID FROM DUAL", transaction: transaction, commandTimeout: commandTimeout);
+                id = r.First().ID;
+                if (id == null)
+                    return 0;
+                idp.SetValue(entityToInsert, Convert.ChangeType(id, idp.PropertyType), null);
+                cmd = $"insert into {tableName} ({idp.Name},{columnList}) values ({id},{parameterList})";
+            }
             if (isList)
             {
                 return connection.Execute(cmd, entityToInsert, transaction, commandTimeout);
             }
-            var r = connection.Query($"SELECT {oracleSequence}.NEXTVAL ID FROM DUAL", transaction: transaction, commandTimeout: commandTimeout);
-            var id = r.First().ID;
-            if (id == null)
-                return 0;
-            if (propertyInfos.Length == 0)
-                return Convert.ToInt32(id);
-            idp.SetValue(entityToInsert, Convert.ChangeType(id, idp.PropertyType), null);
             connection.Execute(cmd, entityToInsert, transaction, commandTimeout);
-
             return Convert.ToInt32(id);
         }
 
