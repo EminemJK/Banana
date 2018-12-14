@@ -20,7 +20,7 @@ namespace Banana.Uow.Extension
     /// <summary>
     /// 数据库语句
     /// </summary>
-    internal class SqlBuilder
+    public class SqlBuilder
     {
         /// <summary>
         /// 数据库语句
