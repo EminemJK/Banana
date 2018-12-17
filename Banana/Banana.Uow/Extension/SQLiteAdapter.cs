@@ -122,7 +122,7 @@ namespace Banana.Uow.Extension
         public SQLiteAdapter() { } 
 
 
-        public SqlBuilder GetPageList<T>(IRepository<T> repository, int pageNum, int pageSize, string whereString, object param, object order, bool asc)
+        public ISqlBuilder GetPageList<T>(IRepository<T> repository, int pageNum, int pageSize, string whereString, object param, object order, bool asc)
             where T : class, IEntity
         {
             SqlBuilder sqlBuilder = new SqlBuilder();

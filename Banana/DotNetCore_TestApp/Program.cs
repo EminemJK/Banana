@@ -91,7 +91,7 @@ namespace DotNetCore_TestApp
             //                         CreateTime DATETIME
             //                         )", null);
             //var datas = TestData();
-            //repoUserInfo.DBConnection.Insert(datas);
+            //repoUserInfo.Insert(datas);
 
             var list = repoUserInfo.QueryList();
 
@@ -139,7 +139,7 @@ namespace DotNetCore_TestApp
             //                           `CreateTime` DATETIME
             //                        )  CHARSET=utf8;", null);
             //var datas = TestData();
-            //repoUserInfo.DBConnection.Insert(datas);
+            //repoUserInfo.Insert(datas);
             var list = repoUserInfo.QueryList();
 
             var page1 = repoUserInfo.QueryList(1, 5, "Phone is not null", order: "ID", asc: true);
@@ -173,7 +173,7 @@ namespace DotNetCore_TestApp
         static void TestPostgres()
         {
             ConnectionBuilder.ConfigRegist("PORT=5432;DATABASE=postgres;HOST=192.168.23.129;PASSWORD=mimashi123;USER ID=postgres", DBType.Postgres);
-            var repoUserInfo = new Repository<UserModel>(); 
+            var repoUserInfo = new Repository<UserModel>();
             //repoUserInfo.Execute(@"CREATE TABLE t_user( 
             //                            id         SERIAL      PRIMARY KEY,
             //                            username    CHAR(50)    NOT NULL,
@@ -183,7 +183,7 @@ namespace DotNetCore_TestApp
             //                            sex int,enable int,
             //                            createtime date); ", null);
             //var datas = ModelConvertUtil<UserInfo, UserModel>.ModelCopy(TestData());
-            //repoUserInfo.DBConnection.Insert(datas);
+            //repoUserInfo.Insert(datas);
 
             var list = repoUserInfo.QueryList();
 
@@ -223,7 +223,7 @@ namespace DotNetCore_TestApp
             //                         CreateTime DATETIME
             //                         )", null);
             //var datas = TestData();
-            //repoUserInfo.DBConnection.Insert(datas);
+            //repoUserInfo.Insert(datas);
              
             var list = repoUserInfo.QueryList();
 
@@ -354,7 +354,7 @@ namespace DotNetCore_TestApp
 
             //datas  
             //var datas = ModelConvertUtil<UserInfo, UserModel_Oracle>.ModelCopy(TestData());
-            //repoUserInfo.DBConnection.Insert(datas);
+            //repoUserInfo.Insert(datas);
 
             var list = repoUserInfo.QueryList();
 

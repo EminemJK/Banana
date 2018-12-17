@@ -82,7 +82,7 @@ namespace Banana.Uow.Interface
         /// <param name="order"></param>
         /// <param name="asc"></param>
         /// <returns></returns>
-        SqlBuilder GetPageList<T>(IRepository<T> repository, int pageNum = 0, int pageSize = 0, string whereString = null, object param = null, object order = null, bool asc = false)
+        ISqlBuilder GetPageList<T>(IRepository<T> repository, int pageNum = 0, int pageSize = 0, string whereString = null, object param = null, object order = null, bool asc = false)
            where T : class, IEntity;
     }
 }

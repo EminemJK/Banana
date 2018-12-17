@@ -23,6 +23,11 @@ namespace Banana.Uow.Interface
         long Insert(T entity);
 
         /// <summary>
+        /// 插入实体
+        /// </summary>
+        long Insert(IEnumerable<T> entityList);
+
+        /// <summary>
         /// 更新对象
         /// </summary>
         bool Update(T entity);
@@ -74,6 +79,11 @@ namespace Banana.Uow.Interface
         /// 插入实体
         /// </summary>
         Task<int> InsertAsync(T entity);
+
+        /// <summary>
+        /// 插入实体
+        /// </summary>
+        Task<int> InsertAsync(IEnumerable<T> entityList);
 
         /// <summary>
         /// 删除对象

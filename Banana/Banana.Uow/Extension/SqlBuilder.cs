@@ -3,6 +3,7 @@
  * Date：2018-11-20
  **********************************/
 
+using Banana.Uow.Interface;
 using Banana.Uow.Models;
 using Dapper;
 using System;
@@ -20,7 +21,7 @@ namespace Banana.Uow.Extension
     /// <summary>
     /// 数据库语句
     /// </summary>
-    public class SqlBuilder
+    public class SqlBuilder: ISqlBuilder
     {
         /// <summary>
         /// 数据库语句

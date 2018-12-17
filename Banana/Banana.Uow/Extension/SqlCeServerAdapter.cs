@@ -123,7 +123,7 @@ namespace Banana.Uow.Extension
             sb.AppendFormat("@{0}", paramName);
         }
 
-        public SqlBuilder GetPageList<T>(IRepository<T> repository, int pageNum = 0, int pageSize = 0, string whereString = null, object param = null, object order = null, bool asc = false)
+        public ISqlBuilder GetPageList<T>(IRepository<T> repository, int pageNum = 0, int pageSize = 0, string whereString = null, object param = null, object order = null, bool asc = false)
           where T : class, IEntity
         {
             throw new Exception("Sorry, it is not supported for the time being");

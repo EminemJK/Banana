@@ -114,6 +114,14 @@ namespace Banana.Uow
         }
 
         /// <summary>
+        /// 插入实体列表
+        /// </summary>
+        public long Insert(IEnumerable<T> entityList)
+        {
+            return DBConnection.Insert(entityList, _dbTransaction);
+        }
+
+        /// <summary>
         /// 查询单个实体
         /// </summary>
         /// <param name="id">Id</param>
@@ -250,6 +258,14 @@ namespace Banana.Uow
         public async Task<int> InsertAsync(T entity)
         {
             return await DBConnection.InsertAsync(entity, _dbTransaction);
+        }
+
+        /// <summary>
+        /// 插入实体列表
+        /// </summary>
+        public async Task<int> InsertAsync(IEnumerable<T> entityList)
+        {
+            return await DBConnection.InsertAsync(entityList, _dbTransaction);
         }
 
         /// <summary>

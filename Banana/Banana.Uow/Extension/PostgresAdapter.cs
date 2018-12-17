@@ -168,7 +168,7 @@ namespace Banana.Uow.Extension
         /// </summary>
         public PostgresAdapter() { }
 
-        public SqlBuilder GetPageList<T>(IRepository<T> repository, int pageNum = 0, int pageSize = 0, string whereString = null, object param = null, object order = null, bool asc = false)
+        public ISqlBuilder GetPageList<T>(IRepository<T> repository, int pageNum = 0, int pageSize = 0, string whereString = null, object param = null, object order = null, bool asc = false)
             where T : class, IEntity
         {
             SqlBuilder sqlBuilder = new SqlBuilder();
