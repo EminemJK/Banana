@@ -216,16 +216,15 @@ namespace Banana.Uow
                 try
                 {
                     int res = Execute(sql, entities);
+                    TrancationState = ETrancationState.Closed;
                     if (res > 0)
                     {
                         trans.Commit();
-                        TrancationState = ETrancationState.Closed;
                         return true;
                     }
                     else
                     {
                         trans.Rollback();
-                        TrancationState = ETrancationState.Closed;
                         return false;
                     }
                 }
@@ -233,7 +232,7 @@ namespace Banana.Uow
                 {
                     trans.Rollback();
                     TrancationState = ETrancationState.Closed;
-                    return false;
+                    throw ex;
                 }
             }
         }
