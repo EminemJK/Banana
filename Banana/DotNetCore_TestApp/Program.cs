@@ -61,16 +61,16 @@ namespace DotNetCore_TestApp
 
             string password = Banana.Utility.Encryption.MD5.Encrypt("mimashi123");
             data.Add(new UserInfo() { Name = "Monkey D. Luffy", Phone = "15878451111", Password = password, Sex = 1, UserName = "Luffy", CreateTime = DateTime.Now, Enable = 1 });
-            data.Add(new UserInfo() { Name = "索隆", Phone = "13355526663", Password = password, Sex = 1, UserName = "Zoro", CreateTime = DateTime.Now, Enable =1 });
-            data.Add(new UserInfo() { Name = "娜美", Phone = "15878451111", Password = password, Sex = 0, UserName = "Nami", CreateTime = DateTime.Now, Enable = 1 });
-            data.Add(new UserInfo() { Name = "山治", Phone = "17755602229", Password = password, Sex = 1, UserName = "Sanji", CreateTime = DateTime.Now, Enable = 1 });
-            data.Add(new UserInfo() { Name = "乌索普", Phone = "14799995555", Password = password, Sex = 1, UserName = "Usopp", CreateTime = DateTime.Now, Enable = 1 });
+            data.Add(new UserInfo() { Name = "Zoro", Phone = "13355526663", Password = password, Sex = 1, UserName = "Zoro", CreateTime = DateTime.Now, Enable =1 });
+            data.Add(new UserInfo() { Name = "Nami", Phone = "15878451111", Password = password, Sex = 0, UserName = "Nami", CreateTime = DateTime.Now, Enable = 1 });
+            data.Add(new UserInfo() { Name = "Sanji", Phone = "17755602229", Password = password, Sex = 1, UserName = "Sanji", CreateTime = DateTime.Now, Enable = 1 });
+            data.Add(new UserInfo() { Name = "Usopp", Phone = "14799995555", Password = password, Sex = 1, UserName = "Usopp", CreateTime = DateTime.Now, Enable = 1 });
 
-            data.Add(new UserInfo() { Name = "乔巴", Phone = "18966660000", Password = password, Sex = 1, UserName = "Chopper", CreateTime = DateTime.Now, Enable = 1 });
-            data.Add(new UserInfo() { Name = "罗宾", Phone = "13122227878", Password = password, Sex = 0, UserName = "Robin", CreateTime = DateTime.Now, Enable = 1 });
-            data.Add(new UserInfo() { Name = "弗兰奇", Phone = "15962354412", Password = password, Sex = 1, UserName = "Franky", CreateTime = DateTime.Now, Enable = 1 });
-            data.Add(new UserInfo() { Name = "布鲁克", Phone = "14322221111", Password = password, Sex = 1, UserName = "Brook", CreateTime = DateTime.Now, Enable = 1 });
-            data.Add(new UserInfo() { Name = "甚平", Phone = "15655479960", Password = password, Sex = 1, UserName = "Jinbe", CreateTime = DateTime.Now, Enable = 1 });
+            data.Add(new UserInfo() { Name = "Chopper", Phone = "18966660000", Password = password, Sex = 1, UserName = "Chopper", CreateTime = DateTime.Now, Enable = 1 });
+            data.Add(new UserInfo() { Name = "Robin", Phone = "13122227878", Password = password, Sex = 0, UserName = "Robin", CreateTime = DateTime.Now, Enable = 1 });
+            data.Add(new UserInfo() { Name = "Franky", Phone = "15962354412", Password = password, Sex = 1, UserName = "Franky", CreateTime = DateTime.Now, Enable = 1 });
+            data.Add(new UserInfo() { Name = "Brook", Phone = "14322221111", Password = password, Sex = 1, UserName = "Brook", CreateTime = DateTime.Now, Enable = 1 });
+            data.Add(new UserInfo() { Name = "Jinbe", Phone = "15655479960", Password = password, Sex = 1, UserName = "Jinbe", CreateTime = DateTime.Now, Enable = 1 });
             return data;
         }
 

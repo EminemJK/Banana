@@ -1,6 +1,8 @@
 ﻿/***********************************
  * Coder：EminemJK
  * Date：2018-12-06
+ * 
+ * Last Update：2018-12-18
  **********************************/
 
 using Banana.Uow.Models;
@@ -8,7 +10,7 @@ using Banana.Uow.Models;
 namespace Banana.Uow.Interface
 {
     /// <summary>
-    /// 定义IRepository接口
+    /// 定义IRepository接口|The interface for repository's factory  
     /// </summary>
     public interface IRepositoryFactory
     {

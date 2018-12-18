@@ -1,6 +1,8 @@
 ﻿/***********************************
  * Coder：EminemJK
  * Date：2018-11-21
+ * 
+ * Last Update：2018-12-18
  **********************************/
 
 using System;
@@ -12,7 +14,7 @@ using System.Threading.Tasks;
 namespace Banana.Utility.Common
 {
     /// <summary>
-    /// 时间帮助类
+    /// 时间帮助类|UnixTime helper
     /// </summary>
     public class JavaDate
     {
@@ -67,10 +69,14 @@ namespace Banana.Utility.Common
         }
 
         #region 根据时间获取当前是第几周
-
-        //如果12月31号与下一年的1月1好在同一个星期则算下一年的第一周
+        /// <summary>
+        /// Gets the current week based on the time
+        /// </summary>
+        /// <param name="dTime"></param>
+        /// <returns></returns>
         public static int GetWeekIndex(DateTime dTime)
         {
+            //如果12月31号与下一年的1月1好在同一个星期则算下一年的第一周
             try
             {
                 //需要判断的时间

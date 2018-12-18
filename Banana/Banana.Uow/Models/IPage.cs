@@ -1,6 +1,8 @@
 ﻿/***********************************
  * Coder：EminemJK
  * Date：2018-12-06
+ * 
+ * Last Update：2018-12-18
  **********************************/
 
 using System.Collections.Generic;
@@ -8,7 +10,8 @@ using System.Collections.Generic;
 namespace Banana.Uow.Models
 {
     /// <summary>
-    /// 分页数据接口
+    /// 分页数据接口|
+    /// The interface for paging
     /// </summary>
     public interface IPage<T>
     {

@@ -1,19 +1,16 @@
 ﻿/***********************************
  * Coder：EminemJK
  * Date：2018-11-21
+ * 
+ * Last Update：2018-12-18
  **********************************/
-
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Banana.Utility.Common
 {
     /// <summary>
-    /// 枚举说明
+    /// 枚举说明|Enumeration show
     /// </summary>
     public class EnumDescription : Attribute
     {

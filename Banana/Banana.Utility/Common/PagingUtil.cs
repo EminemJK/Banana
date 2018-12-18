@@ -1,6 +1,8 @@
 ﻿/***********************************
  * Coder：EminemJK
  * Date：2018-11-21
+ * 
+ * Last Update：2018-12-18
  **********************************/
 
 using System;
@@ -11,25 +13,29 @@ using System.Threading.Tasks;
 
 namespace Banana.Utility.Common
 {
+    /// <summary>
+    /// Paging tool
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public class PagingUtil<T> : List<T>
     {
         /// <summary>
-        /// 总记录数
+        /// 总记录数|
         /// </summary>
         public int dataCount { get; set; }
 
         /// <summary>
-        /// 总页数
+        /// 总页数|pageCount
         /// </summary>
         public int pageCount { get; set; }
 
         /// <summary>
-        /// 当前页码
+        /// 当前页码|page number
         /// </summary>
         public int pageNo { get; set; }
 
         /// <summary>
-        /// 每页显示记录数
+        /// 每页显示记录数|page size
         /// </summary>
         public int pageSize { get; set; }
 

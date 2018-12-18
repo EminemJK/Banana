@@ -1,37 +1,34 @@
 ﻿/***********************************
  * Coder：EminemJK
  * Date：2018-11-20
+ * 
+ * Last Update：2018-12-18
  **********************************/
 
 using Banana.Uow.Interface;
-using Banana.Uow.Models;
-using Dapper;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
-using static Banana.Uow.Extension.SqlMapperExtensions;
 
 namespace Banana.Uow.Extension
 {
     /// <summary>
-    /// 数据库语句
+    /// SQL builder
     /// </summary>
     public class SqlBuilder: ISqlBuilder
     {
         /// <summary>
-        /// 数据库语句
+        /// SQL builder
         /// </summary>
         public SqlBuilder()
         {
         }
 
         /// <summary>
-        /// 数据库语句
+        /// SQL builder
         /// </summary>
         public SqlBuilder(string sql, params object[] args)
         {
@@ -175,14 +172,14 @@ namespace Banana.Uow.Extension
                 if (int.TryParse(param, out int paramIndex))
                 { 
                     if (paramIndex < 0 || paramIndex >= args_src.Length)
-                        throw new ArgumentOutOfRangeException(string.Format("参数 '@{0}' 已指定，但只提供了参数 {1} (sql: `{2}`)", paramIndex, args_src.Length, _sql)); 
+                        throw new ArgumentOutOfRangeException(string.Format("参数 '@{0}' 已指定，但只提供了参数 {1}|The parameter '@{0}' is specified, but only the parameter {1} is provided. (sql: `{2}`)", paramIndex, args_src.Length, _sql)); 
                     var o = args_src[paramIndex]; 
                     var pi = o.GetType().GetProperty(param);
                     if (pi != null)
                     {
                         if (temp.ContainsKey(pi.Name))
                         {
-                            throw new ArgumentOutOfRangeException("参数重名：" + pi.Name);
+                            throw new ArgumentOutOfRangeException("参数重名|parameter has same name：" + pi.Name);
                         }
                         temp.Add(pi.Name, pi.GetValue(o, null));
                         found = true; 
@@ -197,7 +194,7 @@ namespace Banana.Uow.Extension
                         {
                             if (temp.ContainsKey(pi.Name))
                             {
-                                throw new ArgumentOutOfRangeException("参数重名：" + pi.Name);
+                                throw new ArgumentOutOfRangeException("参数重名|parameter has same name：" + pi.Name);
                             }
                             temp.Add(pi.Name, pi.GetValue(o, null));
                             found = true;
@@ -210,7 +207,7 @@ namespace Banana.Uow.Extension
                             {
                                 if (temp.ContainsKey(key))
                                 {
-                                    throw new ArgumentOutOfRangeException("参数重名：" + key);
+                                    throw new ArgumentOutOfRangeException("参数重名|parameter has same name：" + key);
                                 }
                                 found = true;
                                 temp.Add(key, dic[key]);
@@ -220,7 +217,7 @@ namespace Banana.Uow.Extension
                     }  
                 }
                 if (!found)
-                    throw new ArgumentException(string.Format("参数 '@{0}' 已指定， 但传递的参数中没有一个具有该名称的属性 (sql: '{1}')", param, _sql));
+                    throw new ArgumentException(string.Format("参数 '@{0}' 已指定， 但传递的参数中没有一个具有该名称的属性|The parameter '@{0}' is specified, but none of the passed parameters has an attribute with that name. (sql: '{1}')", param, _sql));
                 //return "@" + (args_dest.Count - 1).ToString();
                 return m.Value;
             }

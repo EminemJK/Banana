@@ -1,6 +1,8 @@
 ﻿/***********************************
  * Coder：EminemJK
- * Date：2018-11-16
+ * Create Date：2018-11-16
+ * 
+ * Last Update：2018-12-18
  **********************************/
 
 using Banana.Uow.Models;
@@ -13,7 +15,8 @@ using Banana.Uow.Interface;
 namespace Banana.Uow
 {
     /// <summary>
-    /// 工作单元基类
+    /// 工作单元基类|
+    /// Base UnitOfWork
     /// </summary>
     public class UnitOfWork : IUnitOfWork, IRepositoryFactory
     {
@@ -50,9 +53,9 @@ namespace Banana.Uow
         #endregion
 
         /// <summary>
-        /// 工作单元基类
+        /// 工作单元基类|
+        /// Base UnitOfWork
         /// </summary>
-        /// <param name="context"></param>
         public UnitOfWork(IDbConnection context = null)
         {
             this.context = context;
@@ -68,7 +71,8 @@ namespace Banana.Uow
         }
 
         /// <summary>
-        /// 提交
+        /// 提交事务|
+        /// transaction commit
         /// </summary>
         public void Commit()
         {
@@ -76,7 +80,8 @@ namespace Banana.Uow
         }
 
         /// <summary>
-        /// 回滚
+        /// 事务回滚|
+        /// transaction rollback
         /// </summary>
         public void Rollback()
         {
@@ -84,7 +89,8 @@ namespace Banana.Uow
         }
 
         /// <summary>
-        /// 获取仓储
+        /// 获取仓储|
+        /// Get a repository
         /// </summary> 
         public IRepository<T> GetRepository<T>() where T : class, IEntity
         { 

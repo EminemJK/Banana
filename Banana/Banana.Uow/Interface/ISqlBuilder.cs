@@ -1,12 +1,14 @@
 ﻿/***********************************
  * Coder：EminemJK
  * Date：2018-12-17
+ * 
+ * Last Update：2018-12-18
  **********************************/
 
 namespace Banana.Uow.Interface
 {
     /// <summary>
-    /// ISqlBuilder
+    /// The interface for all SqlBuilder operations.
     /// </summary>
     public interface ISqlBuilder
     {

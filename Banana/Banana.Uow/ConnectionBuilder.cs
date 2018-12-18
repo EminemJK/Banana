@@ -1,8 +1,10 @@
 ﻿/***********************************
  * Coder：EminemJK
- * Date：2018-11-16
+ * Create Date：2018-11-16
+ * 
+ * Last Update：2018-12-18
  **********************************/
- 
+
 using Banana.Uow.Interface;
 using Banana.Uow.Models;
 using MySql.Data.MySqlClient;
@@ -18,32 +20,37 @@ using static Banana.Uow.Extension.SqlMapperExtensions;
 namespace Banana.Uow
 {
     /// <summary>
-    /// 创建基础链接
+    /// 创建基础链接|
+    /// Creating database links
     /// </summary>
     public class ConnectionBuilder
     {
         private static DBSetting dBSetting;
 
         /// <summary>
-        /// 注册链接
+        /// 注册链接|
+        /// Register database links
         /// </summary>
-        /// <param name="strConn">链接串</param>
-        /// <param name="dBType">数据库类型</param>
+        /// <param name="strConn">connection string</param>
+        /// <param name="dBType">type of database</param>
         public static void ConfigRegist(string strConn, DBType dBType = DBType.SqlServer)
         {
             dBSetting = new DBSetting() { ConnectionString = strConn, DBType = dBType };
         }
 
         /// <summary>
-        /// 注册链接
+        /// 注册链接|
+        /// Register database links
         /// </summary>
+        /// <param name="dBSetting">connection model</param>
         public static void ConfigRegist(DBSetting dBSetting)
         {
             dBSetting = new DBSetting() { ConnectionString = dBSetting.ConnectionString, DBType = dBSetting.DBType };
         }
 
         /// <summary>
-        /// 创建连接串
+        /// 创建连接串|
+        /// create database connection
         /// </summary>
         public static IDbConnection CreateConnection()
         {
@@ -69,8 +76,12 @@ namespace Banana.Uow
             {
                 throw new Exception("未注册数据库链接，请调用ConnectionBuilder.ConfigRegist");
             }
-        } 
+        }
 
+        /// <summary>
+        /// The interface for all Dapper.Contrib database operations 
+        /// </summary>
+        /// <returns></returns>
         internal static ISqlAdapter GetAdapter()
         {
             return GetFormatter(CreateConnection());

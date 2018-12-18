@@ -1,6 +1,8 @@
 ﻿/***********************************
  * Coder：EminemJK
  * Date：2018-11-21
+ * 
+ * Last Update：2018-12-18
  **********************************/
 
 using System;
@@ -13,7 +15,7 @@ using System.Threading.Tasks;
 namespace Banana.Utility.Common
 {
     /// <summary>
-    /// 模型拷贝 -（利用表达树进行，提高效率）
+    /// 模型拷贝 -（利用表达树进行，提高效率）|The model copy
     /// </summary>
     /// <typeparam name="TIn"></typeparam>
     /// <typeparam name="TOut"></typeparam>

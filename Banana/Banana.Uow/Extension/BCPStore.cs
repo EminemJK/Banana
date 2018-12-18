@@ -22,7 +22,8 @@ namespace Banana.Uow.Extension
         private DataTable myTable = new DataTable();
 
         /// <summary>
-        /// 初始化
+        /// 初始化|initialize
+        /// 
         /// </summary>
         /// <param name="connection"></param>
         /// <param name="tablename"></param>
@@ -33,7 +34,7 @@ namespace Banana.Uow.Extension
         }
 
         /// <summary>
-        /// 初始化
+        /// 初始化|initialize
         /// </summary>
         /// <param name="repository"></param>
         public void Init<T>(IRepository<T> repository) where T : class, IEntity
@@ -45,7 +46,7 @@ namespace Banana.Uow.Extension
             }
             else
             {
-                throw new ArgumentException("BCPStore仅Sql Server数据库中使用", "repository.DBConnection");
+                throw new ArgumentException("BCPStore仅Sql Server数据库中使用|The BCPStore is only used in Sql Server databases.", "repository.DBConnection");
             }
         }
 

@@ -1,6 +1,8 @@
 ﻿/***********************************
  * Coder：EminemJK
  * Date：2018-11-16
+ * 
+ * Last Update：2018-12-18
  **********************************/
 
 using System;
@@ -12,7 +14,7 @@ using System.Threading.Tasks;
 namespace Banana.Uow.Models
 {
     /// <summary>
-    /// 模型基类
+    /// 模型基类|base entity
     /// </summary>
     public class BaseModel : IEntity
     {

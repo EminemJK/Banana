@@ -2,18 +2,17 @@
 
   <PropertyGroup>
     <PackageId>Banana.Utility</PackageId>
-    <PackageTags>Common;Tools;Redis;PinYin;加密</PackageTags>
+    <PackageTags>Tools;Redis;PinYin;Encryption</PackageTags>
     <Title>Banana.Utility</Title>
-    <Description>Banana工具类库</Description>
+    <Description>Banana tools</Description>
     <Authors>EminemJK</Authors>
     <TargetFrameworks>net461;netstandard2.0</TargetFrameworks>
     <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0.html</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/EminemJK/Banana.git</PackageProjectUrl>
     <PackageIconUrl>https://www.cnblogs.com/images/cnblogs_com/EminemJK/1345488/o_banana.uow.png</PackageIconUrl>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.0.2</Version>
-    <PackageReleaseNotes>1、Add RSA
-2、Update logo，From my girlfriend's design</PackageReleaseNotes>
+    <Version>1.0.3</Version>
+    <PackageReleaseNotes>Make separate English documentation and make all the code comments in English</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net461|AnyCPU'">
