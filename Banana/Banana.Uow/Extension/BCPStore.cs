@@ -39,7 +39,14 @@ namespace Banana.Uow.Extension
         public void Init<T>(IRepository<T> repository) where T : class, IEntity
         {
             this.tableName = repository.TableName;
-            init(repository.DBConnection as SqlConnection);
+            if (repository.DBConnection is SqlConnection)
+            {
+                init(repository.DBConnection as SqlConnection);
+            }
+            else
+            {
+                throw new ArgumentException("BCPStore仅Sql Server数据库中使用", "repository.DBConnection");
+            }
         }
 
         private void init(SqlConnection connection)
@@ -59,7 +66,7 @@ namespace Banana.Uow.Extension
         /// <summary>
         /// 数据
         /// </summary>
-        public void AddData(params object[] objRow)
+        public void AddData(object[] objRow)
         {
             myTable.Rows.Add(objRow);
         }
@@ -76,7 +83,6 @@ namespace Banana.Uow.Extension
             {
                 connection.Open();
             }
-            var tran = connection.BeginTransaction();
             try
             {
                 if (truncateFirst)
@@ -90,12 +96,10 @@ namespace Banana.Uow.Extension
                     bcp.BulkCopyTimeout = bulkCopyTimeout;
                     bcp.WriteToServer(myTable);
                 }
-                tran.Commit();
                 myTable.Rows.Clear();
             }
             catch (Exception ex)
             {
-                tran.Rollback();
                 throw ex;
             }
         }

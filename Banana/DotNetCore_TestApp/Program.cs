@@ -27,7 +27,9 @@ namespace DotNetCore_TestApp
 
             //TestSQLite();
 
-            TestOracle();
+            //TestOracle();
+
+            TestBCPStore();
             Console.WriteLine("Hello World!");
             Console.ReadKey();
         } 
@@ -57,17 +59,18 @@ namespace DotNetCore_TestApp
         { 
             List<UserInfo> data = new List<UserInfo>();
 
-            data.Add(new UserInfo() { Name = "Monkey D. Luffy", Phone = "15878451111", Password = "12345678", Sex = 1, UserName = "Luffy", CreateTime = DateTime.Now, Enable = 1 });
-            data.Add(new UserInfo() { Name = "索隆", Phone = "13355526663", Password = "12345678", Sex = 1, UserName = "Zoro", CreateTime = DateTime.Now, Enable =1 });
-            data.Add(new UserInfo() { Name = "娜美", Phone = "15878451111", Password = "12345678", Sex = 0, UserName = "Nami", CreateTime = DateTime.Now, Enable = 1 });
-            data.Add(new UserInfo() { Name = "山治", Phone = "17755602229", Password = "12345678", Sex = 1, UserName = "Sanji", CreateTime = DateTime.Now, Enable = 1 });
-            data.Add(new UserInfo() { Name = "乌索普", Phone = "14799995555", Password = "12345678", Sex = 1, UserName = "Usopp", CreateTime = DateTime.Now, Enable = 1 });
+            string password = Banana.Utility.Encryption.MD5.Encrypt("mimashi123");
+            data.Add(new UserInfo() { Name = "Monkey D. Luffy", Phone = "15878451111", Password = password, Sex = 1, UserName = "Luffy", CreateTime = DateTime.Now, Enable = 1 });
+            data.Add(new UserInfo() { Name = "索隆", Phone = "13355526663", Password = password, Sex = 1, UserName = "Zoro", CreateTime = DateTime.Now, Enable =1 });
+            data.Add(new UserInfo() { Name = "娜美", Phone = "15878451111", Password = password, Sex = 0, UserName = "Nami", CreateTime = DateTime.Now, Enable = 1 });
+            data.Add(new UserInfo() { Name = "山治", Phone = "17755602229", Password = password, Sex = 1, UserName = "Sanji", CreateTime = DateTime.Now, Enable = 1 });
+            data.Add(new UserInfo() { Name = "乌索普", Phone = "14799995555", Password = password, Sex = 1, UserName = "Usopp", CreateTime = DateTime.Now, Enable = 1 });
 
-            data.Add(new UserInfo() { Name = "乔巴", Phone = "18966660000", Password = "12345678", Sex = 1, UserName = "Chopper", CreateTime = DateTime.Now, Enable = 1 });
-            data.Add(new UserInfo() { Name = "罗宾", Phone = "13122227878", Password = "12345678", Sex = 0, UserName = "Robin", CreateTime = DateTime.Now, Enable = 1 });
-            data.Add(new UserInfo() { Name = "弗兰奇", Phone = "15962354412", Password = "12345678", Sex = 1, UserName = "Franky", CreateTime = DateTime.Now, Enable = 1 });
-            data.Add(new UserInfo() { Name = "布鲁克", Phone = "14322221111", Password = "12345678", Sex = 1, UserName = "Brook", CreateTime = DateTime.Now, Enable = 1 });
-            data.Add(new UserInfo() { Name = "甚平", Phone = "15655479960", Password = "12345678", Sex = 1, UserName = "Jinbe", CreateTime = DateTime.Now, Enable = 1 });
+            data.Add(new UserInfo() { Name = "乔巴", Phone = "18966660000", Password = password, Sex = 1, UserName = "Chopper", CreateTime = DateTime.Now, Enable = 1 });
+            data.Add(new UserInfo() { Name = "罗宾", Phone = "13122227878", Password = password, Sex = 0, UserName = "Robin", CreateTime = DateTime.Now, Enable = 1 });
+            data.Add(new UserInfo() { Name = "弗兰奇", Phone = "15962354412", Password = password, Sex = 1, UserName = "Franky", CreateTime = DateTime.Now, Enable = 1 });
+            data.Add(new UserInfo() { Name = "布鲁克", Phone = "14322221111", Password = password, Sex = 1, UserName = "Brook", CreateTime = DateTime.Now, Enable = 1 });
+            data.Add(new UserInfo() { Name = "甚平", Phone = "15655479960", Password = password, Sex = 1, UserName = "Jinbe", CreateTime = DateTime.Now, Enable = 1 });
             return data;
         }
 
@@ -99,7 +102,7 @@ namespace DotNetCore_TestApp
             var page2 = repoUserInfo.QueryList(2, 5);
             var page3 = repoUserInfo.QueryList(3, 5);
 
-            var model = repoUserInfo.Query(2);
+            var model = repoUserInfo.Query(list[0].Id);
             bool b = repoUserInfo.Delete(model);
             list = repoUserInfo.QueryList();
 
@@ -382,6 +385,39 @@ namespace DotNetCore_TestApp
             };
             int id = (int)repoUserInfo.Insert(newUser);
             list = repoUserInfo.QueryList();
+        }
+
+        /// <summary>
+        /// Bcp
+        /// </summary>
+        static void TestBCPStore()
+        {
+            ConnectionBuilder.ConfigRegist("Data Source=.;Initial Catalog = AdminLTE.Net.DB;User ID=sa;Password =mimashi123", DBType.SqlServer);
+            var repoUserInfo = new Repository<UserInfo>();
+
+            var datas = TestData();
+
+            var conn = repoUserInfo.DBConnection;
+
+            BCPStore bcp = new BCPStore();
+            bcp.Init(repoUserInfo);
+            List<object> row = new List<object>();
+            foreach (var data in datas)
+            {
+                //对应select top 0 * from tableName 的行数据
+                row.Add(data.Id);
+                row.Add(data.UserName);
+                row.Add(data.Password);
+                row.Add(data.Name);
+                row.Add(data.Sex);
+                row.Add(data.Phone);
+                row.Add(data.Enable);
+                row.Add(data.CreateTime); 
+
+                bcp.AddData(row.ToArray());
+                row.Clear();
+            }
+            bcp.Flush(conn as System.Data.SqlClient.SqlConnection, true);
         }
     }
 }
