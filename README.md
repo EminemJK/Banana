@@ -6,6 +6,8 @@
 | [Banana.Uow](https://www.nuget.org/packages/Banana.Uow/) | [![Banana.Uow](https://img.shields.io/nuget/v/Banana.Uow.svg)](https://www.nuget.org/packages/Banana.Uow/)  | [![Banana.Uow](https://img.shields.io/nuget/vpre/Banana.Uow.svg)](https://www.nuget.org/packages/Banana.Uow/) | [![Banana.Uow](https://img.shields.io/nuget/dt/Banana.Uow.svg)](https://www.nuget.org/packages/Banana.Uow/) |
 
 ### 项目介绍
+👉[English documentation](https://github.com/EminemJK/Banana/wiki)
+
 基于Dapper封装的仓储、工作单元，支持SQL Server, MySQL, Sqlite，Postgresql，Oracle...
 
 ### 使用说明
