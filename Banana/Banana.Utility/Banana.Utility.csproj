@@ -13,6 +13,7 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Version>1.0.3</Version>
     <PackageReleaseNotes>Make separate English documentation and make all the code comments in English</PackageReleaseNotes>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net461|AnyCPU'">
