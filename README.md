@@ -35,14 +35,13 @@ using Banana.Uow.Models;
         [Computed]
        public DateTime Createtime { get; set; }
    }
-
-特性说明：
-· Table：指定实体对应地数据库表名，如果类名和数据库表名不同，需要设置
-· Key：指定此列为自动增长主键（oracle设置序列即可）
-· ExplicitKey：指定此列为非自动增长主键（例如guid，字符串列）
-· Computed：计算属性，此列不作为更新
-· Write：指定列是否可写
 ```
+特性说明：
+* Table：指定实体对应地数据库表名，如果类名和数据库表名不同，需要设置
+* Key：指定此列为自动增长主键（oracle设置序列名称即可）
+* ExplicitKey：指定此列为非自动增长主键（例如guid，字符串列）
+* Computed：计算属性，此列不作为更新
+* Write：指定列是否可写
 #### 仓储使用
 ``` csharp
    var repo = new Repository<Student>();
