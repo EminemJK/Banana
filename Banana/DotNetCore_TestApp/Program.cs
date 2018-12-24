@@ -12,6 +12,7 @@ using Dapper;
 using System.Linq;
 using System.Threading.Tasks;
 using Banana.Utility.Common;
+using Banana.Utility.Redis;
 
 namespace DotNetCore_TestApp
 {
@@ -58,8 +59,8 @@ namespace DotNetCore_TestApp
         static List<UserInfo> TestData()
         { 
             List<UserInfo> data = new List<UserInfo>();
-
             string password = Banana.Utility.Encryption.MD5.Encrypt("mimashi123");
+            
             data.Add(new UserInfo() { Name = "Monkey D. Luffy", Phone = "15878451111", Password = password, Sex = 1, UserName = "Luffy", CreateTime = DateTime.Now, Enable = 1 });
             data.Add(new UserInfo() { Name = "Zoro", Phone = "13355526663", Password = password, Sex = 1, UserName = "Zoro", CreateTime = DateTime.Now, Enable =1 });
             data.Add(new UserInfo() { Name = "Nami", Phone = "15878451111", Password = password, Sex = 0, UserName = "Nami", CreateTime = DateTime.Now, Enable = 1 });
@@ -71,6 +72,18 @@ namespace DotNetCore_TestApp
             data.Add(new UserInfo() { Name = "Franky", Phone = "15962354412", Password = password, Sex = 1, UserName = "Franky", CreateTime = DateTime.Now, Enable = 1 });
             data.Add(new UserInfo() { Name = "Brook", Phone = "14322221111", Password = password, Sex = 1, UserName = "Brook", CreateTime = DateTime.Now, Enable = 1 });
             data.Add(new UserInfo() { Name = "Jinbe", Phone = "15655479960", Password = password, Sex = 1, UserName = "Jinbe", CreateTime = DateTime.Now, Enable = 1 });
+
+            data.Add(new UserInfo() { Name = "Li", Phone = "18966661220", Password = password, Sex = 1, UserName = "Li", CreateTime = DateTime.Now, Enable = 1 });
+            data.Add(new UserInfo() { Name = "Papi", Phone = "13122221378", Password = password, Sex = 0, UserName = "Papi", CreateTime = DateTime.Now, Enable = 1 });
+            data.Add(new UserInfo() { Name = "Hacy", Phone = "15962354512", Password = password, Sex = 1, UserName = "Hacy", CreateTime = DateTime.Now, Enable = 1 });
+            data.Add(new UserInfo() { Name = "Hook", Phone = "14322221411", Password = password, Sex = 1, UserName = "Hook", CreateTime = DateTime.Now, Enable = 1 });
+            data.Add(new UserInfo() { Name = "Yami", Phone = "15655479960", Password = password, Sex = 1, UserName = "Yami", CreateTime = DateTime.Now, Enable = 1 });
+            Random r = new Random();
+            foreach (var d in data)
+            {
+                d.HeaderImg = $"/images/userHeader/{ d.UserName}.jpg";
+                d.CreateTime = d.CreateTime.AddDays(-r.Next(0,360));
+            }
             return data;
         }
 
@@ -412,12 +425,65 @@ namespace DotNetCore_TestApp
                 row.Add(data.Sex);
                 row.Add(data.Phone);
                 row.Add(data.Enable);
-                row.Add(data.CreateTime); 
+                row.Add(data.CreateTime);
+                row.Add(data.HeaderImg);
 
                 bcp.AddData(row.ToArray());
                 row.Clear();
             }
             bcp.Flush(conn as System.Data.SqlClient.SqlConnection, true);
+        }
+
+        static void TestRedis()
+        {
+            int dbIdx = 4;
+            string key = "testKey";
+            Task.Run(()=> {
+                while (true)
+                {
+                    Task.Run(() =>
+                    {
+                        RedisUtils.StringSet(dbIdx, key, DateTime.Now.ToString(), TimeSpan.FromSeconds(30));
+                    });
+                    Task.Run(() =>
+                    {
+                        string v = RedisUtils.StringGet(dbIdx, key);
+                        Console.WriteLine("1：" + v);
+                    });
+                    System.Threading.Thread.Sleep(100);
+                }
+            });
+            Task.Run(() => {
+                while (true)
+                {
+                    Task.Run(() =>
+                    {
+                        RedisUtils.StringSet(dbIdx, key, DateTime.Now.ToString(), TimeSpan.FromSeconds(30));
+                    });
+                    Task.Run(() =>
+                    {
+                        string v = RedisUtils.StringGet(dbIdx, key);
+                        Console.WriteLine("2：" + v);
+                    });
+                    System.Threading.Thread.Sleep(100);
+                }
+            });
+            Task.Run(() => {
+                while (true)
+                {
+                    Task.Run(() =>
+                    {
+                        RedisUtils.StringSet(dbIdx, key, DateTime.Now.ToString(), TimeSpan.FromSeconds(30));
+                    });
+                    Task.Run(() =>
+                    {
+                        string v = RedisUtils.StringGet(dbIdx, key);
+                        Console.WriteLine("3：" + v);
+                    });
+                    System.Threading.Thread.Sleep(100);
+                }
+            });
+
         }
     }
 }

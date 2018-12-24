@@ -1,6 +1,8 @@
 ﻿/***********************************
  * Coder：EminemJK
  * Date：2018-11-21
+ * 
+ * Last Update：2018-12-24
  **********************************/
 
 using System;
@@ -29,10 +31,10 @@ namespace Banana.Utility.Redis
         {
             get
             {
-                if (_instance == null)
-                {
-                    lock (_locker)
-                    {
+                //if (_instance == null)
+                //{
+                //    lock (_locker)
+                //    {
                         if (_instance == null || !_instance.IsConnected)
                         {
                             _instance = ConnectionMultiplexer.Connect(RedisPath);
@@ -43,8 +45,8 @@ namespace Banana.Utility.Redis
                             _instance.HashSlotMoved += MuxerHashSlotMoved;
                             _instance.InternalError += MuxerInternalError;
                         }
-                    }
-                }
+                //    }
+                //}
                 return _instance;
             }
         }

@@ -11,8 +11,8 @@
     <PackageProjectUrl>https://github.com/EminemJK/Banana.git</PackageProjectUrl>
     <PackageIconUrl>https://www.cnblogs.com/images/cnblogs_com/EminemJK/1345488/o_banana.uow.png</PackageIconUrl>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.0.3</Version>
-    <PackageReleaseNotes>Make separate English documentation and make all the code comments in English</PackageReleaseNotes>
+    <Version>1.0.4</Version>
+    <PackageReleaseNotes>fix redis bug</PackageReleaseNotes>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
