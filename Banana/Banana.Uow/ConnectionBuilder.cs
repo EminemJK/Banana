@@ -25,7 +25,7 @@ namespace Banana.Uow
     /// </summary>
     public class ConnectionBuilder
     {
-        private static DBSetting dBSetting;
+        private static DBSetting dbSetting;
 
         /// <summary>
         /// 注册链接|
@@ -35,17 +35,17 @@ namespace Banana.Uow
         /// <param name="dBType">type of database</param>
         public static void ConfigRegist(string strConn, DBType dBType = DBType.SqlServer)
         {
-            dBSetting = new DBSetting() { ConnectionString = strConn, DBType = dBType };
+            dbSetting = new DBSetting() { ConnectionString = strConn, DBType = dBType };
         }
 
         /// <summary>
         /// 注册链接|
         /// Register database links
         /// </summary>
-        /// <param name="dBSetting">connection model</param>
-        public static void ConfigRegist(DBSetting dBSetting)
+        /// <param name="db">connection model<DBSetting></param>
+        public static void ConfigRegist(DBSetting db)
         {
-            dBSetting = new DBSetting() { ConnectionString = dBSetting.ConnectionString, DBType = dBSetting.DBType };
+            dbSetting = new DBSetting() { ConnectionString = db.ConnectionString, DBType = db.DBType };
         }
 
         /// <summary>
@@ -56,8 +56,8 @@ namespace Banana.Uow
         {
             try
             {
-                var conn = dBSetting.ConnectionString;
-                switch (dBSetting.DBType)
+                var conn = dbSetting.ConnectionString;
+                switch (dbSetting.DBType)
                 {
                     case DBType.SqlServer:
                         return new SqlConnection(conn);
