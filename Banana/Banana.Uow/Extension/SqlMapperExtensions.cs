@@ -1,6 +1,10 @@
 ﻿/***********************************
  * Coder：EminemJK
  * Date：2018-12-12
+ * 
+ * UpdateDate:
+ * 2018-12-28  1.更新自动表名为 T_{class name}
+ *             2.更新Get、GetAll中的Select *  => Select {ColumnList}
  **********************************/
 
 using System;
@@ -192,7 +196,17 @@ namespace Banana.Uow.Extension
                 var key = GetSingleKey<T>(nameof(Get));
                 var name = GetTableName(type);
 
-                sql = $"select * from {name} where {key.Name} = " + sb;
+                var sbColumnList = new StringBuilder(null);
+                var allProperties = TypePropertiesCache(type);
+                for (var i = 0; i < allProperties.Count; i++)
+                {
+                    var property = allProperties[i];
+                    adapter.AppendColumnName(sbColumnList, property.Name); 
+                    if (i < allProperties.Count - 1)
+                        sbColumnList.Append(", ");
+                }
+
+                sql = $"select {sbColumnList.ToString()} from {name} where {key.Name} = {sb.ToString()}";
                 GetQueries[type.TypeHandle] = sql;
             }
             
@@ -249,13 +263,26 @@ namespace Banana.Uow.Extension
         {
             var type = typeof(T);
             var cacheType = typeof(List<T>);
-
+            
+           
             if (!GetQueries.TryGetValue(cacheType.TypeHandle, out string sql))
             {
                 GetSingleKey<T>(nameof(GetAll));
+
+                var adapter = GetFormatter(connection);
                 var name = GetTableName(type);
 
-                sql = "select * from " + name;
+                var sbColumnList = new StringBuilder(null);
+                var allProperties = TypePropertiesCache(type);
+                for (var i = 0; i < allProperties.Count; i++)
+                {
+                    var property = allProperties[i];
+                    adapter.AppendColumnName(sbColumnList, property.Name);
+                    if (i < allProperties.Count - 1)
+                        sbColumnList.Append(", ");
+                }
+
+                sql = $"select {sbColumnList.ToString()} from {name}";
                 GetQueries[cacheType.TypeHandle] = sql;
             }
 
@@ -317,9 +344,9 @@ namespace Banana.Uow.Extension
                 }
                 else
                 {
-                    name = type.Name + "s";
                     if (type.IsInterface() && name.StartsWith("I"))
                         name = name.Substring(1);
+                    name = "T_" + type.Name;
                 }
             }
 

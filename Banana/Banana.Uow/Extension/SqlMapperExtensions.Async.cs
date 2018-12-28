@@ -1,6 +1,10 @@
 ﻿/***********************************
  * Coder：EminemJK
  * Date：2018-12-12
+ * 
+ * UpdateDate:
+ * 2018-12-28  1.更新自动表名为 T_{class name}
+ *             2.更新Get、GetAll中的Select *  => Select {ColumnList}
  **********************************/
 
 using System;
@@ -31,17 +35,30 @@ namespace Banana.Uow.Extension
         public static async Task<T> GetAsync<T>(this IDbConnection connection, dynamic id, IDbTransaction transaction = null, int? commandTimeout = null) where T : class
         {
             var type = typeof(T);
+            var sb = new StringBuilder();
+            var adapter = GetFormatter(connection);
+            adapter.AppendParametr(sb, "id");
             if (!GetQueries.TryGetValue(type.TypeHandle, out string sql))
             {
                 var key = GetSingleKey<T>(nameof(GetAsync));
                 var name = GetTableName(type);
 
-                sql = $"SELECT * FROM {name} WHERE {key.Name} = @id";
+                var sbColumnList = new StringBuilder(null);
+                var allProperties = TypePropertiesCache(type);
+                for (var i = 0; i < allProperties.Count; i++)
+                {
+                    var property = allProperties[i];
+                    adapter.AppendColumnName(sbColumnList, property.Name);
+                    if (i < allProperties.Count - 1)
+                        sbColumnList.Append(", ");
+                }
+
+                sql = $"select {sbColumnList.ToString()} from {name} where {key.Name} = {sb.ToString()}";
                 GetQueries[type.TypeHandle] = sql;
             }
 
             var dynParms = new DynamicParameters();
-            dynParms.Add("@id", id);
+            dynParms.Add(sb.ToString(), id);
 
             if (!type.IsInterface())
                 return (await connection.QueryAsync<T>(sql, dynParms, transaction, commandTimeout).ConfigureAwait(false)).FirstOrDefault();
@@ -92,9 +109,20 @@ namespace Banana.Uow.Extension
             if (!GetQueries.TryGetValue(cacheType.TypeHandle, out string sql))
             {
                 GetSingleKey<T>(nameof(GetAll));
+                var adapter = GetFormatter(connection);
                 var name = GetTableName(type);
 
-                sql = "SELECT * FROM " + name;
+                var sbColumnList = new StringBuilder(null);
+                var allProperties = TypePropertiesCache(type);
+                for (var i = 0; i < allProperties.Count; i++)
+                {
+                    var property = allProperties[i];
+                    adapter.AppendColumnName(sbColumnList, property.Name);
+                    if (i < allProperties.Count - 1)
+                        sbColumnList.Append(", ");
+                }
+
+                sql = $"select {sbColumnList.ToString()} from {name}";
                 GetQueries[cacheType.TypeHandle] = sql;
             }
 

@@ -22,7 +22,7 @@ namespace DotNetCore_TestApp
         {
             //TestSQLServer();
 
-            //TestMySQL();
+            TestMySQL();
 
             //TestPostgres(); 
 
@@ -81,7 +81,6 @@ namespace DotNetCore_TestApp
             Random r = new Random();
             foreach (var d in data)
             {
-                d.HeaderImg = $"/images/userHeader/{ d.UserName}.jpg";
                 d.CreateTime = d.CreateTime.AddDays(-r.Next(0,360));
             }
             return data;
@@ -426,7 +425,6 @@ namespace DotNetCore_TestApp
                 row.Add(data.Phone);
                 row.Add(data.Enable);
                 row.Add(data.CreateTime);
-                row.Add(data.HeaderImg);
 
                 bcp.AddData(row.ToArray());
                 row.Clear();

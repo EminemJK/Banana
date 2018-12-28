@@ -1,6 +1,9 @@
 ﻿/***********************************
  * Coder：EminemJK
  * Date：2018-12-12
+ * 
+ * UpdateDate:
+ * 2018-12-28  1.更新GetPageList中的Select *  => Select {ColumnList}
  **********************************/
 
 using Banana.Uow.Interface;
@@ -162,7 +165,17 @@ namespace Banana.Uow.Extension
           where T : class, IEntity
         {
             SqlBuilder sqlBuilder = new SqlBuilder();
-            sqlBuilder.Select(args: "*");
+            var sbColumnList = new StringBuilder(null);
+            var allProperties = SqlMapperExtensions.TypePropertiesCache(typeof(T));
+            for (var i = 0; i < allProperties.Count; i++)
+            {
+                var property = allProperties[i];
+                AppendColumnName(sbColumnList, property.Name);
+                if (i < allProperties.Count - 1)
+                    sbColumnList.Append(", ");
+            }
+
+            sqlBuilder.Select(args: sbColumnList.ToString());
             if (pageSize > 0)
             { 
                 SqlBuilder sqlBuilderRows = new SqlBuilder();

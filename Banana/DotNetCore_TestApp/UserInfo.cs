@@ -24,8 +24,6 @@ namespace DotNetCore_TestApp
 
         public DateTime CreateTime { get; set; }
 
-        public string HeaderImg { get; set; }
-
         public override string ToString()
         {
             return $"Id：{Id} UserName：{UserName} Name：{Name} Phone：{Phone}";
