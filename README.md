@@ -35,7 +35,7 @@ using Banana.Uow.Models;
        [Computed]
        public DateTime Createtime { get; set; }
        [Column("UserNameFiel")]
-       public string UserName {get;set;}
+       public string UserName { get; set; }
    }
 ```
 特性说明：
