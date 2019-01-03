@@ -5,6 +5,7 @@
  * UpdateDate:
  * 2018-12-28  1.更新自动表名为 T_{class name}
  *             2.更新Get、GetAll中的Select *  => Select {ColumnList}
+ * 2019-01-03  1.新增对别名列的解析GetColumnAlias
  **********************************/
 
 using System;
@@ -80,11 +81,11 @@ namespace Banana.Uow.Extension
             = new Dictionary<string, ISqlAdapter>
             {
                 ["sqlconnection"] = new SqlServerAdapter(),
-                ["sqlceconnection"] = new SqlCeServerAdapter(),
+                //["sqlceconnection"] = new SqlCeServerAdapter(),
                 ["npgsqlconnection"] = new PostgresAdapter(),
                 ["sqliteconnection"] = new SQLiteAdapter(),
                 ["mysqlconnection"] = new MySqlAdapter(),
-                ["fbconnection"] = new FbAdapter(),
+                //["fbconnection"] = new FbAdapter(),
                 ["oracleconnection"] = new OracleAdapter()
             };
 
@@ -158,6 +159,16 @@ namespace Banana.Uow.Extension
             return writeAttribute.Write;
         }
 
+        internal static string GetColumnAlias(PropertyInfo pi)
+        {
+            var attributes = pi.GetCustomAttributes(typeof(ColumnAttribute), false).AsList();
+            if (attributes.Count != 1)
+                return pi.Name;
+
+            var columnAttribute = (ColumnAttribute)attributes[0];
+            return columnAttribute.ColumnName;
+        }
+
         internal static PropertyInfo GetSingleKey<T>(string method)
         {
             var type = typeof(T);
@@ -201,7 +212,7 @@ namespace Banana.Uow.Extension
                 for (var i = 0; i < allProperties.Count; i++)
                 {
                     var property = allProperties[i];
-                    adapter.AppendColumnName(sbColumnList, property.Name); 
+                    adapter.AppendColumnName(sbColumnList, GetColumnAlias(property), property.Name);
                     if (i < allProperties.Count - 1)
                         sbColumnList.Append(", ");
                 }
@@ -231,7 +242,8 @@ namespace Banana.Uow.Extension
                     if (property.PropertyType.IsGenericType() && property.PropertyType.GetGenericTypeDefinition() == typeof(Nullable<>))
                     {
                         var genericType = Nullable.GetUnderlyingType(property.PropertyType);
-                        if (genericType != null) property.SetValue(obj, Convert.ChangeType(val, genericType), null);
+                        if (genericType != null)
+                            property.SetValue(obj, Convert.ChangeType(val, genericType), null);
                     }
                     else
                     {
@@ -277,7 +289,7 @@ namespace Banana.Uow.Extension
                 for (var i = 0; i < allProperties.Count; i++)
                 {
                     var property = allProperties[i];
-                    adapter.AppendColumnName(sbColumnList, property.Name);
+                    adapter.AppendColumnName(sbColumnList, GetColumnAlias(property), property.Name);
                     if (i < allProperties.Count - 1)
                         sbColumnList.Append(", ");
                 }
@@ -400,7 +412,7 @@ namespace Banana.Uow.Extension
             for (var i = 0; i < allPropertiesExceptKeyAndComputed.Count; i++)
             {
                 var property = allPropertiesExceptKeyAndComputed[i];
-                adapter.AppendColumnName(sbColumnList, property.Name);  //fix for issue #336
+                adapter.AppendColumnName(sbColumnList, GetColumnAlias(property), "");  //fix for issue #336
                 if (i < allPropertiesExceptKeyAndComputed.Count - 1)
                     sbColumnList.Append(", ");
             }
@@ -480,7 +492,7 @@ namespace Banana.Uow.Extension
             for (var i = 0; i < nonIdProps.Count; i++)
             {
                 var property = nonIdProps[i];
-                adapter.AppendColumnNameEqualsValue(sb, property.Name);  //fix for issue #336
+                adapter.AppendColumnNameEqualsValue(sb, GetColumnAlias(property), property.Name);  //fix for issue #336
                 if (i < nonIdProps.Count - 1)
                     sb.Append(", ");
             }
@@ -488,7 +500,7 @@ namespace Banana.Uow.Extension
             for (var i = 0; i < keyProperties.Count; i++)
             {
                 var property = keyProperties[i];
-                adapter.AppendColumnNameEqualsValue(sb, property.Name);  //fix for issue #336
+                adapter.AppendColumnNameEqualsValue(sb, GetColumnAlias(property), property.Name); //fix for issue #336
                 if (i < keyProperties.Count - 1)
                     sb.Append(" and ");
             }
@@ -545,7 +557,7 @@ namespace Banana.Uow.Extension
             for (var i = 0; i < keyProperties.Count; i++)
             {
                 var property = keyProperties[i];
-                adapter.AppendColumnNameEqualsValue(sb, property.Name);  //fix for issue #336
+                adapter.AppendColumnNameEqualsValue(sb, GetColumnAlias(property), property.Name);  //fix for issue #336
                 if (i < keyProperties.Count - 1)
                     sb.Append(" and ");
             }

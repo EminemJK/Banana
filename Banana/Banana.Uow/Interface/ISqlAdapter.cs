@@ -2,7 +2,8 @@
  * Coder：EminemJK
  * Date：2018-11-16
  * 
- * Last Update：2018-12-18
+ * Last Update：
+ * 2019-01-03  1.更新AppendColumnName、AppendColumnNameEqualsValue,增加别名
  **********************************/
 
 using Banana.Uow.Extension;
@@ -56,14 +57,16 @@ namespace Banana.Uow.Interface
         /// </summary>
         /// <param name="sb">The string builder  to append to.</param>
         /// <param name="columnName">The column name.</param>
-        void AppendColumnName(StringBuilder sb, string columnName);
+        /// <param name="columnAlias">The column alias.</param>
+        void AppendColumnName(StringBuilder sb, string columnName, string columnAlias);
 
         /// <summary>
         /// Adds a column equality to a parameter.
         /// </summary>
         /// <param name="sb">The string builder  to append to.</param>
         /// <param name="columnName">The column name.</param>
-        void AppendColumnNameEqualsValue(StringBuilder sb, string columnName);
+        /// <param name="columnAlias">The column alias.</param>
+        void AppendColumnNameEqualsValue(StringBuilder sb, string columnName, string columnAlias);
 
         /// <summary>
         /// Adds the parametr to sql

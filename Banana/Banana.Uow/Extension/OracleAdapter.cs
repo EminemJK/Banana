@@ -4,6 +4,8 @@
  * 
  * UpdateDate:
  * 2018-12-28  1.更新GetPageList中的Select *  => Select {ColumnList}
+ * 2019-01-03  1.更新GetPageList中的property.Name => SqlMapperExtensions.GetColumnAlias(property)
+ *             2.更新AppendColumnName、AppendColumnNameEqualsValue 新增别名
  **********************************/
 
 using Banana.Uow.Interface;
@@ -136,9 +138,13 @@ namespace Banana.Uow.Extension
         /// </summary>
         /// <param name="sb">The string builder  to append to.</param>
         /// <param name="columnName">The column name.</param>
-        public void AppendColumnName(StringBuilder sb, string columnName)
+        /// <param name="columnAlias">The column alias.</param>
+        public void AppendColumnName(StringBuilder sb, string columnName, string columnAlias)
         {
-            sb.AppendFormat("{0}", columnName);
+            if (string.IsNullOrEmpty(columnAlias) || columnName.Equals(columnAlias))
+                sb.AppendFormat("{0}", columnName);
+            else
+                sb.AppendFormat("{0} as {1}", columnName, columnAlias);
         }
 
         /// <summary>
@@ -146,9 +152,13 @@ namespace Banana.Uow.Extension
         /// </summary>
         /// <param name="sb">The string builder  to append to.</param>
         /// <param name="columnName">The column name.</param>
-        public void AppendColumnNameEqualsValue(StringBuilder sb, string columnName)
+        /// <param name="columnAlias">The column alias.</param>
+        public void AppendColumnNameEqualsValue(StringBuilder sb, string columnName, string columnAlias)
         {
-            sb.AppendFormat("{0} = :{1}", columnName, columnName);
+            if (string.IsNullOrEmpty(columnAlias) || columnName.Equals(columnAlias))
+                sb.AppendFormat("{0} = :{1}", columnName, columnName);
+            else
+                sb.AppendFormat("{0} = :{1}", columnName, columnAlias);
         }
 
         /// <summary>
@@ -170,7 +180,7 @@ namespace Banana.Uow.Extension
             for (var i = 0; i < allProperties.Count; i++)
             {
                 var property = allProperties[i];
-                AppendColumnName(sbColumnList, property.Name);
+                AppendColumnName(sbColumnList, SqlMapperExtensions.GetColumnAlias(property), property.Name);
                 if (i < allProperties.Count - 1)
                     sbColumnList.Append(", ");
             }

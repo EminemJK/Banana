@@ -11,7 +11,8 @@ namespace DotNetCore_TestApp
         [Key]
         public int Id { get; set; }
 
-        public string UserName { get; set; }
+        [Column("UserName")]
+        public string UserNameFiel { get; set; }
         public string Password { get; set; }
 
         public string Name { get; set; }
@@ -26,7 +27,7 @@ namespace DotNetCore_TestApp
 
         public override string ToString()
         {
-            return $"Id：{Id} UserName：{UserName} Name：{Name} Phone：{Phone}";
+            return $"Id：{Id} UserName：{UserNameFiel} Name：{Name} Phone：{Phone}";
         }
     }
 }

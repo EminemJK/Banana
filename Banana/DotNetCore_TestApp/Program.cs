@@ -20,7 +20,7 @@ namespace DotNetCore_TestApp
     {
         static void Main(string[] args)
         {
-            //TestSQLServer();
+            TestSQLServer();
 
             TestMySQL();
 
@@ -61,23 +61,23 @@ namespace DotNetCore_TestApp
             List<UserInfo> data = new List<UserInfo>();
             string password = Banana.Utility.Encryption.MD5.Encrypt("mimashi123");
             
-            data.Add(new UserInfo() { Name = "Monkey D. Luffy", Phone = "15878451111", Password = password, Sex = 1, UserName = "Luffy", CreateTime = DateTime.Now, Enable = 1 });
-            data.Add(new UserInfo() { Name = "Zoro", Phone = "13355526663", Password = password, Sex = 1, UserName = "Zoro", CreateTime = DateTime.Now, Enable =1 });
-            data.Add(new UserInfo() { Name = "Nami", Phone = "15878451111", Password = password, Sex = 0, UserName = "Nami", CreateTime = DateTime.Now, Enable = 1 });
-            data.Add(new UserInfo() { Name = "Sanji", Phone = "17755602229", Password = password, Sex = 1, UserName = "Sanji", CreateTime = DateTime.Now, Enable = 1 });
-            data.Add(new UserInfo() { Name = "Usopp", Phone = "14799995555", Password = password, Sex = 1, UserName = "Usopp", CreateTime = DateTime.Now, Enable = 1 });
+            data.Add(new UserInfo() { Name = "Monkey D. Luffy", Phone = "15878451111", Password = password, Sex = 1, UserNameFiel = "Luffy", CreateTime = DateTime.Now, Enable = 1 });
+            data.Add(new UserInfo() { Name = "Zoro", Phone = "13355526663", Password = password, Sex = 1, UserNameFiel = "Zoro", CreateTime = DateTime.Now, Enable =1 });
+            data.Add(new UserInfo() { Name = "Nami", Phone = "15878451111", Password = password, Sex = 0, UserNameFiel = "Nami", CreateTime = DateTime.Now, Enable = 1 });
+            data.Add(new UserInfo() { Name = "Sanji", Phone = "17755602229", Password = password, Sex = 1, UserNameFiel = "Sanji", CreateTime = DateTime.Now, Enable = 1 });
+            data.Add(new UserInfo() { Name = "Usopp", Phone = "14799995555", Password = password, Sex = 1, UserNameFiel = "Usopp", CreateTime = DateTime.Now, Enable = 1 });
 
-            data.Add(new UserInfo() { Name = "Chopper", Phone = "18966660000", Password = password, Sex = 1, UserName = "Chopper", CreateTime = DateTime.Now, Enable = 1 });
-            data.Add(new UserInfo() { Name = "Robin", Phone = "13122227878", Password = password, Sex = 0, UserName = "Robin", CreateTime = DateTime.Now, Enable = 1 });
-            data.Add(new UserInfo() { Name = "Franky", Phone = "15962354412", Password = password, Sex = 1, UserName = "Franky", CreateTime = DateTime.Now, Enable = 1 });
-            data.Add(new UserInfo() { Name = "Brook", Phone = "14322221111", Password = password, Sex = 1, UserName = "Brook", CreateTime = DateTime.Now, Enable = 1 });
-            data.Add(new UserInfo() { Name = "Jinbe", Phone = "15655479960", Password = password, Sex = 1, UserName = "Jinbe", CreateTime = DateTime.Now, Enable = 1 });
+            data.Add(new UserInfo() { Name = "Chopper", Phone = "18966660000", Password = password, Sex = 1, UserNameFiel = "Chopper", CreateTime = DateTime.Now, Enable = 1 });
+            data.Add(new UserInfo() { Name = "Robin", Phone = "13122227878", Password = password, Sex = 0, UserNameFiel = "Robin", CreateTime = DateTime.Now, Enable = 1 });
+            data.Add(new UserInfo() { Name = "Franky", Phone = "15962354412", Password = password, Sex = 1, UserNameFiel = "Franky", CreateTime = DateTime.Now, Enable = 1 });
+            data.Add(new UserInfo() { Name = "Brook", Phone = "14322221111", Password = password, Sex = 1, UserNameFiel = "Brook", CreateTime = DateTime.Now, Enable = 1 });
+            data.Add(new UserInfo() { Name = "Jinbe", Phone = "15655479960", Password = password, Sex = 1, UserNameFiel = "Jinbe", CreateTime = DateTime.Now, Enable = 1 });
 
-            data.Add(new UserInfo() { Name = "Li", Phone = "18966661220", Password = password, Sex = 1, UserName = "Li", CreateTime = DateTime.Now, Enable = 1 });
-            data.Add(new UserInfo() { Name = "Papi", Phone = "13122221378", Password = password, Sex = 0, UserName = "Papi", CreateTime = DateTime.Now, Enable = 1 });
-            data.Add(new UserInfo() { Name = "Hacy", Phone = "15962354512", Password = password, Sex = 1, UserName = "Hacy", CreateTime = DateTime.Now, Enable = 1 });
-            data.Add(new UserInfo() { Name = "Hook", Phone = "14322221411", Password = password, Sex = 1, UserName = "Hook", CreateTime = DateTime.Now, Enable = 1 });
-            data.Add(new UserInfo() { Name = "Yami", Phone = "15655479960", Password = password, Sex = 1, UserName = "Yami", CreateTime = DateTime.Now, Enable = 1 });
+            data.Add(new UserInfo() { Name = "Li", Phone = "18966661220", Password = password, Sex = 1, UserNameFiel = "Li", CreateTime = DateTime.Now, Enable = 1 });
+            data.Add(new UserInfo() { Name = "Papi", Phone = "13122221378", Password = password, Sex = 0, UserNameFiel = "Papi", CreateTime = DateTime.Now, Enable = 1 });
+            data.Add(new UserInfo() { Name = "Hacy", Phone = "15962354512", Password = password, Sex = 1, UserNameFiel = "Hacy", CreateTime = DateTime.Now, Enable = 1 });
+            data.Add(new UserInfo() { Name = "Hook", Phone = "14322221411", Password = password, Sex = 1, UserNameFiel = "Hook", CreateTime = DateTime.Now, Enable = 1 });
+            data.Add(new UserInfo() { Name = "Yami", Phone = "15655479960", Password = password, Sex = 1, UserNameFiel = "Yami", CreateTime = DateTime.Now, Enable = 1 });
             Random r = new Random();
             foreach (var d in data)
             {
@@ -125,7 +125,7 @@ namespace DotNetCore_TestApp
             UserInfo newUser = new UserInfo()
             {
                 Name = "eminemjk",
-                UserName = "eminemjk",
+                UserNameFiel = "eminemjk",
                 Phone = "12346578",
                 Enable = 1,
                 Password = "mimashi123",
@@ -172,7 +172,7 @@ namespace DotNetCore_TestApp
             UserInfo newUser = new UserInfo()
             {
                 Name = "eminemjk",
-                UserName = "eminemjk",
+                UserNameFiel = "eminemjk",
                 Phone = "12346578",
                 Enable = 1,
                 Password = "mimashi123",
@@ -257,7 +257,7 @@ namespace DotNetCore_TestApp
             UserInfo newUser = new UserInfo()
             {
                 Name = "eminemjk",
-                UserName = "eminemjk",
+                UserNameFiel = "eminemjk",
                 Phone = "12346578",
                 Enable = 1,
                 Password = "mimashi123",
@@ -418,7 +418,7 @@ namespace DotNetCore_TestApp
             {
                 //对应select top 0 * from tableName 的行数据
                 row.Add(data.Id);
-                row.Add(data.UserName);
+                row.Add(data.UserNameFiel);
                 row.Add(data.Password);
                 row.Add(data.Name);
                 row.Add(data.Sex);

@@ -48,7 +48,7 @@ namespace Banana.Uow.Extension
                 for (var i = 0; i < allProperties.Count; i++)
                 {
                     var property = allProperties[i];
-                    adapter.AppendColumnName(sbColumnList, property.Name);
+                    adapter.AppendColumnName(sbColumnList, GetColumnAlias(property), property.Name);
                     if (i < allProperties.Count - 1)
                         sbColumnList.Append(", ");
                 }
@@ -117,7 +117,7 @@ namespace Banana.Uow.Extension
                 for (var i = 0; i < allProperties.Count; i++)
                 {
                     var property = allProperties[i];
-                    adapter.AppendColumnName(sbColumnList, property.Name);
+                    adapter.AppendColumnName(sbColumnList, GetColumnAlias(property), property.Name);
                     if (i < allProperties.Count - 1)
                         sbColumnList.Append(", ");
                 }
@@ -206,7 +206,7 @@ namespace Banana.Uow.Extension
             for (var i = 0; i < allPropertiesExceptKeyAndComputed.Count; i++)
             {
                 var property = allPropertiesExceptKeyAndComputed[i];
-                sqlAdapter.AppendColumnName(sbColumnList, property.Name);
+                sqlAdapter.AppendColumnName(sbColumnList, GetColumnAlias(property), "");
                 if (i < allPropertiesExceptKeyAndComputed.Count - 1)
                     sbColumnList.Append(", ");
             }
@@ -280,7 +280,7 @@ namespace Banana.Uow.Extension
             for (var i = 0; i < nonIdProps.Count; i++)
             {
                 var property = nonIdProps[i];
-                adapter.AppendColumnNameEqualsValue(sb, property.Name);
+                adapter.AppendColumnNameEqualsValue(sb, GetColumnAlias(property), property.Name);
                 if (i < nonIdProps.Count - 1)
                     sb.Append(", ");
             }
@@ -288,7 +288,7 @@ namespace Banana.Uow.Extension
             for (var i = 0; i < keyProperties.Count; i++)
             {
                 var property = keyProperties[i];
-                adapter.AppendColumnNameEqualsValue(sb, property.Name);
+                adapter.AppendColumnNameEqualsValue(sb, GetColumnAlias(property), property.Name);
                 if (i < keyProperties.Count - 1)
                     sb.Append(" and ");
             }
@@ -345,7 +345,7 @@ namespace Banana.Uow.Extension
             for (var i = 0; i < keyProperties.Count; i++)
             {
                 var property = keyProperties[i];
-                adapter.AppendColumnNameEqualsValue(sb, property.Name);
+                adapter.AppendColumnNameEqualsValue(sb, GetColumnAlias(property), property.Name);
                 if (i < keyProperties.Count - 1)
                     sb.Append(" AND ");
             }

@@ -32,8 +32,10 @@ using Banana.Uow.Models;
        public string Name { get; set; }
        public int Sex { get; set; }
        public int ClassId { get; set; }
-        [Computed]
+       [Computed]
        public DateTime Createtime { get; set; }
+       [Column("UserNameFiel")]
+       public string UserName {get;set;}
    }
 ```
 特性说明：
@@ -42,6 +44,7 @@ using Banana.Uow.Models;
 * ExplicitKey：指定此列为非自动增长主键（例如guid，字符串列）
 * Computed：计算属性，此列不作为更新
 * Write：指定列是否可写
+* Column：指定列名
 #### 仓储使用
 ``` csharp
    var repo = new Repository<Student>();

@@ -11,8 +11,8 @@
     <PackageProjectUrl></PackageProjectUrl>
     <PackageIconUrl>https://www.cnblogs.com/images/cnblogs_com/EminemJK/1345488/o_banana.uow.png</PackageIconUrl>
     <RepositoryUrl>https://github.com/EminemJK/Banana.git</RepositoryUrl>
-    <Version>1.3.4</Version>
-    <PackageReleaseNotes>Update "Select *"  =&gt; "Select {ColumnList}"</PackageReleaseNotes>
+    <Version>1.4.0</Version>
+    <PackageReleaseNotes>Happy New Year,Add a new Attribute: ColumnAttribute.</PackageReleaseNotes>
     <SignAssembly>true</SignAssembly>
     <RepositoryType>git</RepositoryType>
     <Copyright>Copyright (c) Lio.Huang. All rights reserved.</Copyright>

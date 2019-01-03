@@ -16,7 +16,6 @@ using Npgsql;
 using Oracle.ManagedDataAccess.Client;
 using static Banana.Uow.Extension.SqlMapperExtensions;
 
-
 namespace Banana.Uow
 {
     /// <summary>
@@ -42,7 +41,7 @@ namespace Banana.Uow
         /// 注册链接|
         /// Register database links
         /// </summary>
-        /// <param name="db">connection model<DBSetting></param>
+        /// <param name="db">connection model</param>
         public static void ConfigRegist(DBSetting db)
         {
             dbSetting = new DBSetting() { ConnectionString = db.ConnectionString, DBType = db.DBType };
@@ -70,6 +69,7 @@ namespace Banana.Uow
                     case DBType.Oracle:
                         return new OracleConnection(conn);
                 }
+               
                 throw new Exception("未注册数据库链接，请调用ConnectionBuilder.ConfigRegist");
             }
             catch(Exception ex)

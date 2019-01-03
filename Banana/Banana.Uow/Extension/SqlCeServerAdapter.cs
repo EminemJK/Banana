@@ -1,6 +1,9 @@
 ﻿/***********************************
  * Coder：EminemJK
  * Date：2018-12-12
+ * 
+ * Update Time:
+ * 2019-01-03  1.更新AppendColumnName、AppendColumnNameEqualsValue 新增别名
  **********************************/
 
 using Banana.Uow.Interface;
@@ -98,9 +101,13 @@ namespace Banana.Uow.Extension
         /// </summary>
         /// <param name="sb">The string builder  to append to.</param>
         /// <param name="columnName">The column name.</param>
-        public void AppendColumnName(StringBuilder sb, string columnName)
+        /// <param name="columnAlias">The column alias.</param>
+        public void AppendColumnName(StringBuilder sb, string columnName, string columnAlias = "")
         {
-            sb.AppendFormat("[{0}]", columnName);
+            if (string.IsNullOrEmpty(columnAlias) || columnName.Equals(columnAlias))
+                sb.AppendFormat("[{0}]", columnName);
+            else
+                sb.AppendFormat("[{0}] as {1}", columnName, columnAlias);
         }
 
         /// <summary>
@@ -108,9 +115,13 @@ namespace Banana.Uow.Extension
         /// </summary>
         /// <param name="sb">The string builder  to append to.</param>
         /// <param name="columnName">The column name.</param>
-        public void AppendColumnNameEqualsValue(StringBuilder sb, string columnName)
+        /// <param name="columnAlias">The column alias.</param>
+        public void AppendColumnNameEqualsValue(StringBuilder sb, string columnName, string columnAlias = "")
         {
-            sb.AppendFormat("[{0}] = @{1}", columnName, columnName);
+            if (string.IsNullOrEmpty(columnAlias) || columnName.Equals(columnAlias))
+                sb.AppendFormat("[{0}] = @{1}", columnName, columnName);
+            else
+                sb.AppendFormat("[{0}] = @{1}", columnName, columnAlias);
         }
 
         /// <summary>
@@ -126,7 +137,60 @@ namespace Banana.Uow.Extension
         public ISqlBuilder GetPageList<T>(IRepository<T> repository, int pageNum = 0, int pageSize = 0, string whereString = null, object param = null, object order = null, bool asc = false)
           where T : class, IEntity
         {
-            throw new Exception("Sorry, it is not supported for the time being");
+            SqlBuilder sqlBuilder = new SqlBuilder();
+            var sbColumnList = new StringBuilder(null);
+            var allProperties = SqlMapperExtensions.TypePropertiesCache(typeof(T));
+            for (var i = 0; i < allProperties.Count; i++)
+            {
+                var property = allProperties[i];
+                AppendColumnName(sbColumnList, SqlMapperExtensions.GetColumnAlias(property), property.Name);
+                if (i < allProperties.Count - 1)
+                    sbColumnList.Append(", ");
+            }
+
+            sqlBuilder.Select(args: sbColumnList.ToString());
+            if (pageSize > 0)
+            {
+                SqlBuilder sqlBuilderRows = new SqlBuilder();
+                string ascSql = " asc";
+                if (!asc)
+                {
+                    ascSql = " desc";
+                }
+                string orderSql = "ID";
+                if (order != null)
+                {
+                    orderSql = SqlBuilder.GetArgsString("ORDER BY", args: order);
+                }
+
+                sqlBuilderRows.Select(args: "SELECT ROW_NUMBER() OVER(ORDER BY " + orderSql + " " + ascSql + ") AS row_id,*");
+                sqlBuilderRows.From(repository.TableName);
+                if (!string.IsNullOrEmpty(whereString))
+                {
+                    sqlBuilderRows.Where(whereString, param);
+                }
+                sqlBuilder.Append($"From ({sqlBuilderRows.SQL}) as t", sqlBuilderRows.Arguments);
+
+                if (pageNum <= 0)
+                    pageNum = 1;
+                int numMin = (pageNum - 1) * pageSize + 1,
+                    numMax = pageNum * pageSize;
+                sqlBuilder.Where("t.row_id>=@numMin and t.row_id<=@numMax", new { numMin, numMax });
+            }
+            else
+            {
+                sqlBuilder.From(repository.TableName);
+                if (!string.IsNullOrEmpty(whereString))
+                {
+                    sqlBuilder.Where(whereString, param);
+                }
+                if (order != null)
+                {
+                    sqlBuilder.OrderBy(order);
+                    sqlBuilder.IsAse(asc);
+                }
+            }
+            return sqlBuilder;
         }
     }
 }

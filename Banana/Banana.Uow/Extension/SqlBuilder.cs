@@ -224,13 +224,11 @@ namespace Banana.Uow.Extension
             );
         }
 
-        public static string RevomeFlag(string OldString, string flag)
-        {
-            var temp = OldString.ToUpper();
-            flag = flag.ToUpper();
-            if (temp.StartsWith(flag))
+        public static string RevomeFlag(string OldString, string prefix)
+        { 
+            if (OldString.TrimStart().StartsWith(prefix, StringComparison.InvariantCultureIgnoreCase))
             {
-                return OldString.Substring(flag.Length);
+                return OldString.Substring(prefix.Length);
             }
             return OldString;
         }
