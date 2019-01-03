@@ -1,5 +1,5 @@
 # Banana.Uow
-![image](https://github.com/EminemJK/Banana/blob/master/Banana/Doc/banana_logo.ico)
+![image](https://raw.githubusercontent.com/EminemJK/Banana/master/Banana/Doc/banana_logo.ico)
 
 | Package | NuGet Stable | NuGet Pre-release | Downloads |
 | ------- | ------------ | ----------------- | --------- |
