@@ -1,5 +1,5 @@
 ﻿/***********************************
- * Coder：EminemJK
+ * Developer: Lio.Huang
  * Date：2018-11-26
  **********************************/
 
@@ -26,7 +26,7 @@ namespace Banana.Utility.Encryption
         /// <summary>
         /// 偏移量 8位
         /// </summary>
-        private const string IV = "eminemjk";
+        private const string IV = "Lio.Huang";
 
         /// <summary>
         /// 密钥长度，无需修改

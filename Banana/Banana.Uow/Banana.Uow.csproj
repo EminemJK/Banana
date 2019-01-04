@@ -3,7 +3,7 @@
     <PackageId>Banana.Uow</PackageId>
     <PackageTags>orm;sql;micro-orm;Dapper;UnitOfWork;Repository</PackageTags>
     <Description>The official collection of get, insert, update and delete helpers for Dapper.net. Also handles lists of entities and optional "dirty" tracking of interface-based entities, Support for multiple databases: SQL Server, MySQL, Sqlite, Postgresql, Oracle...</Description>
-    <Authors>EminemJK</Authors>
+    <Authors>Lio.Huang</Authors>
     <TargetFrameworks>net452;netstandard2.0</TargetFrameworks>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
@@ -17,6 +17,7 @@
     <RepositoryType>git</RepositoryType>
     <Copyright>Copyright (c) Lio.Huang. All rights reserved.</Copyright>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <Company />
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net452|AnyCPU'">
     <DocumentationFile>bin\Release\Banana.Uow.xml</DocumentationFile>

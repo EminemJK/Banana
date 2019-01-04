@@ -1,5 +1,5 @@
 ﻿/***********************************
- * Coder：EminemJK
+ * Developer: Lio.Huang
  * Date：2018-12-04
  **********************************/
 
@@ -125,8 +125,8 @@ namespace DotNetCore_TestApp
             list = repoUserInfo.QueryList(order: "order by id");
             UserInfo newUser = new UserInfo()
             {
-                Name = "eminemjk",
-                UserNameFiel = "eminemjk",
+                Name = "Lio.Huang",
+                UserNameFiel = "Lio.Huang",
                 Phone = "12346578",
                 Enable = 1,
                 Password = "mimashi123",
@@ -172,8 +172,8 @@ namespace DotNetCore_TestApp
             list = repoUserInfo.QueryList(order: "order by id");
             UserInfo newUser = new UserInfo()
             {
-                Name = "eminemjk",
-                UserNameFiel = "eminemjk",
+                Name = "Lio.Huang",
+                UserNameFiel = "Lio.Huang",
                 Phone = "12346578",
                 Enable = 1,
                 Password = "mimashi123",
@@ -257,8 +257,8 @@ namespace DotNetCore_TestApp
             list = repoUserInfo.QueryList(order: "order by id");
             UserInfo newUser = new UserInfo()
             {
-                Name = "eminemjk",
-                UserNameFiel = "eminemjk",
+                Name = "Lio.Huang",
+                UserNameFiel = "Lio.Huang",
                 Phone = "12346578",
                 Enable = 1,
                 Password = "mimashi123",
@@ -388,8 +388,8 @@ namespace DotNetCore_TestApp
             list = repoUserInfo.QueryList(order: "order by id");
             UserModel_Oracle newUser = new UserModel_Oracle()
             {
-                Name = "eminemjk",
-                UserName = "eminemjk",
+                Name = "Lio.Huang",
+                UserName = "Lio.Huang",
                 Phone = "12346578",
                 Enable = 1,
                 Password = "mimashi123",
@@ -492,7 +492,7 @@ namespace DotNetCore_TestApp
             var s1 = new Student()
             {
                 Id = Guid.NewGuid().ToString("N"),
-                Name = "EminemJK",
+                Name = "Lio.Huang",
                 LinkPhone = "15522223333",
                 Sex = 1,
                 CreateTime = Convert.ToDateTime("2019-01-03")
