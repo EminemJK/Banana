@@ -1,21 +1,24 @@
-# Banana.Uow
-![image](https://raw.githubusercontent.com/EminemJK/Banana/master/Banana/Doc/banana_logo.ico)
+<div align=center><img width = '150' height ='150' src ="https://raw.githubusercontent.com/EminemJK/Banana/master/Banana/Doc/banana_logo.png"/></div>
+
+> Developer: Lio.Huang
 
 | Package | NuGet Stable | NuGet Pre-release | Downloads |
 | ------- | ------------ | ----------------- | --------- |
 | [Banana.Uow](https://www.nuget.org/packages/Banana.Uow/) | [![Banana.Uow](https://img.shields.io/nuget/v/Banana.Uow.svg)](https://www.nuget.org/packages/Banana.Uow/)  | [![Banana.Uow](https://img.shields.io/nuget/vpre/Banana.Uow.svg)](https://www.nuget.org/packages/Banana.Uow/) | [![Banana.Uow](https://img.shields.io/nuget/dt/Banana.Uow.svg)](https://www.nuget.org/packages/Banana.Uow/) |
+| [Banana.Utility](https://www.nuget.org/packages/Banana.Utility/) | [![Banana.Utility](https://img.shields.io/nuget/v/Banana.Utility.svg)](https://www.nuget.org/packages/Banana.Utility/)  | [![Banana.Utility](https://img.shields.io/nuget/vpre/Banana.Utility.svg)](https://www.nuget.org/packages/Banana.Utility/) | [![Banana.Utility](https://img.shields.io/nuget/dt/Banana.Utility.svg)](https://www.nuget.org/packages/Banana.Utility/) |
 
+# Banana.Uow
 ### 项目介绍
 👉[English documentation](https://github.com/EminemJK/Banana/wiki)
 
 基于Dapper封装的仓储、工作单元，支持SQL Server, MySQL, Sqlite，Postgresql，Oracle...
 
-### 使用说明
-#### 注册链接
+### 一、使用说明
+#### 1. 注册链接
 ``` csharp
  ConnectionBuilder.ConfigRegist("strConn", Banana.Uow.Models.DBType.SqlServer);
 ```
-#### 模型
+#### 2. 模型
 引入命名空间：
 ``` csharp
 using Banana.Uow.Models;
@@ -45,7 +48,7 @@ using Banana.Uow.Models;
 * Computed：计算属性，此列不作为更新
 * Write：指定列是否可写
 * Column：指定列名
-#### 仓储使用
+#### 3. 仓储使用
 ``` csharp
    var repo = new Repository<Student>();
    //查询单个
@@ -76,7 +79,7 @@ using Banana.Uow.Models;
     //执行语句
     int res = repo.Execute(sql,param);
 ```
-#### 工作单元
+### 二、工作单元
 ``` csharp
 using (UnitOfWork uow = new UnitOfWork())
 {
@@ -97,9 +100,6 @@ using (UnitOfWork uow = new UnitOfWork())
 }
 ```
 # Banana.Utility
-| Package | NuGet Stable | NuGet Pre-release | Downloads |
-| ------- | ------------ | ----------------- | --------- |
-| [Banana.Utility](https://www.nuget.org/packages/Banana.Utility/) | [![Banana.Utility](https://img.shields.io/nuget/v/Banana.Utility.svg)](https://www.nuget.org/packages/Banana.Utility/)  | [![Banana.Utility](https://img.shields.io/nuget/vpre/Banana.Utility.svg)](https://www.nuget.org/packages/Banana.Utility/) | [![Banana.Utility](https://img.shields.io/nuget/dt/Banana.Utility.svg)](https://www.nuget.org/packages/Banana.Utility/) |
 ### 公用库 Utility
 
 | Name| Use |
