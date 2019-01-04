@@ -162,7 +162,7 @@ namespace Banana.Uow.Extension
             for (var i = 0; i < allProperties.Count; i++)
             {
                 var property = allProperties[i];
-                AppendColumnName(sbColumnList, SqlMapperExtensions.GetColumnAlias(property), property.Name);
+                AppendColumnName(sbColumnList, SqlMapperExtensions.GetColumnName(property), property.Name);
                 if (i < allProperties.Count - 1)
                     sbColumnList.Append(", ");
             }

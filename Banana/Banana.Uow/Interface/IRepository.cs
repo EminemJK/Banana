@@ -78,13 +78,24 @@ namespace Banana.Uow.Interface
         /// <summary>
         /// 查询单个实体|
         /// Returns a single entity by a single id from table "Ts".  
-        /// Id must be marked with [Key] attribute.
+        /// Id must be marked with [Key]/[ExplicitKey] attribute.
         /// Entities created from interfaces are tracked/intercepted for changes and used by the Update() extension
         /// for optimal performance. 
         /// </summary>
-        /// <param name="id">Id of the entity to get, must be marked with [Key] attribute</param>
+        /// <param name="id">Id of the entity to get, must be marked with [Key]/[ExplicitKey] attribute</param>
         /// <returns>Entity of T</returns>
         T Query(int id);
+
+        /// <summary>
+        /// 查询单个实体|
+        /// Returns a single entity by a single id from table "Ts".  
+        /// Id must be marked with [Key]/[ExplicitKey] attribute.
+        /// Entities created from interfaces are tracked/intercepted for changes and used by the Update() extension
+        /// for optimal performance. 
+        /// </summary>
+        /// <param name="id">Id of the entity to get, must be marked with [Key]/[ExplicitKey] attribute</param>
+        /// <returns>Entity of T</returns>
+        T Query(string id);
 
         /// <summary>
         /// 查询总数|
@@ -172,13 +183,24 @@ namespace Banana.Uow.Interface
         /// <summary>
         /// 查询单个实体|
         /// Returns a single entity by a single id from table "Ts".  
-        /// Id must be marked with [Key] attribute.
+        /// Id must be marked with [Key]/[ExplicitKey]  attribute.
         /// Entities created from interfaces are tracked/intercepted for changes and used by the Update() extension
         /// for optimal performance. 
         /// </summary>
-        /// <param name="id">Id of the entity to get, must be marked with [Key] attribute</param>
+        /// <param name="id">Id of the entity to get, must be marked with [Key]/[ExplicitKey]  attribute</param>
         /// <returns>Entity of T</returns>
         Task<T> QueryAsync(int id);
+
+        /// <summary>
+        /// 查询单个实体|
+        /// Returns a single entity by a single id from table "Ts".  
+        /// Id must be marked with [Key]/[ExplicitKey]  attribute.
+        /// Entities created from interfaces are tracked/intercepted for changes and used by the Update() extension
+        /// for optimal performance. 
+        /// </summary>
+        /// <param name="id">Id of the entity to get, must be marked with [Key]/[ExplicitKey]  attribute</param>
+        /// <returns>Entity of T</returns>
+        Task<T> QueryAsync(string id);
 
         /// <summary>
         /// 查询总数|

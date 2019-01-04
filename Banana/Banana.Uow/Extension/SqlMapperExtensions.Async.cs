@@ -5,6 +5,7 @@
  * UpdateDate:
  * 2018-12-28  1.更新自动表名为 T_{class name}
  *             2.更新Get、GetAll中的Select *  => Select {ColumnList}
+ * 2019-01-04  1.更新Get，根据ID获取
  **********************************/
 
 using System;
@@ -37,23 +38,21 @@ namespace Banana.Uow.Extension
             var type = typeof(T);
             var sb = new StringBuilder();
             var adapter = GetFormatter(connection);
-            adapter.AppendParametr(sb, "id");
+            var key = GetSingleKey<T>(nameof(GetAsync));
+            adapter.AppendParametr(sb, key.Name);
             if (!GetQueries.TryGetValue(type.TypeHandle, out string sql))
             {
-                var key = GetSingleKey<T>(nameof(GetAsync));
-                var name = GetTableName(type);
-
+                var name = GetTableName(type); 
                 var sbColumnList = new StringBuilder(null);
                 var allProperties = TypePropertiesCache(type);
                 for (var i = 0; i < allProperties.Count; i++)
                 {
                     var property = allProperties[i];
-                    adapter.AppendColumnName(sbColumnList, GetColumnAlias(property), property.Name);
+                    adapter.AppendColumnName(sbColumnList, GetColumnName(property), property.Name);
                     if (i < allProperties.Count - 1)
                         sbColumnList.Append(", ");
                 }
-
-                sql = $"select {sbColumnList.ToString()} from {name} where {key.Name} = {sb.ToString()}";
+                sql = $"select {sbColumnList.ToString()} from {name} where {GetColumnName(key)} = {sb.ToString()}";
                 GetQueries[type.TypeHandle] = sql;
             }
 
@@ -117,7 +116,7 @@ namespace Banana.Uow.Extension
                 for (var i = 0; i < allProperties.Count; i++)
                 {
                     var property = allProperties[i];
-                    adapter.AppendColumnName(sbColumnList, GetColumnAlias(property), property.Name);
+                    adapter.AppendColumnName(sbColumnList, GetColumnName(property), property.Name);
                     if (i < allProperties.Count - 1)
                         sbColumnList.Append(", ");
                 }
@@ -174,9 +173,8 @@ namespace Banana.Uow.Extension
             int? commandTimeout = null, ISqlAdapter sqlAdapter = null) where T : class
         {
             var type = typeof(T);
-            sqlAdapter = sqlAdapter ?? GetFormatter(connection);
-
             var isList = false;
+            sqlAdapter = sqlAdapter ?? GetFormatter(connection);
             if (type.IsArray)
             {
                 isList = true;
@@ -206,7 +204,7 @@ namespace Banana.Uow.Extension
             for (var i = 0; i < allPropertiesExceptKeyAndComputed.Count; i++)
             {
                 var property = allPropertiesExceptKeyAndComputed[i];
-                sqlAdapter.AppendColumnName(sbColumnList, GetColumnAlias(property), "");
+                sqlAdapter.AppendColumnName(sbColumnList, GetColumnName(property), "");
                 if (i < allPropertiesExceptKeyAndComputed.Count - 1)
                     sbColumnList.Append(", ");
             }
@@ -219,8 +217,7 @@ namespace Banana.Uow.Extension
                 if (i < allPropertiesExceptKeyAndComputed.Count - 1)
                     sbParameterList.Append(", ");
             }
-
-
+            
             return sqlAdapter.InsertAsync(connection, transaction, commandTimeout, name, sbColumnList.ToString(),
                 sbParameterList.ToString(), keyProperties, entityToInsert, isList);
         }
@@ -280,7 +277,7 @@ namespace Banana.Uow.Extension
             for (var i = 0; i < nonIdProps.Count; i++)
             {
                 var property = nonIdProps[i];
-                adapter.AppendColumnNameEqualsValue(sb, GetColumnAlias(property), property.Name);
+                adapter.AppendColumnNameEqualsValue(sb, GetColumnName(property), property.Name);
                 if (i < nonIdProps.Count - 1)
                     sb.Append(", ");
             }
@@ -288,7 +285,7 @@ namespace Banana.Uow.Extension
             for (var i = 0; i < keyProperties.Count; i++)
             {
                 var property = keyProperties[i];
-                adapter.AppendColumnNameEqualsValue(sb, GetColumnAlias(property), property.Name);
+                adapter.AppendColumnNameEqualsValue(sb, GetColumnName(property), property.Name);
                 if (i < keyProperties.Count - 1)
                     sb.Append(" and ");
             }
@@ -345,7 +342,7 @@ namespace Banana.Uow.Extension
             for (var i = 0; i < keyProperties.Count; i++)
             {
                 var property = keyProperties[i];
-                adapter.AppendColumnNameEqualsValue(sb, GetColumnAlias(property), property.Name);
+                adapter.AppendColumnNameEqualsValue(sb, GetColumnName(property), property.Name);
                 if (i < keyProperties.Count - 1)
                     sb.Append(" AND ");
             }

@@ -3,6 +3,8 @@
  * Create Date：2018-11-16
  * 
  * Last Update：2018-12-18
+ * 
+ * 2019-01-04  1.更新Query和QueryAsync 新增stringId
  **********************************/
 
 using System;
@@ -139,13 +141,27 @@ namespace Banana.Uow
         /// <summary>
         /// 查询单个实体|
         /// Returns a single entity by a single id from table "Ts".  
-        /// Id must be marked with [Key] attribute.
+        /// Id must be marked with [Key]/[ExplicitKey] attribute.
         /// Entities created from interfaces are tracked/intercepted for changes and used by the Update() extension
         /// for optimal performance. 
         /// </summary>
-        /// <param name="id">Id of the entity to get, must be marked with [Key] attribute</param>
+        /// <param name="id">Id of the entity to get, must be marked with [Key]/[ExplicitKey] attribute</param>
         /// <returns>Entity of T</returns>
         public T Query(int id)
+        {
+            return Query(id.ToString());
+        }
+
+        /// <summary>
+        /// 查询单个实体|
+        /// Returns a single entity by a single id from table "Ts".  
+        /// Id must be marked with [Key]/[ExplicitKey] attribute.
+        /// Entities created from interfaces are tracked/intercepted for changes and used by the Update() extension
+        /// for optimal performance. 
+        /// </summary>
+        /// <param name="id">Id of the entity to get, must be marked with [Key]/[ExplicitKey] attribute</param>
+        /// <returns>Entity of T</returns>
+        public T Query(string id)
         {
             return DBConnection.Get<T>(id);
         }
@@ -341,6 +357,19 @@ namespace Banana.Uow
         /// <param name="id">Id of the entity to get, must be marked with [Key] attribute</param>
         /// <returns>返回实体|Entity of T</returns>
         public async Task<T> QueryAsync(int id)
+        {
+            return await QueryAsync(id.ToString());
+        }
+
+        /// <summary>
+        /// 查询|
+        /// Returns a single entity by a single id from table "Ts" asynchronously using .NET 4.5 Task. T must be of interface type. 
+        /// Id must be marked with [Key] attribute.
+        /// Created entity is tracked/intercepted for changes and used by the Update() extension. 
+        /// </summary>
+        /// <param name="id">Id of the entity to get, must be marked with [Key] attribute</param>
+        /// <returns>返回实体|Entity of T</returns>
+        public async Task<T> QueryAsync(string id)
         {
             return await DBConnection.GetAsync<T>(id);
         }

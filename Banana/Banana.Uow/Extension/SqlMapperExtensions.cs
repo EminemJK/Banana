@@ -5,7 +5,8 @@
  * UpdateDate:
  * 2018-12-28  1.更新自动表名为 T_{class name}
  *             2.更新Get、GetAll中的Select *  => Select {ColumnList}
- * 2019-01-03  1.新增对别名列的解析GetColumnAlias
+ * 2019-01-03  1.新增对别名列的解析GetColumnName
+ * 2019-01-04  1.更新Get，根据ID获取
  **********************************/
 
 using System;
@@ -159,7 +160,7 @@ namespace Banana.Uow.Extension
             return writeAttribute.Write;
         }
 
-        internal static string GetColumnAlias(PropertyInfo pi)
+        internal static string GetColumnName(PropertyInfo pi)
         {
             var attributes = pi.GetCustomAttributes(typeof(ColumnAttribute), false).AsList();
             if (attributes.Count != 1)
@@ -200,24 +201,21 @@ namespace Banana.Uow.Extension
             var type = typeof(T);
             var sb = new StringBuilder();
             var adapter = GetFormatter(connection);
-            adapter.AppendParametr(sb, "id");
-
+            var key = GetSingleKey<T>(nameof(Get));
+            adapter.AppendParametr(sb, key.Name);
             if (!GetQueries.TryGetValue(type.TypeHandle, out string sql))
             {
-                var key = GetSingleKey<T>(nameof(Get));
                 var name = GetTableName(type);
-
                 var sbColumnList = new StringBuilder(null);
                 var allProperties = TypePropertiesCache(type);
                 for (var i = 0; i < allProperties.Count; i++)
                 {
                     var property = allProperties[i];
-                    adapter.AppendColumnName(sbColumnList, GetColumnAlias(property), property.Name);
+                    adapter.AppendColumnName(sbColumnList, GetColumnName(property), property.Name);
                     if (i < allProperties.Count - 1)
                         sbColumnList.Append(", ");
                 }
-
-                sql = $"select {sbColumnList.ToString()} from {name} where {key.Name} = {sb.ToString()}";
+                sql = $"select {sbColumnList.ToString()} from {name} where {GetColumnName(key)} = {sb.ToString()}";
                 GetQueries[type.TypeHandle] = sql;
             }
             
@@ -276,7 +274,6 @@ namespace Banana.Uow.Extension
             var type = typeof(T);
             var cacheType = typeof(List<T>);
             
-           
             if (!GetQueries.TryGetValue(cacheType.TypeHandle, out string sql))
             {
                 GetSingleKey<T>(nameof(GetAll));
@@ -289,7 +286,7 @@ namespace Banana.Uow.Extension
                 for (var i = 0; i < allProperties.Count; i++)
                 {
                     var property = allProperties[i];
-                    adapter.AppendColumnName(sbColumnList, GetColumnAlias(property), property.Name);
+                    adapter.AppendColumnName(sbColumnList, GetColumnName(property), property.Name);
                     if (i < allProperties.Count - 1)
                         sbColumnList.Append(", ");
                 }
@@ -378,9 +375,7 @@ namespace Banana.Uow.Extension
         public static long Insert<T>(this IDbConnection connection, T entityToInsert, IDbTransaction transaction = null, int? commandTimeout = null) where T : class
         {
             var isList = false;
-
             var type = typeof(T);
-
             if (type.IsArray)
             {
                 isList = true;
@@ -412,7 +407,7 @@ namespace Banana.Uow.Extension
             for (var i = 0; i < allPropertiesExceptKeyAndComputed.Count; i++)
             {
                 var property = allPropertiesExceptKeyAndComputed[i];
-                adapter.AppendColumnName(sbColumnList, GetColumnAlias(property), "");  //fix for issue #336
+                adapter.AppendColumnName(sbColumnList, GetColumnName(property), "");  //fix for issue #336
                 if (i < allPropertiesExceptKeyAndComputed.Count - 1)
                     sbColumnList.Append(", ");
             }
@@ -426,15 +421,8 @@ namespace Banana.Uow.Extension
                     sbParameterList.Append(", ");
             }
 
-            int returnVal;
-            var wasClosed = connection.State == ConnectionState.Closed;
-            if (wasClosed) connection.Open();
-            
-            returnVal = adapter.Insert(connection, transaction, commandTimeout, name, sbColumnList.ToString(),
+            return adapter.Insert(connection, transaction, commandTimeout, name, sbColumnList.ToString(),
                 sbParameterList.ToString(), keyProperties, entityToInsert, isList);
-            
-            if (wasClosed) connection.Close();
-            return returnVal;
         }
 
         /// <summary>
@@ -492,7 +480,7 @@ namespace Banana.Uow.Extension
             for (var i = 0; i < nonIdProps.Count; i++)
             {
                 var property = nonIdProps[i];
-                adapter.AppendColumnNameEqualsValue(sb, GetColumnAlias(property), property.Name);  //fix for issue #336
+                adapter.AppendColumnNameEqualsValue(sb, GetColumnName(property), property.Name);  //fix for issue #336
                 if (i < nonIdProps.Count - 1)
                     sb.Append(", ");
             }
@@ -500,7 +488,7 @@ namespace Banana.Uow.Extension
             for (var i = 0; i < keyProperties.Count; i++)
             {
                 var property = keyProperties[i];
-                adapter.AppendColumnNameEqualsValue(sb, GetColumnAlias(property), property.Name); //fix for issue #336
+                adapter.AppendColumnNameEqualsValue(sb, GetColumnName(property), property.Name); //fix for issue #336
                 if (i < keyProperties.Count - 1)
                     sb.Append(" and ");
             }
@@ -557,7 +545,7 @@ namespace Banana.Uow.Extension
             for (var i = 0; i < keyProperties.Count; i++)
             {
                 var property = keyProperties[i];
-                adapter.AppendColumnNameEqualsValue(sb, GetColumnAlias(property), property.Name);  //fix for issue #336
+                adapter.AppendColumnNameEqualsValue(sb, GetColumnName(property), property.Name);  //fix for issue #336
                 if (i < keyProperties.Count - 1)
                     sb.Append(" and ");
             }

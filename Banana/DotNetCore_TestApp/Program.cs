@@ -20,6 +20,7 @@ namespace DotNetCore_TestApp
     {
         static void Main(string[] args)
         {
+            TestExplicitKey();
             TestSQLServer();
 
             TestMySQL();
@@ -118,7 +119,7 @@ namespace DotNetCore_TestApp
             bool b = repoUserInfo.Delete(model);
             list = repoUserInfo.QueryList();
 
-            model = repoUserInfo.Query(3);
+            model = repoUserInfo.Query(list[0].Id);
             model.Phone = "1234567";
             bool ub = repoUserInfo.Update(model);
             list = repoUserInfo.QueryList(order: "order by id");
@@ -482,6 +483,28 @@ namespace DotNetCore_TestApp
                 }
             });
 
+        }
+
+        static void TestExplicitKey()
+        {
+            ConnectionBuilder.ConfigRegist("Data Source=.;Initial Catalog = AdminLTE.Net.DB;User ID=sa;Password =mimashi123", DBType.SqlServer);
+            var repoStudent = new Repository<Student>();
+            var s1 = new Student()
+            {
+                Id = Guid.NewGuid().ToString("N"),
+                Name = "EminemJK",
+                LinkPhone = "15522223333",
+                Sex = 1,
+                CreateTime = Convert.ToDateTime("2019-01-03")
+            };
+            var bIn = repoStudent.Insert(s1);
+
+            var model = repoStudent.Query(s1.Id);
+
+            var list = repoStudent.QueryList();
+
+            list[0].Name = "Banana";
+           var b = repoStudent.Update(list[0]);
         }
     }
 }
