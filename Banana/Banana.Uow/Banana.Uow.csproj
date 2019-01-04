@@ -7,7 +7,7 @@
     <TargetFrameworks>net452;netstandard2.0</TargetFrameworks>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <PackageLicenseUrl></PackageLicenseUrl>
+    <PackageLicenseUrl>license.txt</PackageLicenseUrl>
     <PackageProjectUrl></PackageProjectUrl>
     <PackageIconUrl>https://www.cnblogs.com/images/cnblogs_com/EminemJK/1345488/o_banana.uow.png</PackageIconUrl>
     <RepositoryUrl>https://github.com/EminemJK/Banana.git</RepositoryUrl>
@@ -40,5 +40,10 @@
     <PackageReference Include="Oracle.ManagedDataAccess">
       <Version>18.3.0</Version>
     </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="license.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>
