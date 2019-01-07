@@ -202,7 +202,7 @@ namespace Banana.Uow
             }
             else
             {
-                ISqlAdapter adapter = ConnectionBuilder.GetAdapter();
+                ISqlAdapter adapter = ConnectionBuilder.GetAdapter(this.DBConnection);
                 var sqlbuilder = adapter.GetPageList(this, whereString: whereString, param: param, order: order, asc: asc);
                 return DBConnection.Query<T>(sqlbuilder.SQL, sqlbuilder.Arguments).ToList();
             }
@@ -222,7 +222,7 @@ namespace Banana.Uow
         public IPage<T> QueryList(int pageNum, int pageSize, string whereString = null, object param = null, string order = null, bool asc = false)
         {
             IPage<T> paging = new Paging<T>(pageNum, pageSize);
-            ISqlAdapter adapter = ConnectionBuilder.GetAdapter();
+            ISqlAdapter adapter = ConnectionBuilder.GetAdapter(this.DBConnection);
             var sqlbuilder = adapter.GetPageList(this, pageNum, pageSize, whereString, param, order, asc);
             paging.data = DBConnection.Query<T>(sqlbuilder.SQL, sqlbuilder.Arguments).ToList();
             paging.pageCount = QueryCount(whereString, param);
@@ -410,7 +410,7 @@ namespace Banana.Uow
             }
             else
             {
-                ISqlAdapter adapter = ConnectionBuilder.GetAdapter();
+                ISqlAdapter adapter = ConnectionBuilder.GetAdapter(this.DBConnection);
                 var sqlbuilder = adapter.GetPageList(this, whereString: whereString, param: param, order: order, asc: asc);
                 return await DBConnection.QueryAsync<T>(sqlbuilder.SQL, sqlbuilder.Arguments);
             }
@@ -432,7 +432,7 @@ namespace Banana.Uow
             return await Task.Run(() =>
             {
                 IPage<T> paging = new Paging<T>(pageNum, pageSize);
-                ISqlAdapter adapter = ConnectionBuilder.GetAdapter();
+                ISqlAdapter adapter = ConnectionBuilder.GetAdapter(this.DBConnection);
                 var sqlbuilder = adapter.GetPageList(this, pageNum, pageSize, whereString, param, order, asc);
                 paging.data = DBConnection.Query<T>(sqlbuilder.SQL, sqlbuilder.Arguments).ToList();
                 paging.pageCount = QueryCount(whereString, param);

@@ -82,9 +82,9 @@ namespace Banana.Uow
         /// The interface for all Dapper.Contrib database operations 
         /// </summary>
         /// <returns></returns>
-        internal static ISqlAdapter GetAdapter()
+        internal static ISqlAdapter GetAdapter(IDbConnection connection)
         {
-            return GetFormatter(CreateConnection());
+            return GetFormatter(connection);
         }
     }
 }
