@@ -3,8 +3,9 @@
  * Create Date：2018-11-16
  * 
  * Last Update：2018-12-18
- * 
  * 2019-01-04  1.更新Query和QueryAsync 新增stringId
+ * 2019-01-07  1.Add && _dbConnection.State!= ConnectionState.Connecting
+ *             2.GetAdapter(_dbConnection)
  **********************************/
 
 using System;
@@ -58,7 +59,7 @@ namespace Banana.Uow
                 {
                     _dbConnection = ConnectionBuilder.CreateConnection();
                 }
-                if (_dbConnection.State == ConnectionState.Closed)
+                if (_dbConnection.State == ConnectionState.Closed && _dbConnection.State!= ConnectionState.Connecting)
                 {
                     _dbConnection.Open();
                 } 

@@ -2,7 +2,8 @@
  * Developer: Lio.Huang
  * Create Date：2018-11-16
  * 
- * Last Update：2018-12-18
+ * Last Update：
+ * 2019-01-07  1. GetAdapter(connection)
  **********************************/
 
 using Banana.Uow.Interface;

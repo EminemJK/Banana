@@ -2,7 +2,8 @@
  * Developer: Lio.Huang
  * Create Date：2018-11-16
  * 
- * Last Update：2018-12-18
+ * Last Update：
+ * 2019-01-07  1.2018-12-18 add this.context.State != ConnectionState.Connecting
  **********************************/
 
 using Banana.Uow.Models;
@@ -63,7 +64,7 @@ namespace Banana.Uow
             {
                 this.context = ConnectionBuilder.CreateConnection();
             }
-            if (this.context.State == ConnectionState.Closed)
+            if (this.context.State == ConnectionState.Closed && this.context.State != ConnectionState.Connecting)
             {
                 this.context.Open();
             }

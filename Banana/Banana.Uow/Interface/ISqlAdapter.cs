@@ -19,7 +19,7 @@ using System.Threading.Tasks;
 namespace Banana.Uow.Interface
 {
     /// <summary>
-    /// The interface for all Dapper.Contrib database operations
+    /// The interface for all Dapper database operations
     /// Implementing this is each provider's model.
     /// </summary>
     public partial interface ISqlAdapter
