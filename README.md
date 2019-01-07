@@ -55,13 +55,13 @@ using Banana.Uow.Models;
    var model = repo.Query(7);
 
    //查询列表
-   var list = repo.QueryList("where Name like @Name", new { Name = "%EminemJK%" });
+   var list = repo.QueryList("Name like @Name", new { Name = "%EminemJK%" });
 
    //分页查询
    var page1 = repo.QueryList(1,5);
    var page2 = repo.QueryList(2,5);
    … …
-   var page0 = repo.QueryList(1, 10, "where ID>@Id", new { Id = 2 }, "id", false);
+   var page0 = repo.QueryList(1, 10, "ID>@Id", new { Id = 2 }, "id", false);
 
     //删除
     boo b = repo.Delete(model);
