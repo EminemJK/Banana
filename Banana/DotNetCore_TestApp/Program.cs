@@ -506,7 +506,7 @@ namespace DotNetCore_TestApp
             var list = repoStudent.QueryList();
 
             list[0].Name = "Banana";
-           var b = repoStudent.Update(list[0]);
+            var b = repoStudent.Update(list[0]);
         }
     }
 }
