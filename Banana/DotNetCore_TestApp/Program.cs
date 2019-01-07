@@ -20,7 +20,7 @@ namespace DotNetCore_TestApp
     {
         static void Main(string[] args)
         {
-            TestExplicitKey();
+            //TestExplicitKey();
             TestSQLServer();
 
             TestMySQL();
@@ -92,7 +92,7 @@ namespace DotNetCore_TestApp
         /// </summary>
         static void TestSQLServer()
         {
-            ConnectionBuilder.ConfigRegist("Data Source=.;Initial Catalog = AdminLTE.Net.DB;User ID=sa;Password =mimashi123", DBType.SqlServer);
+            ConnectionBuilder.ConfigRegist("Data Source=.;Initial Catalog = AdminLTE.Net.DB;User ID=sa;Password =mimashi123", DBType.SqlServer2012);
             var repoUserInfo = new Repository<UserInfo>();
 
             //repoUserInfo.Execute(@"CREATE TABLE T_User
@@ -489,6 +489,8 @@ namespace DotNetCore_TestApp
         {
             ConnectionBuilder.ConfigRegist("Data Source=.;Initial Catalog = AdminLTE.Net.DB;User ID=sa;Password =mimashi123", DBType.SqlServer);
             var repoStudent = new Repository<Student>();
+
+            var t = repoStudent.DBConnection.GetType();
             var s1 = new Student()
             {
                 Id = Guid.NewGuid().ToString("N"),

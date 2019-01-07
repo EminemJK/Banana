@@ -180,21 +180,31 @@ namespace Banana.Uow.Extension
                 if (order != null)
                 {
                     orderSql = SqlBuilder.GetArgsString("ORDER BY", args: order);
-                }
+                } 
 
-                sqlBuilderRows.Select(args: "SELECT ROW_NUMBER() OVER(ORDER BY " + orderSql + " " + ascSql + ") AS row_id,*");
-                sqlBuilderRows.From(repository.TableName);
-                if (!string.IsNullOrEmpty(whereString))
+                if (ConnectionBuilder.DBSetting.DBType == DBType.SqlServer2012)
                 {
-                    sqlBuilderRows.Where(whereString, param);
+                    sqlBuilder.From(repository.TableName);
+                    sqlBuilder.OrderBy(orderSql);
+                    int numMin = (pageNum - 1) * pageSize;
+                    sqlBuilder.Append($"offset {numMin} rows fetch next {pageSize} rows only");
                 }
-                sqlBuilder.Append($"From ({sqlBuilderRows.SQL}) as t", sqlBuilderRows.Arguments);
-
-                if (pageNum <= 0)
-                    pageNum = 1;
-                int numMin = (pageNum - 1) * pageSize + 1, 
-                    numMax = pageNum * pageSize;
-                sqlBuilder.Where("t.row_id>=@numMin and t.row_id<=@numMax", new { numMin, numMax });
+                else
+                {
+                    sqlBuilderRows.Select(args: "SELECT ROW_NUMBER() OVER(ORDER BY " + orderSql + " " + ascSql + ") AS row_id,*");
+                    sqlBuilderRows.From(repository.TableName);
+                    if (!string.IsNullOrEmpty(whereString))
+                    {
+                        sqlBuilderRows.Where(whereString, param);
+                    }
+                    sqlBuilder.Append($"From ({sqlBuilderRows.SQL}) as t", sqlBuilderRows.Arguments);
+                    if (pageNum <= 0)
+                        pageNum = 1;
+                    int numMin = (pageNum - 1) * pageSize + 1,
+                        numMax = pageNum * pageSize;
+                    sqlBuilder.Where("t.row_id>=@numMin and t.row_id<=@numMax", new { numMin, numMax });
+                }
+               
             }
             else
             {

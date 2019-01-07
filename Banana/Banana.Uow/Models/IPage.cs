@@ -16,9 +16,14 @@ namespace Banana.Uow.Models
     public interface IPage<T>
     {
         /// <summary>
+        /// All data rows
+        /// </summary>
+        int dataCount { get; set; }
+
+        /// <summary>
         ///pageCount
         /// </summary>
-        int pageCount { get; set; }
+        int pageCount { get; }
 
         /// <summary>
         /// pageNo

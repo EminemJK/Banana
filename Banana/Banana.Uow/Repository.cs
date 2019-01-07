@@ -226,7 +226,7 @@ namespace Banana.Uow
             ISqlAdapter adapter = ConnectionBuilder.GetAdapter(this.DBConnection);
             var sqlbuilder = adapter.GetPageList(this, pageNum, pageSize, whereString, param, order, asc);
             paging.data = DBConnection.Query<T>(sqlbuilder.SQL, sqlbuilder.Arguments).ToList();
-            paging.pageCount = QueryCount(whereString, param);
+            paging.dataCount = QueryCount(whereString, param);
             return paging;
         }
 
@@ -436,7 +436,7 @@ namespace Banana.Uow
                 ISqlAdapter adapter = ConnectionBuilder.GetAdapter(this.DBConnection);
                 var sqlbuilder = adapter.GetPageList(this, pageNum, pageSize, whereString, param, order, asc);
                 paging.data = DBConnection.Query<T>(sqlbuilder.SQL, sqlbuilder.Arguments).ToList();
-                paging.pageCount = QueryCount(whereString, param);
+                paging.dataCount = QueryCount(whereString, param);
                 return paging;
             }); ;
         }

@@ -3,6 +3,7 @@
  * Create Date：2018-12-06
  * 
  * Last Update：2018-12-18
+ * 2019-01-07  1.add dataCount
  **********************************/
 
 using System.Collections.Generic;
@@ -16,9 +17,13 @@ namespace Banana.Uow.Models
     public class Paging<T>: IPage<T>
     {
         /// <summary>
+        /// All data rows
+        /// </summary>
+        public int dataCount { get; set; }
+        /// <summary>
         /// 总页数|pageCount
         /// </summary>
-        public int pageCount { get; set; }
+        public int pageCount => (int)System.Math.Ceiling((decimal)this.dataCount / pageSize);
 
         /// <summary>
         /// 当前页码|page number
