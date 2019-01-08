@@ -8,6 +8,7 @@
  *             2.更新AppendColumnName、AppendColumnNameEqualsValue 新增别名
  **********************************/
 
+using Banana.Uow.Extension;
 using Banana.Uow.Interface;
 using Banana.Uow.Models;
 using Dapper;
@@ -19,7 +20,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Banana.Uow.Extension
+namespace Banana.Uow.Adapter
 {
     /// <summary>
     /// Postgres分页扩展

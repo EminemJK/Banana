@@ -8,6 +8,7 @@
  *             2.更新AppendColumnName、AppendColumnNameEqualsValue 新增别名
  **********************************/
 
+using Banana.Uow.Extension;
 using Banana.Uow.Interface;
 using Banana.Uow.Models;
 using Dapper;
@@ -19,12 +20,12 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Banana.Uow.Extension
+namespace Banana.Uow.Adapter
 {
     /// <summary>
-    /// The SQL Server database adapter.
+    /// The Oracle adapter.
     /// </summary>
-    internal partial class SqlServerAdapter : ISqlAdapter
+    internal partial class OracleAdapter : ISqlAdapter
     {
         /// <summary>
         /// Inserts <paramref name="entityToInsert"/> into the database, returning the Id of the row created.
@@ -39,27 +40,45 @@ namespace Banana.Uow.Extension
         /// <param name="entityToInsert">The entity to insert.</param>
         /// <returns>The Id of the row created.</returns>
         public async Task<int> InsertAsync(IDbConnection connection, IDbTransaction transaction, int? commandTimeout, string tableName, string columnList, string parameterList, IEnumerable<PropertyInfo> keyProperties, object entityToInsert, bool isList)
-        {
+        { 
+            var propertyInfos = keyProperties as PropertyInfo[] ?? keyProperties.ToArray();
+            string oracleSequence =""; 
+            for(int i = 0; i < propertyInfos.Length; i++)
+            {
+                var sequencePropertyDescriptor = propertyInfos[i].GetCustomAttribute<KeyAttribute>();
+                if (sequencePropertyDescriptor != null)
+                {
+                    oracleSequence = sequencePropertyDescriptor.OracleSequence;
+                    break;
+                }
+            }
+
             string cmd = "";
-            if (isList)
+            dynamic id = 0;
+            if (propertyInfos.Length == 0)
             {
                 cmd = $"insert into {tableName} ({columnList}) values ({parameterList})";
+            }
+            else
+            {
+                if (string.IsNullOrEmpty(oracleSequence))
+                    throw new Exception("KeyAttribute's OracleSequence is Null");
+                var idp = propertyInfos[0];
+               
+                var r = connection.Query($"SELECT {oracleSequence}.NEXTVAL ID FROM DUAL", transaction: transaction, commandTimeout: commandTimeout);
+                id = r.First().ID; 
+                if (id == null)
+                    return 0;
+                idp.SetValue(entityToInsert, Convert.ChangeType(id, idp.PropertyType), null);
+                //cmd = $"insert into {tableName} ({idp.Name},{columnList}) values ({oracleSequence}.Nextval,{parameterList})"; 
+                cmd = $"insert into {tableName} ({idp.Name},{columnList}) values ({id},{parameterList})";
+            }
+            if (isList)
+            {
                 return await connection.ExecuteAsync(cmd, entityToInsert, transaction, commandTimeout);
             }
-            cmd = $"INSERT INTO {tableName} ({columnList}) values ({parameterList}); SELECT SCOPE_IDENTITY() id";
-            var multi = await connection.QueryMultipleAsync(cmd, entityToInsert, transaction, commandTimeout).ConfigureAwait(false);
-
-            var first = multi.Read().FirstOrDefault();
-            if (first == null || first.id == null) return 0;
-
-            var id = (int)first.id;
-            var pi = keyProperties as PropertyInfo[] ?? keyProperties.ToArray();
-            if (pi.Length == 0) return id;
-
-            var idp = pi[0];
-            idp.SetValue(entityToInsert, Convert.ChangeType(id, idp.PropertyType), null);
-
-            return id;
+            await connection.ExecuteAsync(cmd, entityToInsert, transaction, commandTimeout);
+            return Convert.ToInt32(id);
         }
 
         /// <summary>
@@ -75,27 +94,44 @@ namespace Banana.Uow.Extension
         /// <param name="entityToInsert">The entity to insert.</param>
         /// <returns>The Id of the row created.</returns>
         public int Insert(IDbConnection connection, IDbTransaction transaction, int? commandTimeout, string tableName, string columnList, string parameterList, IEnumerable<PropertyInfo> keyProperties, object entityToInsert, bool isList)
-        {
+        { 
+            var propertyInfos = keyProperties as PropertyInfo[] ?? keyProperties.ToArray();
+            string oracleSequence = "";
+            for (int i = 0; i < propertyInfos.Length; i++)
+            {
+                var sequencePropertyDescriptor = propertyInfos[i].GetCustomAttribute<KeyAttribute>();
+                if (sequencePropertyDescriptor != null)
+                {
+                    oracleSequence = sequencePropertyDescriptor.OracleSequence;
+                    break;
+                }
+            }
+            
             string cmd = "";
-            if (isList)
+            dynamic id = 0;
+            if (propertyInfos.Length == 0)
             {
                 cmd = $"insert into {tableName} ({columnList}) values ({parameterList})";
+            }
+            else
+            {
+                if (string.IsNullOrEmpty(oracleSequence))
+                    throw new Exception("KeyAttribute's oracleSequence is Null");
+                var idp = propertyInfos[0];
+                
+                var r = connection.Query($"SELECT {oracleSequence}.NEXTVAL ID FROM DUAL", transaction: transaction, commandTimeout: commandTimeout);
+                id = r.First().ID;
+                if (id == null)
+                    return 0;
+                idp.SetValue(entityToInsert, Convert.ChangeType(id, idp.PropertyType), null);
+                cmd = $"insert into {tableName} ({idp.Name},{columnList}) values ({id},{parameterList})";
+            }
+            if (isList)
+            {
                 return connection.Execute(cmd, entityToInsert, transaction, commandTimeout);
             }
-            cmd = $"insert into {tableName} ({columnList}) values ({parameterList});select SCOPE_IDENTITY() id";
-            var multi = connection.QueryMultiple(cmd, entityToInsert, transaction, commandTimeout);
-
-            var first = multi.Read().FirstOrDefault();
-            if (first == null || first.id == null) return 0;
-
-            var id = (int)first.id;
-            var propertyInfos = keyProperties as PropertyInfo[] ?? keyProperties.ToArray();
-            if (propertyInfos.Length == 0) return id;
-
-            var idProperty = propertyInfos[0];
-            idProperty.SetValue(entityToInsert, Convert.ChangeType(id, idProperty.PropertyType), null);
-
-            return id;
+            connection.Execute(cmd, entityToInsert, transaction, commandTimeout);
+            return Convert.ToInt32(id);
         }
 
         /// <summary>
@@ -107,9 +143,9 @@ namespace Banana.Uow.Extension
         public void AppendColumnName(StringBuilder sb, string columnName, string columnAlias)
         {
             if (string.IsNullOrEmpty(columnAlias) || columnName.Equals(columnAlias))
-                sb.AppendFormat("[{0}]", columnName);
+                sb.AppendFormat("{0}", columnName);
             else
-                sb.AppendFormat("[{0}] as {1}", columnName, columnAlias);
+                sb.AppendFormat("{0} as {1}", columnName, columnAlias);
         }
 
         /// <summary>
@@ -121,40 +157,23 @@ namespace Banana.Uow.Extension
         public void AppendColumnNameEqualsValue(StringBuilder sb, string columnName, string columnAlias)
         {
             if (string.IsNullOrEmpty(columnAlias) || columnName.Equals(columnAlias))
-                sb.AppendFormat("[{0}] = @{1}", columnName, columnName);
+                sb.AppendFormat("{0} = :{1}", columnName, columnName);
             else
-                sb.AppendFormat("[{0}] = @{1}", columnName, columnAlias);
+                sb.AppendFormat("{0} = :{1}", columnName, columnAlias);
         }
 
         /// <summary>
-        /// Adds the parametr to sql.
+        /// Adds parameter.
         /// </summary>
         /// <param name="sb">The string builder  to append to.</param>
-        /// <param name="paramName">The column name.</param>
+        /// <param name="paramName">The parametr name.</param>
         public void AppendParametr(StringBuilder sb, string paramName)
         {
-            sb.AppendFormat("@{0}", paramName);
+            sb.AppendFormat(":{0}", paramName);
         }
 
-        /// <summary>
-        /// SQL Server 扩展
-        /// </summary>
-        public SqlServerAdapter() { }
-
-        /// <summary>
-        /// 分页
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="repository"></param>
-        /// <param name="pageNum">页码</param>
-        /// <param name="pageSize">页大小</param>
-        /// <param name="whereString">where语句，不需要携带where</param>
-        /// <param name="param">where 参数</param>
-        /// <param name="order"></param>
-        /// <param name="asc"></param>
-        /// <returns></returns>
         public ISqlBuilder GetPageList<T>(IRepository<T> repository, int pageNum = 0, int pageSize = 0, string whereString = null, object param = null, object order = null, bool asc = false)
-            where T : class, IEntity
+          where T : class, IEntity
         {
             SqlBuilder sqlBuilder = new SqlBuilder();
             var sbColumnList = new StringBuilder(null);
@@ -169,7 +188,7 @@ namespace Banana.Uow.Extension
 
             sqlBuilder.Select(args: sbColumnList.ToString());
             if (pageSize > 0)
-            {
+            { 
                 SqlBuilder sqlBuilderRows = new SqlBuilder();
                 string ascSql = " asc";
                 if (!asc)
@@ -179,35 +198,26 @@ namespace Banana.Uow.Extension
                 string orderSql = "ID";
                 if (order != null)
                 {
-                    orderSql = SqlBuilder.GetArgsString("ORDER BY", args: order);
-                } 
+                    orderSql = SqlBuilder.GetArgsString("ORDER BY", prefix: repository.TableName, args: order);
+                }
 
-                if (ConnectionBuilder.DBSetting.DBType == DBType.SqlServer2012)
+                sqlBuilderRows.Select(args: $"SELECT ROW_NUMBER() OVER(ORDER BY { orderSql}  {ascSql} ) AS row_id,{repository.TableName}.*");
+                sqlBuilderRows.From(repository.TableName);
+                if (!string.IsNullOrEmpty(whereString))
                 {
-                    sqlBuilder.From(repository.TableName);
-                    sqlBuilder.OrderBy(orderSql);
-                    int numMin = (pageNum - 1) * pageSize;
-                    sqlBuilder.Append($"offset {numMin} rows fetch next {pageSize} rows only");
+                    sqlBuilderRows.Where(whereString, param);
                 }
-                else
-                {
-                    sqlBuilderRows.Select(args: "SELECT ROW_NUMBER() OVER(ORDER BY " + orderSql + " " + ascSql + ") AS row_id,*");
-                    sqlBuilderRows.From(repository.TableName);
-                    if (!string.IsNullOrEmpty(whereString))
-                    {
-                        sqlBuilderRows.Where(whereString, param);
-                    }
-                    sqlBuilder.Append($"From ({sqlBuilderRows.SQL}) as t", sqlBuilderRows.Arguments);
-                    if (pageNum <= 0)
-                        pageNum = 1;
-                    int numMin = (pageNum - 1) * pageSize + 1,
-                        numMax = pageNum * pageSize;
-                    sqlBuilder.Where("t.row_id>=@numMin and t.row_id<=@numMax", new { numMin, numMax });
-                }
-               
+                sqlBuilder.Append($"From ({sqlBuilderRows.SQL}) TT", sqlBuilderRows.Arguments);
+
+                if (pageNum <= 0)
+                    pageNum = 1;
+                int numMin = (pageNum - 1) * pageSize + 1, 
+                    numMax = pageNum * pageSize;
+                sqlBuilder.Where("TT.row_id between :numMin and :numMax", new { numMin, numMax });
             }
             else
             {
+                
                 sqlBuilder.From(repository.TableName);
                 if (!string.IsNullOrEmpty(whereString))
                 {

@@ -21,6 +21,7 @@ using System.Reflection.Emit;
 using Dapper;
 using Banana.Uow.Models;
 using Banana.Uow.Interface;
+using Banana.Uow.Adapter;
 
 #if NETSTANDARD1_3
 using DataException = System.InvalidOperationException;
