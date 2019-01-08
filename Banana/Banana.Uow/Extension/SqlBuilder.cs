@@ -6,6 +6,8 @@
  **********************************/
 
 using Banana.Uow.Interface;
+using Banana.Uow.Models.QueryEnum;
+using Banana.Uow.SQLBuilder;
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
@@ -18,7 +20,7 @@ namespace Banana.Uow.Extension
     /// <summary>
     /// SQL builder
     /// </summary>
-    public class SqlBuilder: ISqlBuilder
+    internal class SqlBuilder: ISqlBuilder
     {
         /// <summary>
         /// SQL builder
@@ -79,6 +81,26 @@ namespace Banana.Uow.Extension
                 return _argsFinal;
             }
         }
+
+        public IDictionary<string, object> Parameters => throw new NotImplementedException();
+
+        public List<string> TableNames => throw new NotImplementedException();
+
+        public List<string> JoinExpressions => throw new NotImplementedException();
+
+        public List<string> SelectionList => throw new NotImplementedException();
+
+        public List<string> WhereConditions => throw new NotImplementedException();
+
+        public List<string> OrderByList => throw new NotImplementedException();
+
+        public List<string> GroupByList => throw new NotImplementedException();
+
+        public List<string> HavingConditions => throw new NotImplementedException();
+
+        public List<string> SplitColumns => throw new NotImplementedException();
+
+        public int CurrentParamIndex => throw new NotImplementedException();
 
         public SqlBuilder Append(SqlBuilder sql)
         {
@@ -231,6 +253,101 @@ namespace Banana.Uow.Extension
                 return OldString.Substring(prefix.Length);
             }
             return OldString;
+        }
+
+        public void BeginExpression()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void EndExpression()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void And()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Or()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Not()
+        {
+            throw new NotImplementedException();
+        }
+
+        public string QueryStringPage(int pageSize, int? pageNumber = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void QueryByField(string tableName, string fieldName, string columnAlias, string op, object fieldValue)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void QueryByFieldLike(string tableName, string fieldName, string columnAlias, string fieldValue)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void QueryByFieldNull(string tableName, string fieldName, string columnAlias)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void QueryByFieldNotNull(string tableName, string fieldName, string columnAlias)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void QueryByFieldComparison(string leftTableName, string leftFieldName, string columnAlias, string op, string rightTableName, string rightFieldName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void QueryByIsIn(string tableName, string fieldName, string columnAlias, ISqlBuilder sqlQuery)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void QueryByIsIn(string tableName, string fieldName, string columnAlias, IEnumerable<object> values)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Join(string originalTableName, string joinTableName, string leftField, string rightField)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void OrderBy(string tableName, string fieldName, bool desc = false)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Query(Type type)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Query(string tableName, string fieldName, string columnAlias)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Query(string tableName, string fieldName, string columnAlias, ESelectFunction selectFunction)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void GroupBy(string tableName, string fieldName)
+        {
+            throw new NotImplementedException();
         }
     }
 }

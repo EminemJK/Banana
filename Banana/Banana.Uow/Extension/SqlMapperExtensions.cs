@@ -21,6 +21,8 @@ using System.Reflection.Emit;
 using Dapper;
 using Banana.Uow.Models;
 using Banana.Uow.Interface;
+using Banana.Uow.Adapter;
+using System.Linq.Expressions;
 
 #if NETSTANDARD1_3
 using DataException = System.InvalidOperationException;
@@ -170,6 +172,31 @@ namespace Banana.Uow.Extension
             return columnAttribute.ColumnName;
         }
 
+        internal static string GetColumnName(Expression expression)
+        {
+            var member = GetMemberExpression(expression);
+            var column = member.Member.GetCustomAttributes(false).OfType<ColumnAttribute>().FirstOrDefault();
+            if (column != null)
+                return column.ColumnName;
+            else
+                return member.Member.Name;
+        }
+
+        internal static MemberExpression GetMemberExpression(Expression expression)
+        {
+            switch (expression.NodeType)
+            {
+                case ExpressionType.MemberAccess:
+                    return expression as MemberExpression;
+                case ExpressionType.Convert:
+                    return GetMemberExpression((expression as UnaryExpression).Operand);
+                case ExpressionType.Equal:
+                    return expression as MemberExpression;
+            }
+
+            throw new ArgumentException("Member expression expected");
+        }
+
         internal static PropertyInfo GetSingleKey<T>(string method)
         {
             var type = typeof(T);
@@ -202,7 +229,7 @@ namespace Banana.Uow.Extension
             var sb = new StringBuilder();
             var adapter = GetFormatter(connection);
             var key = GetSingleKey<T>(nameof(Get));
-            adapter.AppendParametr(sb, key.Name);
+            sb.Append(adapter.AppendParametr(key.Name));
             if (!GetQueries.TryGetValue(type.TypeHandle, out string sql))
             {
                 var name = GetTableName(type);
@@ -211,7 +238,7 @@ namespace Banana.Uow.Extension
                 for (var i = 0; i < allProperties.Count; i++)
                 {
                     var property = allProperties[i];
-                    adapter.AppendColumnName(sbColumnList, GetColumnName(property), property.Name);
+                    sbColumnList.Append(adapter.AppendColumnName(GetColumnName(property), property.Name, name));
                     if (i < allProperties.Count - 1)
                         sbColumnList.Append(", ");
                 }
@@ -286,7 +313,7 @@ namespace Banana.Uow.Extension
                 for (var i = 0; i < allProperties.Count; i++)
                 {
                     var property = allProperties[i];
-                    adapter.AppendColumnName(sbColumnList, GetColumnName(property), property.Name);
+                    sbColumnList.Append(adapter.AppendColumnName(GetColumnName(property), property.Name, name));
                     if (i < allProperties.Count - 1)
                         sbColumnList.Append(", ");
                 }
@@ -407,7 +434,7 @@ namespace Banana.Uow.Extension
             for (var i = 0; i < allPropertiesExceptKeyAndComputed.Count; i++)
             {
                 var property = allPropertiesExceptKeyAndComputed[i];
-                adapter.AppendColumnName(sbColumnList, GetColumnName(property), "");  //fix for issue #336
+                sbColumnList.Append(adapter.AppendColumnName(GetColumnName(property), "", ""));  //fix for issue #336
                 if (i < allPropertiesExceptKeyAndComputed.Count - 1)
                     sbColumnList.Append(", ");
             }
@@ -416,7 +443,7 @@ namespace Banana.Uow.Extension
             for (var i = 0; i < allPropertiesExceptKeyAndComputed.Count; i++)
             {
                 var property = allPropertiesExceptKeyAndComputed[i];
-                adapter.AppendParametr(sbParameterList, property.Name);
+                sbParameterList.Append(adapter.AppendParametr(property.Name));
                 if (i < allPropertiesExceptKeyAndComputed.Count - 1)
                     sbParameterList.Append(", ");
             }
@@ -480,7 +507,7 @@ namespace Banana.Uow.Extension
             for (var i = 0; i < nonIdProps.Count; i++)
             {
                 var property = nonIdProps[i];
-                adapter.AppendColumnNameEqualsValue(sb, GetColumnName(property), property.Name);  //fix for issue #336
+                sb.Append(adapter.AppendColumnNameEqualsValue(GetColumnName(property), property.Name));  //fix for issue #336
                 if (i < nonIdProps.Count - 1)
                     sb.Append(", ");
             }
@@ -488,7 +515,7 @@ namespace Banana.Uow.Extension
             for (var i = 0; i < keyProperties.Count; i++)
             {
                 var property = keyProperties[i];
-                adapter.AppendColumnNameEqualsValue(sb, GetColumnName(property), property.Name); //fix for issue #336
+                sb.Append(adapter.AppendColumnNameEqualsValue(GetColumnName(property), property.Name)); //fix for issue #336
                 if (i < keyProperties.Count - 1)
                     sb.Append(" and ");
             }
@@ -545,7 +572,7 @@ namespace Banana.Uow.Extension
             for (var i = 0; i < keyProperties.Count; i++)
             {
                 var property = keyProperties[i];
-                adapter.AppendColumnNameEqualsValue(sb, GetColumnName(property), property.Name);  //fix for issue #336
+                sb.Append(adapter.AppendColumnNameEqualsValue(GetColumnName(property), property.Name));  //fix for issue #336
                 if (i < keyProperties.Count - 1)
                     sb.Append(" and ");
             }

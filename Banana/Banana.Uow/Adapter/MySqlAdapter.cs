@@ -8,8 +8,10 @@
  *             2.更新AppendColumnName、AppendColumnNameEqualsValue 新增别名
  **********************************/
 
+using Banana.Uow.Extension;
 using Banana.Uow.Interface;
 using Banana.Uow.Models;
+using Banana.Uow.SQLBuilder;
 using Dapper;
 using System;
 using System.Collections.Generic;
@@ -19,12 +21,12 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Banana.Uow.Extension
+namespace Banana.Uow.Adapter
 {
     /// <summary>
     /// MySQL 扩展
     /// </summary>
-    internal partial class MySqlAdapter : ISqlAdapter
+    internal partial class MySqlAdapter : SqlAdapterBase, ISqlAdapter
     {
         /// <summary>
         /// Inserts <paramref name="entityToInsert"/> into the database, returning the Id of the row created.
@@ -100,39 +102,41 @@ namespace Banana.Uow.Extension
         /// <summary>
         /// Adds the name of a column.
         /// </summary>
-        /// <param name="sb">The string builder  to append to.</param>
         /// <param name="columnName">The column name.</param>
         /// <param name="columnAlias">The column alias.</param>
-        public void AppendColumnName(StringBuilder sb, string columnName, string columnAlias)
+        /// <param name="tableName"></param>
+        public string AppendColumnName(string columnName, string columnAlias, string tableName)
         {
+            string tmp = "";
             if (string.IsNullOrEmpty(columnAlias) || columnName.Equals(columnAlias))
-                sb.AppendFormat("`{0}`", columnName);
+                tmp = string.Format("`{0}`", columnName);
             else
-                sb.AppendFormat("`{0}` as {1}", columnName, columnAlias);
+                tmp = string.Format("`{0}` as {1}", tableName, columnName, columnAlias);
+            if (!string.IsNullOrEmpty(tableName))
+                return string.Format("`{0}`.{1}", tableName, tmp);
+            return tmp;
         }
 
         /// <summary>
         /// Adds a column equality to a parameter.
         /// </summary>
-        /// <param name="sb">The string builder  to append to.</param>
         /// <param name="columnName">The column name.</param>
         /// <param name="columnAlias">The column alias.</param>
-        public void AppendColumnNameEqualsValue(StringBuilder sb, string columnName, string columnAlias)
+        public string AppendColumnNameEqualsValue(string columnName, string columnAlias)
         {
             if (string.IsNullOrEmpty(columnAlias) || columnName.Equals(columnAlias))
-                sb.AppendFormat("`{0}` = @{1}", columnName, columnName);
+                return string.Format("`{0}` = @{1}", columnName, columnName);
             else
-                sb.AppendFormat("`{0}` = @{1}", columnName, columnAlias);
+                return string.Format("`{0}` = @{1}", columnName, columnAlias);
         }
 
         /// <summary>
         /// Adds the parametr to sql.
         /// </summary>
-        /// <param name="sb">The string builder  to append to.</param>
         /// <param name="paramName">The column name.</param>
-        public void AppendParametr(StringBuilder sb, string paramName)
+        public string AppendParametr(string paramName)
         {
-            sb.AppendFormat("@{0}", paramName);
+            return string.Format("@{0}", paramName);
         }
 
         /// <summary>
@@ -150,7 +154,7 @@ namespace Banana.Uow.Extension
             for (var i = 0; i < allProperties.Count; i++)
             {
                 var property = allProperties[i];
-                AppendColumnName(sbColumnList, SqlMapperExtensions.GetColumnName(property), property.Name);
+                sbColumnList.Append(AppendColumnName(SqlMapperExtensions.GetColumnName(property), property.Name, ""));
                 if (i < allProperties.Count - 1)
                     sbColumnList.Append(", ");
             }
@@ -174,6 +178,11 @@ namespace Banana.Uow.Extension
                 sqlBuilder.Append($" limit {numMin},{pageSize}");
             }
             return sqlBuilder;
+        }
+
+        public string GetPageList(string selection, string source, string conditions, string order, int pageSize, int? pageNumber = null)
+        {
+            throw new NotImplementedException();
         }
     }
 }

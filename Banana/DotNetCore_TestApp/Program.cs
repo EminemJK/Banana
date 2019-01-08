@@ -20,7 +20,8 @@ namespace DotNetCore_TestApp
     {
         static void Main(string[] args)
         {
-            //TestExplicitKey();
+            ExpressionTests.TestCreateSQL();
+            TestExplicitKey();
             TestSQLServer();
 
             TestMySQL();

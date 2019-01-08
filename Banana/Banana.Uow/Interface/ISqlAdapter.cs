@@ -8,6 +8,7 @@
 
 using Banana.Uow.Extension;
 using Banana.Uow.Models;
+using Banana.Uow.SQLBuilder;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -55,39 +56,50 @@ namespace Banana.Uow.Interface
         /// <summary>
         /// Adds the name of a column.
         /// </summary>
-        /// <param name="sb">The string builder  to append to.</param>
         /// <param name="columnName">The column name.</param>
         /// <param name="columnAlias">The column alias.</param>
-        void AppendColumnName(StringBuilder sb, string columnName, string columnAlias);
+        /// <param name="tableName">tableName</param>
+        string AppendColumnName(string columnName, string columnAlias, string tableName);
 
         /// <summary>
         /// Adds a column equality to a parameter.
         /// </summary>
-        /// <param name="sb">The string builder  to append to.</param>
         /// <param name="columnName">The column name.</param>
         /// <param name="columnAlias">The column alias.</param>
-        void AppendColumnNameEqualsValue(StringBuilder sb, string columnName, string columnAlias);
+        string AppendColumnNameEqualsValue(string columnName, string columnAlias);
 
         /// <summary>
         /// Adds the parametr to sql
         /// </summary>
-        /// <param name="sbParameterList"></param>
         /// <param name="paramName"></param>
-        void AppendParametr(StringBuilder sbParameterList, string paramName);
+        string AppendParametr(string paramName);
 
         /// <summary>
         /// 分页查询|
         /// Executes a query, returning the paging data typed as T.
         /// </summary>
-        /// <param name="repository">repository</param>
-        /// <param name="pageNum">页码|page number</param>
+        /// <param name="selection"></param>
+        /// <param name="source"></param>
+        /// <param name="conditions"></param>
         /// <param name="pageSize">页大小|page size</param>
-        /// <param name="whereString">parameterized sql of "where",(example:whereString:name like @name)</param>
-        /// <param name="param">whereString's param，(example:new { name = "google%" })</param>
+        /// <param name="pageNumber"></param>
         /// <param name="order">order param,(example:order:"createTime")</param>
-        /// <param name="asc">Is ascending</param>
         /// <returns>返回分页数据|returning the paging data typed as T</returns>
+        string GetPageList(string selection, string source, string conditions, string order, int pageSize, int? pageNumber = null);
+
+        /// <summary>
+        /// Base query
+        /// </summary>
+        /// <param name="selection"></param>
+        /// <param name="source"></param>
+        /// <param name="conditions"></param>
+        /// <param name="order"></param>
+        /// <param name="grouping"></param>
+        /// <param name="having"></param>
+        /// <returns></returns>
+        string QueryString(string selection, string source, string conditions, string order, string grouping, string having);
+
         ISqlBuilder GetPageList<T>(IRepository<T> repository, int pageNum = 0, int pageSize = 0, string whereString = null, object param = null, object order = null, bool asc = false)
-           where T : class, IEntity;
+          where T : class, IEntity;
     }
 }

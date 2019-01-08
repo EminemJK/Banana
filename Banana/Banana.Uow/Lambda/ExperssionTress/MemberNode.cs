@@ -1,0 +1,16 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Banana.Uow.Lambda.ExperssionTress
+{
+    class MemberNode : Node
+    {
+        public string TableName { get; set; }
+        public string FieldName { get; set; }
+
+        public string ColumnAlias { get; set; }
+    }
+}

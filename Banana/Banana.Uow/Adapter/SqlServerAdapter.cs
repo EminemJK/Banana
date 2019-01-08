@@ -1,15 +1,17 @@
 ﻿/***********************************
-* Developer: Lio.Huang
-* Date：2018-11-20
-*
-* UpdateDate:
-* 2018-12-28  1.更新GetPageList中的Select *  => Select {ColumnList}
+ * Developer: Lio.Huang
+ * Date：2018-12-12
+ * 
+ * UpdateDate:
+ * 2018-12-28  1.更新GetPageList中的Select *  => Select {ColumnList}
  * 2019-01-03  1.更新GetPageList中的property.Name => SqlMapperExtensions.GetColumnAlias(property)
  *             2.更新AppendColumnName、AppendColumnNameEqualsValue 新增别名
-**********************************/
+ **********************************/
 
+using Banana.Uow.Extension;
 using Banana.Uow.Interface;
 using Banana.Uow.Models;
+using Banana.Uow.SQLBuilder;
 using Dapper;
 using System;
 using System.Collections.Generic;
@@ -19,12 +21,12 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Banana.Uow.Extension
+namespace Banana.Uow.Adapter
 {
     /// <summary>
-    /// SQLite 扩展
+    /// The SQL Server database adapter.
     /// </summary>
-    internal partial class SQLiteAdapter : ISqlAdapter
+    internal partial class SqlServerAdapter : SqlAdapterBase, ISqlAdapter
     {
         /// <summary>
         /// Inserts <paramref name="entityToInsert"/> into the database, returning the Id of the row created.
@@ -46,10 +48,13 @@ namespace Banana.Uow.Extension
                 cmd = $"insert into {tableName} ({columnList}) values ({parameterList})";
                 return await connection.ExecuteAsync(cmd, entityToInsert, transaction, commandTimeout);
             }
-            cmd = $"INSERT INTO {tableName} ({columnList}) VALUES ({parameterList}); SELECT last_insert_rowid() id";
+            cmd = $"INSERT INTO {tableName} ({columnList}) values ({parameterList}); SELECT SCOPE_IDENTITY() id";
             var multi = await connection.QueryMultipleAsync(cmd, entityToInsert, transaction, commandTimeout).ConfigureAwait(false);
 
-            var id = (int)multi.Read().First().id;
+            var first = multi.Read().FirstOrDefault();
+            if (first == null || first.id == null) return 0;
+
+            var id = (int)first.id;
             var pi = keyProperties as PropertyInfo[] ?? keyProperties.ToArray();
             if (pi.Length == 0) return id;
 
@@ -79,10 +84,13 @@ namespace Banana.Uow.Extension
                 cmd = $"insert into {tableName} ({columnList}) values ({parameterList})";
                 return connection.Execute(cmd, entityToInsert, transaction, commandTimeout);
             }
-            cmd = $"INSERT INTO {tableName} ({columnList}) VALUES ({parameterList}); SELECT last_insert_rowid() id";
+            cmd = $"insert into {tableName} ({columnList}) values ({parameterList});select SCOPE_IDENTITY() id";
             var multi = connection.QueryMultiple(cmd, entityToInsert, transaction, commandTimeout);
 
-            var id = (int)multi.Read().First().id;
+            var first = multi.Read().FirstOrDefault();
+            if (first == null || first.id == null) return 0;
+
+            var id = (int)first.id;
             var propertyInfos = keyProperties as PropertyInfo[] ?? keyProperties.ToArray();
             if (propertyInfos.Length == 0) return id;
 
@@ -95,47 +103,61 @@ namespace Banana.Uow.Extension
         /// <summary>
         /// Adds the name of a column.
         /// </summary>
-        /// <param name="sb">The string builder  to append to.</param>
         /// <param name="columnName">The column name.</param>
         /// <param name="columnAlias">The column alias.</param>
-        public void AppendColumnName(StringBuilder sb, string columnName, string columnAlias)
+        /// <param name="tableName"></param>
+        public string AppendColumnName(string columnName, string columnAlias, string tableName)
         {
+            string tmp = "";
             if (string.IsNullOrEmpty(columnAlias) || columnName.Equals(columnAlias))
-                sb.AppendFormat("\"{0}\"", columnName);
+                tmp = string.Format("[{0}]", columnName);
             else
-                sb.AppendFormat("\"{0}\" as {1}", columnName, columnAlias);
+                tmp = string.Format("[{0}] as {1}", tableName, columnName, columnAlias);
+            if (!string.IsNullOrEmpty(tableName))
+                return string.Format("[{0}].{1}", tableName, tmp);
+            return tmp;
         }
 
         /// <summary>
         /// Adds a column equality to a parameter.
         /// </summary>
-        /// <param name="sb">The string builder  to append to.</param>
         /// <param name="columnName">The column name.</param>
         /// <param name="columnAlias">The column alias.</param>
-        public void AppendColumnNameEqualsValue(StringBuilder sb, string columnName, string columnAlias)
+        public string AppendColumnNameEqualsValue(string columnName, string columnAlias)
         {
             if (string.IsNullOrEmpty(columnAlias) || columnName.Equals(columnAlias))
-                sb.AppendFormat("\"{0}\" = @{1}", columnName, columnName);
+                return string.Format("[{0}] = @{1}", columnName, columnName);
             else
-                sb.AppendFormat("\"{0}\" = @{1}", columnName, columnAlias);
+                return string.Format("[{0}] = @{1}", columnName, columnAlias);
         }
 
         /// <summary>
         /// Adds the parametr to sql.
         /// </summary>
-        /// <param name="sb">The string builder  to append to.</param>
         /// <param name="paramName">The column name.</param>
-        public void AppendParametr(StringBuilder sb, string paramName)
+        public string AppendParametr(string paramName)
         {
-            sb.AppendFormat("@{0}", paramName);
+            return string.Format("@{0}", paramName);
         }
 
         /// <summary>
-        /// SQLite 扩展
-        public SQLiteAdapter() { } 
+        /// SQL Server 扩展
+        /// </summary>
+        public SqlServerAdapter() { }
 
-
-        public ISqlBuilder GetPageList<T>(IRepository<T> repository, int pageNum, int pageSize, string whereString, object param, object order, bool asc)
+        /// <summary>
+        /// 分页
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="repository"></param>
+        /// <param name="pageNum">页码</param>
+        /// <param name="pageSize">页大小</param>
+        /// <param name="whereString">where语句，不需要携带where</param>
+        /// <param name="param">where 参数</param>
+        /// <param name="order"></param>
+        /// <param name="asc"></param>
+        /// <returns></returns>
+        public ISqlBuilder GetPageList<T>(IRepository<T> repository, int pageNum = 0, int pageSize = 0, string whereString = null, object param = null, object order = null, bool asc = false)
             where T : class, IEntity
         {
             SqlBuilder sqlBuilder = new SqlBuilder();
@@ -144,31 +166,69 @@ namespace Banana.Uow.Extension
             for (var i = 0; i < allProperties.Count; i++)
             {
                 var property = allProperties[i];
-                AppendColumnName(sbColumnList, SqlMapperExtensions.GetColumnName(property), property.Name);
+                sbColumnList.Append(AppendColumnName(SqlMapperExtensions.GetColumnName(property), property.Name, ""));
                 if (i < allProperties.Count - 1)
                     sbColumnList.Append(", ");
             }
 
             sqlBuilder.Select(args: sbColumnList.ToString());
-            sqlBuilder.From(repository.TableName);
-
-            if (!string.IsNullOrEmpty(whereString))
+            if (pageSize > 0)
             {
-                sqlBuilder.Where(whereString, param);
+                SqlBuilder sqlBuilderRows = new SqlBuilder();
+                string ascSql = " asc";
+                if (!asc)
+                {
+                    ascSql = " desc";
+                }
+                string orderSql = "ID";
+                if (order != null)
+                {
+                    orderSql = SqlBuilder.GetArgsString("ORDER BY", args: order);
+                } 
+
+                if (ConnectionBuilder.DBSetting.DBType == DBType.SqlServer2012)
+                {
+                    sqlBuilder.From(repository.TableName);
+                    sqlBuilder.OrderBy(orderSql);
+                    int numMin = (pageNum - 1) * pageSize;
+                    sqlBuilder.Append($"offset {numMin} rows fetch next {pageSize} rows only");
+                }
+                else
+                {
+                    sqlBuilderRows.Select(args: "SELECT ROW_NUMBER() OVER(ORDER BY " + orderSql + " " + ascSql + ") AS row_id,*");
+                    sqlBuilderRows.From(repository.TableName);
+                    if (!string.IsNullOrEmpty(whereString))
+                    {
+                        sqlBuilderRows.Where(whereString, param);
+                    }
+                    sqlBuilder.Append($"From ({sqlBuilderRows.SQL}) as t", sqlBuilderRows.Arguments);
+                    if (pageNum <= 0)
+                        pageNum = 1;
+                    int numMin = (pageNum - 1) * pageSize + 1,
+                        numMax = pageNum * pageSize;
+                    sqlBuilder.Where("t.row_id>=@numMin and t.row_id<=@numMax", new { numMin, numMax });
+                }
+               
             }
-
-            if (order != null)
+            else
             {
-                sqlBuilder.OrderBy(order);
-                sqlBuilder.IsAse(asc);
-            }
-
-            if (pageNum >= 0 && pageSize > 0)
-            {
-                int numMin = (pageNum - 1) * pageSize;
-                sqlBuilder.Append($" limit {numMin},{pageSize}");
+                sqlBuilder.From(repository.TableName);
+                if (!string.IsNullOrEmpty(whereString))
+                {
+                    sqlBuilder.Where(whereString, param);
+                }
+                if (order != null)
+                {
+                    sqlBuilder.OrderBy(order);
+                    sqlBuilder.IsAse(asc);
+                }
             }
             return sqlBuilder;
+        }
+
+        public string GetPageList(string selection, string source, string conditions, string order, int pageSize, int? pageNumber = null)
+        {
+            throw new NotImplementedException();
         }
     }
 }

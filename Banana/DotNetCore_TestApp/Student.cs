@@ -3,6 +3,7 @@ using Banana.Uow.Models;
 
 namespace DotNetCore_TestApp
 {
+    
     [Table("T_Student")]
     public class Student : IEntity
     {

@@ -17,6 +17,7 @@ using Banana.Uow.Models;
 using Banana.Uow.Interface;
 using System.Threading.Tasks;
 using Banana.Uow.Extension;
+using Banana.Uow.Lambda;
 
 namespace Banana.Uow
 {
@@ -24,7 +25,7 @@ namespace Banana.Uow
     /// 仓储基类|
     /// Base Repository
     /// </summary>
-    public class Repository<T> : IRepository<T> where T : class, IEntity
+    public class Repository<T> : SqlLambda<T>, IRepository<T> where T : class, IEntity
     {
         /// <summary>
         /// 仓储基类|
@@ -32,7 +33,8 @@ namespace Banana.Uow
         /// </summary>
         public Repository()
         {
-            _dbConnection = ConnectionBuilder.CreateConnection(); 
+            _builder = new SQLBuilder.SqlQueryBuilder(TableName, ConnectionBuilder.GetAdapter(this.DBConnection));
+            _resolver = new LambdaResolver(_builder);
         }
 
 
@@ -40,7 +42,7 @@ namespace Banana.Uow
         /// 仓储基类|
         /// Base Repository
         /// </summary>
-        public Repository(IDbConnection dbConnection, IDbTransaction dbTransaction = null)
+        public Repository(IDbConnection dbConnection, IDbTransaction dbTransaction = null):this()
         {
             this._dbConnection = dbConnection;
             this._dbTransaction = dbTransaction;
@@ -205,7 +207,7 @@ namespace Banana.Uow
             {
                 ISqlAdapter adapter = ConnectionBuilder.GetAdapter(this.DBConnection);
                 var sqlbuilder = adapter.GetPageList(this, whereString: whereString, param: param, order: order, asc: asc);
-                return DBConnection.Query<T>(sqlbuilder.SQL, sqlbuilder.Arguments).ToList();
+                return DBConnection.Query<T>(sqlbuilder.SQL, sqlbuilder.Parameters).ToList();
             }
         }
 
@@ -225,7 +227,7 @@ namespace Banana.Uow
             IPage<T> paging = new Paging<T>(pageNum, pageSize);
             ISqlAdapter adapter = ConnectionBuilder.GetAdapter(this.DBConnection);
             var sqlbuilder = adapter.GetPageList(this, pageNum, pageSize, whereString, param, order, asc);
-            paging.data = DBConnection.Query<T>(sqlbuilder.SQL, sqlbuilder.Arguments).ToList();
+            paging.data = DBConnection.Query<T>(sqlbuilder.SQL, sqlbuilder.Parameters).ToList();
             paging.dataCount = QueryCount(whereString, param);
             return paging;
         }
@@ -413,7 +415,7 @@ namespace Banana.Uow
             {
                 ISqlAdapter adapter = ConnectionBuilder.GetAdapter(this.DBConnection);
                 var sqlbuilder = adapter.GetPageList(this, whereString: whereString, param: param, order: order, asc: asc);
-                return await DBConnection.QueryAsync<T>(sqlbuilder.SQL, sqlbuilder.Arguments);
+                return await DBConnection.QueryAsync<T>(sqlbuilder.SQL, sqlbuilder.Parameters);
             }
         }
 
@@ -435,7 +437,7 @@ namespace Banana.Uow
                 IPage<T> paging = new Paging<T>(pageNum, pageSize);
                 ISqlAdapter adapter = ConnectionBuilder.GetAdapter(this.DBConnection);
                 var sqlbuilder = adapter.GetPageList(this, pageNum, pageSize, whereString, param, order, asc);
-                paging.data = DBConnection.Query<T>(sqlbuilder.SQL, sqlbuilder.Arguments).ToList();
+                paging.data = DBConnection.Query<T>(sqlbuilder.SQL, sqlbuilder.Parameters).ToList();
                 paging.dataCount = QueryCount(whereString, param);
                 return paging;
             }); ;
