@@ -26,6 +26,7 @@ namespace Banana.Uow.SQLBuilder
         /// </summary>
         IDictionary<string, object> Parameters { get; }
 
+        Type type { get; }
         List<string> TableNames { get; }
         List<string> JoinExpressions { get; }
         List<string> SelectionList { get; }

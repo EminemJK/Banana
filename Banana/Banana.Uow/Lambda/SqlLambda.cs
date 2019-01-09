@@ -1,4 +1,5 @@
-﻿using Banana.Uow.Models.QueryEnum;
+﻿using Banana.Uow.Interface;
+using Banana.Uow.Models.QueryEnum;
 using Banana.Uow.SQLBuilder;
 using System;
 using System.Collections.Generic;
@@ -11,12 +12,13 @@ namespace Banana.Uow.Lambda
 {
     public class SqlLambda<T> : SqlLambdaBase
     {
-        public SqlLambda()
+        public SqlLambda(string tableName, ISqlAdapter adapter)
         {
-            
+            _builder = new SqlQueryBuilder(tableName, typeof(T), adapter);
+            _resolver = new LambdaResolver(_builder);
         }
 
-        public SqlLambda(Expression<Func<T, bool>> expression) : this()
+        public SqlLambda(string tableName, ISqlAdapter adapter, Expression<Func<T, bool>> expression) : this(tableName, adapter)
         {
             Where(expression);
         }

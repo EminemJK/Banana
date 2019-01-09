@@ -273,7 +273,5 @@ namespace Banana.Uow.Interface
         /// type of entity
         /// </summary>
         Type EntityType { get; }
-
-
     }
 }

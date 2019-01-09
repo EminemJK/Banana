@@ -172,31 +172,6 @@ namespace Banana.Uow.Extension
             return columnAttribute.ColumnName;
         }
 
-        internal static string GetColumnName(Expression expression)
-        {
-            var member = GetMemberExpression(expression);
-            var column = member.Member.GetCustomAttributes(false).OfType<ColumnAttribute>().FirstOrDefault();
-            if (column != null)
-                return column.ColumnName;
-            else
-                return member.Member.Name;
-        }
-
-        internal static MemberExpression GetMemberExpression(Expression expression)
-        {
-            switch (expression.NodeType)
-            {
-                case ExpressionType.MemberAccess:
-                    return expression as MemberExpression;
-                case ExpressionType.Convert:
-                    return GetMemberExpression((expression as UnaryExpression).Operand);
-                case ExpressionType.Equal:
-                    return expression as MemberExpression;
-            }
-
-            throw new ArgumentException("Member expression expected");
-        }
-
         internal static PropertyInfo GetSingleKey<T>(string method)
         {
             var type = typeof(T);

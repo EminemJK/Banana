@@ -102,6 +102,8 @@ namespace Banana.Uow.Extension
 
         public int CurrentParamIndex => throw new NotImplementedException();
 
+        public Type type => throw new NotImplementedException();
+
         public SqlBuilder Append(SqlBuilder sql)
         {
             if (_rhs != null)

@@ -38,7 +38,11 @@ namespace Banana.Uow.Lambda
         public static string GetColumnName(Expression expression)
         {
             var member = GetMemberExpression(expression);
-            return Extension.SqlMapperExtensions.GetColumnName(member);
+            var column = member.Member.GetCustomAttributes(false).OfType<ColumnAttribute>().FirstOrDefault();
+            if (column != null)
+                return column.ColumnName;
+            else
+                return member.Member.Name;
         }
 
         public static string GetPropertyInfoName(Expression expression)
@@ -71,9 +75,19 @@ namespace Banana.Uow.Lambda
 
         private static MemberExpression GetMemberExpression(Expression expression)
         {
-            return Extension.SqlMapperExtensions.GetMemberExpression(expression);
-        }
+            switch (expression.NodeType)
+            {
+                case ExpressionType.Convert:
+                    return GetMemberExpression((expression as UnaryExpression).Operand);
+                case ExpressionType.Equal:
+                case ExpressionType.MemberAccess:
+                    return expression as MemberExpression;
+                case ExpressionType.Lambda:
+                    return GetMemberExpression((expression as LambdaExpression).Body);
+            }
 
+            throw new ArgumentException("Member expression expected");
+        }
         #endregion
     }
 }

@@ -14,12 +14,13 @@ namespace Banana.Uow.SQLBuilder
     /// When requested to return the QueryString, the parts are combined and returned as a single query string.
     /// The query parameters are stored in a dictionary implemented by an ExpandoObject that can be requested by QueryParameters.
     /// </summary>
-    internal partial class SqlQueryBuilder: ISqlBuilder
+    internal partial class SqlQueryBuilder : ISqlBuilder
     {
         internal ISqlAdapter Adapter { get; set; }
 
-        private const string PARAMETER_PREFIX = "Param";
+        private const string PARAMETER_PREFIX = "BananaParam";
 
+        public Type type { get; set; }
         public List<string> TableNames { get; } = new List<string>();
         public List<string> JoinExpressions { get; } = new List<string>();
         public List<string> SelectionList { get; } = new List<string>();
@@ -44,9 +45,10 @@ namespace Banana.Uow.SQLBuilder
             get
             {
                 if (SelectionList.Count == 0)
-                    return string.Format("{0}.*", Adapter.AppendColumnName(TableNames.First(), "", ""));
-                else
-                    return string.Join(", ", SelectionList);
+                {
+                    Query(type);
+                }
+                return string.Join(", ", SelectionList);
             }
         }
 
@@ -110,12 +112,13 @@ namespace Banana.Uow.SQLBuilder
             return Adapter.GetPageList(Source, Selection, Conditions, Order, pageSize);
         }
 
-        internal SqlQueryBuilder(string tableName, ISqlAdapter adapter)
+        internal SqlQueryBuilder(string tableName,Type type, ISqlAdapter adapter)
         {
             TableNames.Add(tableName);
             Adapter = adapter;
             Parameters = new ExpandoObject();
             CurrentParamIndex = 0;
+            this.type = type;
         }
 
         #region helpers

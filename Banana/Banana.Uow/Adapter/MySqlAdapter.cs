@@ -111,7 +111,7 @@ namespace Banana.Uow.Adapter
             if (string.IsNullOrEmpty(columnAlias) || columnName.Equals(columnAlias))
                 tmp = string.Format("`{0}`", columnName);
             else
-                tmp = string.Format("`{0}` as {1}", tableName, columnName, columnAlias);
+                tmp = string.Format("`{0}` as {1}", columnName, columnAlias);
             if (!string.IsNullOrEmpty(tableName))
                 return string.Format("`{0}`.{1}", tableName, tmp);
             return tmp;

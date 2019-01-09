@@ -25,7 +25,7 @@ namespace Banana.Uow
     /// 仓储基类|
     /// Base Repository
     /// </summary>
-    public class Repository<T> : SqlLambda<T>, IRepository<T> where T : class, IEntity
+    public partial class Repository<T> : IRepository<T> where T : class, IEntity
     {
         /// <summary>
         /// 仓储基类|
@@ -33,8 +33,7 @@ namespace Banana.Uow
         /// </summary>
         public Repository()
         {
-            _builder = new SQLBuilder.SqlQueryBuilder(TableName, ConnectionBuilder.GetAdapter(this.DBConnection));
-            _resolver = new LambdaResolver(_builder);
+           
         }
 
 
@@ -42,7 +41,7 @@ namespace Banana.Uow
         /// 仓储基类|
         /// Base Repository
         /// </summary>
-        public Repository(IDbConnection dbConnection, IDbTransaction dbTransaction = null):this()
+        public Repository(IDbConnection dbConnection, IDbTransaction dbTransaction = null) : this()
         {
             this._dbConnection = dbConnection;
             this._dbTransaction = dbTransaction;
