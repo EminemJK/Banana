@@ -111,9 +111,9 @@ namespace DotNetCore_TestApp
 
             var list = repoUserInfo.QueryList();
 
-            var page1 = repoUserInfo.QueryList(1, 5);
-            var page2 = repoUserInfo.QueryList(2, 5);
-            var page3 = repoUserInfo.QueryList(3, 5);
+            var page1 = repoUserInfo.QueryList(1, 5, "Id>@Id", new { Id = 6 });
+            var page2 = repoUserInfo.QueryList(2, 5, "Id>@Id", new { Id = 6 });
+            var page3 = repoUserInfo.QueryList(3, 5, "Id>@Id", new { Id = 6 });
 
             var model = repoUserInfo.Query(list[0].Id);
             bool b = repoUserInfo.Delete(model);

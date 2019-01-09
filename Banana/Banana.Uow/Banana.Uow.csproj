@@ -11,10 +11,8 @@
     <PackageProjectUrl></PackageProjectUrl>
     <PackageIconUrl>https://www.cnblogs.com/images/cnblogs_com/EminemJK/1345488/o_banana.uow.png</PackageIconUrl>
     <RepositoryUrl>https://github.com/EminemJK/Banana.git</RepositoryUrl>
-    <Version>1.4.2</Version>
-    <PackageReleaseNotes>1. Add sql server 2012 page
-2. Fix denominate page bug
-3.Improve performance</PackageReleaseNotes>
+    <Version>1.4.3</Version>
+    <PackageReleaseNotes>1. fix bug</PackageReleaseNotes>
     <SignAssembly>true</SignAssembly>
     <RepositoryType>git</RepositoryType>
     <Copyright>Copyright (c) Lio.Huang. All rights reserved.</Copyright>

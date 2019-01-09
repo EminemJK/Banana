@@ -6,6 +6,7 @@
  * 2018-12-28  1.更新GetPageList中的Select *  => Select {ColumnList}
  * 2019-01-03  1.更新GetPageList中的property.Name => SqlMapperExtensions.GetColumnAlias(property)
  *             2.更新AppendColumnName、AppendColumnNameEqualsValue 新增别名
+ * 2019-01-09  1.Fix bug => sqlBuilder.Where(whereString, param);
  **********************************/
 
 using Banana.Uow.Extension;
@@ -186,6 +187,10 @@ namespace Banana.Uow.Adapter
                 if (ConnectionBuilder.DBSetting.DBType == DBType.SqlServer2012)
                 {
                     sqlBuilder.From(repository.TableName);
+                    if (!string.IsNullOrEmpty(whereString))
+                    {
+                        sqlBuilder.Where(whereString, param);
+                    }
                     sqlBuilder.OrderBy(orderSql);
                     int numMin = (pageNum - 1) * pageSize;
                     sqlBuilder.Append($"offset {numMin} rows fetch next {pageSize} rows only");
