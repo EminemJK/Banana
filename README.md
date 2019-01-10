@@ -114,3 +114,6 @@ using (UnitOfWork uow = new UnitOfWork())
 
 ## To Be Continued
 👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍
+
+-------
+[Apache License](http://www.apache.org/licenses/)
