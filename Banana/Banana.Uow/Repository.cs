@@ -6,6 +6,7 @@
  * 2019-01-04  1.更新Query和QueryAsync 新增stringId
  * 2019-01-07  1.Add && _dbConnection.State!= ConnectionState.Connecting
  *             2.GetAdapter(_dbConnection)
+ * 2019-01-11  1.Query(int) => Query(obj)
  **********************************/
 
 using System;
@@ -21,24 +22,20 @@ using Banana.Uow.Extension;
 namespace Banana.Uow
 {
     /// <summary>
-    /// 仓储基类|
-    /// Base Repository
+    /// 仓储基类| Base Repository
     /// </summary>
     public class Repository<T> : IRepository<T> where T : class, IEntity
     {
         /// <summary>
-        /// 仓储基类|
-        /// Base Repository
+        /// 仓储基类| Base Repository
         /// </summary>
         public Repository()
-        {
-            _dbConnection = ConnectionBuilder.CreateConnection(); 
+        { 
         }
 
 
         /// <summary>
-        /// 仓储基类|
-        /// Base Repository
+        /// 仓储基类| Base Repository
         /// </summary>
         public Repository(IDbConnection dbConnection, IDbTransaction dbTransaction = null)
         {
@@ -148,21 +145,7 @@ namespace Banana.Uow
         /// </summary>
         /// <param name="id">Id of the entity to get, must be marked with [Key]/[ExplicitKey] attribute</param>
         /// <returns>Entity of T</returns>
-        public T Query(int id)
-        {
-            return Query(id.ToString());
-        }
-
-        /// <summary>
-        /// 查询单个实体|
-        /// Returns a single entity by a single id from table "Ts".  
-        /// Id must be marked with [Key]/[ExplicitKey] attribute.
-        /// Entities created from interfaces are tracked/intercepted for changes and used by the Update() extension
-        /// for optimal performance. 
-        /// </summary>
-        /// <param name="id">Id of the entity to get, must be marked with [Key]/[ExplicitKey] attribute</param>
-        /// <returns>Entity of T</returns>
-        public T Query(string id)
+        public T Query(object id)
         {
             return DBConnection.Get<T>(id);
         }
@@ -357,20 +340,7 @@ namespace Banana.Uow
         /// </summary>
         /// <param name="id">Id of the entity to get, must be marked with [Key] attribute</param>
         /// <returns>返回实体|Entity of T</returns>
-        public async Task<T> QueryAsync(int id)
-        {
-            return await QueryAsync(id.ToString());
-        }
-
-        /// <summary>
-        /// 查询|
-        /// Returns a single entity by a single id from table "Ts" asynchronously using .NET 4.5 Task. T must be of interface type. 
-        /// Id must be marked with [Key] attribute.
-        /// Created entity is tracked/intercepted for changes and used by the Update() extension. 
-        /// </summary>
-        /// <param name="id">Id of the entity to get, must be marked with [Key] attribute</param>
-        /// <returns>返回实体|Entity of T</returns>
-        public async Task<T> QueryAsync(string id)
+        public async Task<T> QueryAsync(object id)
         {
             return await DBConnection.GetAsync<T>(id);
         }
