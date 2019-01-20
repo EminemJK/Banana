@@ -1,6 +1,9 @@
 ﻿/***********************************
  * Developer: Lio.Huang
  * Date：2018-11-26
+ * 
+ * UpdateDate:
+ * 2019-01-20  1.兼容framework
  **********************************/
 
 using System;
@@ -21,7 +24,7 @@ namespace Banana.Utility.Encryption
         /// <summary>
         /// 密钥 8位
         /// </summary>
-        private const string KEY = "banana07";
+        private const string KEY = "banana07eminemjkliohuang";
 
         /// <summary>
         /// 偏移量 8位
@@ -40,11 +43,11 @@ namespace Banana.Utility.Encryption
         {
             try
             {
+                if (!checkKey(key))
+                    throw new Exception("The length of the key is less than 24 bits");
+
                 byte[] btKey = Encoding.UTF8.GetBytes(key);
-
-                byte[] btIV = Encoding.UTF8.GetBytes(iv);
-
-                byte[] allKey = BufferCopy(KeyLengt, btKey);
+                byte[] btIV = Encoding.UTF8.GetBytes(iv); 
 
                 var des = TripleDES.Create();
 
@@ -53,7 +56,7 @@ namespace Banana.Utility.Encryption
                     byte[] inData = Encoding.UTF8.GetBytes(sourceString);
                     try
                     {
-                        using (CryptoStream cs = new CryptoStream(ms, des.CreateEncryptor(allKey, btIV), CryptoStreamMode.Write))
+                        using (CryptoStream cs = new CryptoStream(ms, des.CreateEncryptor(btKey, btIV), CryptoStreamMode.Write))
                         {
                             cs.Write(inData, 0, inData.Length);
 
@@ -79,12 +82,12 @@ namespace Banana.Utility.Encryption
         /// </summary>
         public static string Decrypt(string encryptedString, string key = KEY, string iv = IV)
         {
+            if (!checkKey(key))
+                throw new Exception("The length of the key is less than 24 bits");
+
             byte[] btKey = Encoding.UTF8.GetBytes(key);
-
             byte[] btIV = Encoding.UTF8.GetBytes(iv);
-
-            byte[] allKey = BufferCopy(KeyLengt, btKey);
-
+              
             var des = TripleDES.Create();
 
             using (MemoryStream ms = new MemoryStream())
@@ -92,7 +95,7 @@ namespace Banana.Utility.Encryption
                 byte[] inData = Convert.FromBase64String(encryptedString);
                 try
                 {
-                    using (CryptoStream cs = new CryptoStream(ms, des.CreateDecryptor(allKey, btIV), CryptoStreamMode.Write))
+                    using (CryptoStream cs = new CryptoStream(ms, des.CreateDecryptor(btKey, btIV), CryptoStreamMode.Write))
                     {
                         cs.Write(inData, 0, inData.Length);
 
@@ -109,13 +112,9 @@ namespace Banana.Utility.Encryption
             }
         }
 
-        private static byte[] BufferCopy(int iLengt, byte[] sourceByte)
+        private static bool checkKey(string key)
         {
-            byte[] allKey = new byte[iLengt];
-            Buffer.BlockCopy(sourceByte, 0, allKey, 0, 8);
-            Buffer.BlockCopy(sourceByte, 0, allKey, 8, 8);
-            Buffer.BlockCopy(sourceByte, 0, allKey, 16, 8);
-            return allKey;
+            return key.Length == KeyLengt;
         }
     }
 }

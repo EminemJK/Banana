@@ -5,15 +5,19 @@
     <PackageTags>Tools;Redis;PinYin;Encryption</PackageTags>
     <Title>Banana.Utility</Title>
     <Description>Banana tools</Description>
-    <Authors>EminemJK</Authors>
+    <Authors>Lio.Huang</Authors>
     <TargetFrameworks>net461;netstandard2.0</TargetFrameworks>
     <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0.html</PackageLicenseUrl>
-    <PackageProjectUrl>https://github.com/EminemJK/Banana.git</PackageProjectUrl>
+    <PackageProjectUrl></PackageProjectUrl>
     <PackageIconUrl>https://www.cnblogs.com/images/cnblogs_com/EminemJK/1345488/o_banana.uow.png</PackageIconUrl>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.0.4</Version>
-    <PackageReleaseNotes>fix redis bug</PackageReleaseNotes>
+    <Version>1.0.5</Version>
+    <PackageReleaseNotes>fix DES bug</PackageReleaseNotes>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <RepositoryUrl>https://github.com/EminemJK/Banana.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <Copyright>Copyright (c) Lio.Huang. All rights reserved.</Copyright>
+    <Company>Lio.Huang</Company>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net461|AnyCPU'">
