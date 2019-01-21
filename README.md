@@ -79,6 +79,15 @@ using Banana.Uow.Models;
     //执行语句
     int res = repo.Execute(sql,param);
 ```
+#### 3.2 多数据库时
+``` csharp
+    ConnectionBuilder.ConfigRegist("strConnA", DBType.SqlServer2012, "readKey");
+    ConnectionBuilder.ConfigRegist("strConnB", DBType.SqlServer2012, "wirteKey");
+    
+    var userInfo_ReadRepo = new Repository<Student>(readKey); 
+    var userInfo_WirteRepo = new Repository<Student>(wirteKey);
+    Your code ……
+```
 ### 二、工作单元
 ``` csharp
 using (UnitOfWork uow = new UnitOfWork())
@@ -97,6 +106,20 @@ using (UnitOfWork uow = new UnitOfWork())
        {
             uow.Rollback();
        }
+}
+```
+多数据库时
+``` csharp
+using (UnitOfWork uow = new UnitOfWork(IDbConnection context))
+{
+      Your code
+}
+```
+OR
+``` csharp
+using (UnitOfWork uow = new UnitOfWork("dbKey"))
+{
+      Your code
 }
 ```
 # Banana.Utility

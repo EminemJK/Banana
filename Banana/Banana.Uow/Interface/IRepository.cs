@@ -3,6 +3,7 @@
  * Date：2018-11-16
  * 
  * Last Update：2018-12-18
+ * 2019-01-21  1.Current DB Setting
  **********************************/
 
 using Banana.Uow.Models;
@@ -223,6 +224,7 @@ namespace Banana.Uow.Interface
         Task<int> ExecuteAsync(string sql, dynamic parms = null);
         #endregion
 
+        #region Field & method
         /// <summary>
         /// 表名|
         /// To get the name of the table
@@ -251,5 +253,11 @@ namespace Banana.Uow.Interface
         /// type of entity
         /// </summary>
         Type EntityType { get; }
+
+        /// <summary>
+        /// Current repository's DBSetting
+        /// </summary>
+        DBSetting CurrentDBSetting { get; }
+        #endregion
     }
 }

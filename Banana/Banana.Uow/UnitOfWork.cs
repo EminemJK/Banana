@@ -3,7 +3,8 @@
  * Create Date：2018-11-16
  * 
  * Last Update：
- * 2019-01-07  1.2018-12-18 add this.context.State != ConnectionState.Connecting
+ * 2019-01-07  1.Add this.context.State != ConnectionState.Connecting
+ * 2019-01-21  1.Add UnitOfWork(string dbKey = "")
  **********************************/
 
 using Banana.Uow.Models;
@@ -57,18 +58,25 @@ namespace Banana.Uow
         /// 工作单元基类|
         /// Base UnitOfWork
         /// </summary>
-        public UnitOfWork(IDbConnection context = null)
+        public UnitOfWork(IDbConnection context)
         {
             this.context = context;
-            if (this.context == null)
-            {
-                this.context = ConnectionBuilder.CreateConnection();
-            }
             if (this.context.State == ConnectionState.Closed && this.context.State != ConnectionState.Connecting)
             {
                 this.context.Open();
             }
             transaction = this.context.BeginTransaction();
+        }
+
+        /// <summary>
+        /// 工作单元基类|
+        /// Base UnitOfWork
+        /// </summary>
+        public UnitOfWork(string dbKey = "")
+        {
+            this.context = ConnectionBuilder.CreateConnection(dbKey);
+            this.context.Open();
+            this.transaction = this.context.BeginTransaction();
         }
 
         /// <summary>

@@ -13,6 +13,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Banana.Utility.Common;
 using Banana.Utility.Redis;
+using Banana.Uow.Interface;
 
 namespace DotNetCore_TestApp
 {
@@ -21,9 +22,9 @@ namespace DotNetCore_TestApp
         static void Main(string[] args)
         {
             //TestExplicitKey();
-            TestSQLServer();
+            //TestSQLServer();
 
-            TestMySQL();
+            //TestMySQL();
 
             //TestPostgres(); 
 
@@ -31,7 +32,9 @@ namespace DotNetCore_TestApp
 
             //TestOracle();
 
-            TestBCPStore();
+            //TestBCPStore();
+
+            TestMultipleDatabases();
             Console.WriteLine("Hello World!");
             Console.ReadKey();
         } 
@@ -507,6 +510,50 @@ namespace DotNetCore_TestApp
 
             list[0].Name = "Banana";
             var b = repoStudent.Update(list[0]);
+        }
+
+        static void TestMultipleDatabases()
+        {
+            string readKey = "readKey",
+                   wirteKey = "wirteKey";
+
+            ConnectionBuilder.ConfigRegist("Data Source=.;Initial Catalog = AdminLTE.Net.DB;User ID=sa;Password =mimashi123", DBType.SqlServer2012, readKey);
+            ConnectionBuilder.ConfigRegist("Data Source=.;Initial Catalog = LoadDB;User ID=sa;Password =mimashi123", DBType.SqlServer2012, wirteKey);
+
+            var userInfo_ReadRepo = new Repository<UserInfo>(readKey); 
+            var userInfo_WirteRepo = new Repository<UserInfo>(wirteKey);
+            CRUDbyRepo(userInfo_WirteRepo);
+            CRUDbyRepo(userInfo_ReadRepo);
+        }
+
+        static void CRUDbyRepo(IRepository<UserInfo> repoUserInfo)
+        {
+            var list = repoUserInfo.QueryList();
+
+            var page1 = repoUserInfo.QueryList(1, 5, "Id>@Id", new { Id = 6 });
+            var page2 = repoUserInfo.QueryList(2, 5, "Id>@Id", new { Id = 6 });
+            var page3 = repoUserInfo.QueryList(3, 5, "Id>@Id", new { Id = 6 });
+
+            var model = repoUserInfo.Query(list[0].Id);
+            bool b = repoUserInfo.Delete(model);
+            list = repoUserInfo.QueryList();
+
+            model = repoUserInfo.Query(list[0].Id);
+            model.Phone = "1234567";
+            bool ub = repoUserInfo.Update(model);
+            list = repoUserInfo.QueryList(order: "order by id");
+            UserInfo newUser = new UserInfo()
+            {
+                Name = "Lio.Huang",
+                UserNameFiel = "Lio.Huang",
+                Phone = "12346578",
+                Enable = 1,
+                Password = "mimashi123",
+                Sex = 1,
+                CreateTime = DateTime.Now
+            };
+            int id = (int)repoUserInfo.Insert(newUser);
+
         }
     }
 }

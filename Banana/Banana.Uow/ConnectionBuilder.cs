@@ -4,6 +4,7 @@
  * 
  * Last Update：
  * 2019-01-07  1. GetAdapter(connection)
+ * 2019-01-21  1.增加同时多数据库支持
  **********************************/
 
 using Banana.Uow.Interface;
@@ -16,6 +17,7 @@ using System.Data.SQLite;
 using Npgsql;
 using Oracle.ManagedDataAccess.Client;
 using static Banana.Uow.Extension.SqlMapperExtensions;
+using System.Collections.Concurrent;
 
 namespace Banana.Uow
 {
@@ -25,7 +27,11 @@ namespace Banana.Uow
     /// </summary>
     public class ConnectionBuilder
     {
-        internal static DBSetting DBSetting;
+        private static ConcurrentDictionary<string, DBSetting> DBSettingDic;
+        /// <summary>
+        /// Default key Name
+        /// </summary>
+        public const string DefaultKeyName = "Banana's read&wirte db connection key";
 
         /// <summary>
         /// 注册链接|
@@ -33,9 +39,11 @@ namespace Banana.Uow
         /// </summary>
         /// <param name="strConn">connection string</param>
         /// <param name="dBType">type of database</param>
-        public static void ConfigRegist(string strConn, DBType dBType = DBType.SqlServer)
+        /// <param name="dbKey">Multiple databases can be injected depending on the key</param>
+        public static void ConfigRegist(string strConn, DBType dBType = DBType.SqlServer, string dbKey = DefaultKeyName)
         {
-            DBSetting = new DBSetting() { ConnectionString = strConn, DBType = dBType };
+           var dbSetting = new DBSetting() { ConnectionString = strConn, DBType = dBType };
+            ConfigRegist(dbSetting, dbKey);
         }
 
         /// <summary>
@@ -43,21 +51,43 @@ namespace Banana.Uow
         /// Register database links
         /// </summary>
         /// <param name="db">connection model</param>
-        public static void ConfigRegist(DBSetting db)
+        /// <param name="dbKey">Multiple databases can be injected depending on the key</param>
+        public static void ConfigRegist(DBSetting db, string dbKey = DefaultKeyName)
         {
-            DBSetting = new DBSetting() { ConnectionString = db.ConnectionString, DBType = db.DBType };
+            if (DBSettingDic == null)
+            {
+                DBSettingDic = new ConcurrentDictionary<string, DBSetting>();
+            }
+            if (string.IsNullOrEmpty(dbKey))
+            {
+                dbKey = DefaultKeyName;
+            }
+            if (DBSettingDic.ContainsKey(dbKey))
+            {
+                throw new Exception("The same key already exists:" + dbKey);
+            }
+            DBSettingDic[dbKey] = db;
         }
 
         /// <summary>
         /// 创建连接串|
         /// create database connection
         /// </summary>
-        public static IDbConnection CreateConnection()
+        public static IDbConnection CreateConnection(string dbKey = DefaultKeyName)
         {
             try
             {
-                var conn = DBSetting.ConnectionString;
-                switch (DBSetting.DBType)
+                if (string.IsNullOrEmpty(dbKey))
+                {
+                    dbKey = DefaultKeyName;
+                }
+                DBSetting dBSetting;
+                if (!DBSettingDic.TryGetValue(dbKey, out dBSetting))
+                {
+                    throw new Exception("The key doesn't exist:" + dbKey);
+                }
+                var conn = dBSetting.ConnectionString;
+                switch (dBSetting.DBType)
                 {
                     case DBType.SqlServer:
                     case DBType.SqlServer2012:
@@ -71,17 +101,28 @@ namespace Banana.Uow
                     case DBType.Oracle:
                         return new OracleConnection(conn);
                 }
-               
-                throw new Exception("未注册数据库链接，请调用ConnectionBuilder.ConfigRegist");
+
+                throw new Exception("Unregistered database link, please register by \"ConnectionBuilder.ConfigRegist\"");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                throw new Exception("未注册数据库链接，请调用ConnectionBuilder.ConfigRegist");
+                throw new Exception("Unregistered database link, please register by \"ConnectionBuilder.ConfigRegist\"");
             }
         }
 
+        public static DBSetting GetDBSetting(string dbKey = DefaultKeyName)
+        {
+            if (string.IsNullOrEmpty(dbKey))
+                dbKey = DefaultKeyName;
+            DBSetting dBSetting;
+            if (!DBSettingDic.TryGetValue(dbKey, out dBSetting))
+            {
+                throw new Exception("The key doesn't exist:" + dbKey);
+            }
+            return dBSetting;
+        }
         /// <summary>
-        /// The interface for all Dapper.Contrib database operations 
+        /// The interface for all Dapper database operations 
         /// </summary>
         /// <returns></returns>
         internal static ISqlAdapter GetAdapter(IDbConnection connection)

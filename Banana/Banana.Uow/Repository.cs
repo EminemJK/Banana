@@ -7,6 +7,7 @@
  * 2019-01-07  1.Add && _dbConnection.State!= ConnectionState.Connecting
  *             2.GetAdapter(_dbConnection)
  * 2019-01-11  1.Query(int) => Query(obj)
+ * 2019-01-21  1.Current DB Setting
  **********************************/
 
 using System;
@@ -29,8 +30,9 @@ namespace Banana.Uow
         /// <summary>
         /// 仓储基类| Base Repository
         /// </summary>
-        public Repository()
-        { 
+        public Repository(string dbKey ="")
+        {
+            this.dbkey = dbKey;
         }
 
 
@@ -43,7 +45,14 @@ namespace Banana.Uow
             this._dbTransaction = dbTransaction;
         }
 
-        #region Method Properties
+        #region Field & method
+        private string dbkey;
+
+        /// <summary>
+        /// CurrentDB Setting
+        /// </summary>
+        public DBSetting CurrentDBSetting => ConnectionBuilder.GetDBSetting(dbkey);
+
         private IDbConnection _dbConnection;
         /// <summary>
         /// IDbConnection
@@ -54,7 +63,7 @@ namespace Banana.Uow
             {
                 if (_dbConnection == null)
                 {
-                    _dbConnection = ConnectionBuilder.CreateConnection();
+                    _dbConnection = ConnectionBuilder.CreateConnection(dbkey);
                 }
                 if (_dbConnection.State == ConnectionState.Closed && _dbConnection.State!= ConnectionState.Connecting)
                 {

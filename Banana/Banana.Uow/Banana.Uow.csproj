@@ -11,8 +11,8 @@
     <PackageProjectUrl></PackageProjectUrl>
     <PackageIconUrl>https://www.cnblogs.com/images/cnblogs_com/EminemJK/1345488/o_banana.uow.png</PackageIconUrl>
     <RepositoryUrl>https://github.com/EminemJK/Banana.git</RepositoryUrl>
-    <Version>1.4.4</Version>
-    <PackageReleaseNotes>Improved performance</PackageReleaseNotes>
+    <Version>1.5.0</Version>
+    <PackageReleaseNotes>Support for multiple databases simultaneously</PackageReleaseNotes>
     <SignAssembly>true</SignAssembly>
     <RepositoryType>git</RepositoryType>
     <Copyright>Copyright (c) Lio.Huang. All rights reserved.</Copyright>

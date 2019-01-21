@@ -184,7 +184,7 @@ namespace Banana.Uow.Adapter
                     orderSql = SqlBuilder.GetArgsString("ORDER BY", args: order);
                 } 
 
-                if (ConnectionBuilder.DBSetting.DBType == DBType.SqlServer2012)
+                if (repository.CurrentDBSetting.DBType == DBType.SqlServer2012)
                 {
                     sqlBuilder.From(repository.TableName);
                     if (!string.IsNullOrEmpty(whereString))
