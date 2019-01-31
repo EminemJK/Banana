@@ -3,6 +3,7 @@
  * Date：2018-11-21
  * 
  * Last Update：2018-12-24
+ * 2019-01-31 1.Add Set method
  **********************************/
 
 using System;
@@ -20,7 +21,17 @@ namespace Banana.Utility.Redis
         /// redis配置文件信息  
         /// </summary>  
         public static string RedisPath = "172.16.3.82:6379";
-        
+
+        /// <summary>
+        /// 注册地址
+        /// </summary>
+        /// <param name="redisPath">redis connection string</param>
+        public static void Register(string redisPath)
+        {
+            RedisPath = redisPath;
+        }
+
+
         private static object _locker = new Object();
         private static ConnectionMultiplexer _instance = null;
 
@@ -148,9 +159,7 @@ namespace Banana.Utility.Redis
             if (db != null)
             {
                 var value = db.StringGet(key);
-                if (string.IsNullOrWhiteSpace(value))
-                    return data;
-                return JsonConvert.DeserializeObject<T>(value);
+                return ConvertObj<T>(value);
             }
             return data;
         }
@@ -180,7 +189,7 @@ namespace Banana.Utility.Redis
                 return false;
             }
             var db = Instance.GetDatabase(dbIndex);
-            return db.StringSet(key, JsonConvert.SerializeObject(value), expiry);
+            return db.StringSet(key, ConvertJson(value), expiry);
         }
         #endregion
 
@@ -195,7 +204,7 @@ namespace Banana.Utility.Redis
         public static bool HashExists(int dbIndex, string hashId, string key)
         {
             var db = Instance.GetDatabase(dbIndex);
-            return db.HashExists(hashId, key);
+            return db.HashExists(key, hashId);
         }
 
         /// <summary>
@@ -223,8 +232,7 @@ namespace Banana.Utility.Redis
         public static bool HashSet<T>(int dbIndex, string hashId, string key, T t)
         {
             var db = Instance.GetDatabase(dbIndex);
-            var value = JsonConvert.SerializeObject(t);
-            return db.HashSet(hashId, key, value);
+            return db.HashSet(hashId, key, ConvertJson(t));
         }
 
         /// <summary>
@@ -241,7 +249,7 @@ namespace Banana.Utility.Redis
             string value = db.HashGet(hashId, key);
             if (string.IsNullOrWhiteSpace(value))
                 return default(T);
-            return JsonConvert.DeserializeObject<T>(value);
+            return ConvertObj<T>(value);
         }
 
         /// <summary>
@@ -253,9 +261,8 @@ namespace Banana.Utility.Redis
         /// <returns></returns>
         public static string HashGet(int dbIndex, string hashId, string key)
         {
-            var db = Instance.GetDatabase(dbIndex);
-            string value = db.HashGet(hashId, key).ToString();
-            return value;
+            var db = Instance.GetDatabase(dbIndex); 
+            return db.HashGet(hashId, key).ToString();
         }
 
         /// <summary>
@@ -273,8 +280,7 @@ namespace Banana.Utility.Redis
             {
                 list.ForEach(x =>
                 {
-                    var value = JsonConvert.DeserializeObject<string>(x);
-                    result.Add(value);
+                    result.Add(ConvertObj<string>(x));
                 });
             }
             return result;
@@ -296,8 +302,7 @@ namespace Banana.Utility.Redis
             {
                 list.ForEach(x =>
                 {
-                    var value = JsonConvert.DeserializeObject<T>(x.Value);
-                    result.Add(value);
+                    result.Add(ConvertObj<T>(x.Value));
                 });
             }
             return result;
@@ -345,10 +350,10 @@ namespace Banana.Utility.Redis
             {
                 foreach (var item in list)
                 {
-                    db.ListRightPush(listId, JsonConvert.SerializeObject(item));
+                    db.ListRightPush(listId, ConvertJson(item));
                 }
             }
-            return ListLength(dbIndex, listId);
+            return db.ListLength(listId);
         }
 
         /// <summary>
@@ -369,8 +374,7 @@ namespace Banana.Utility.Redis
             {
                 list.ForEach(x =>
                 {
-                    var value = JsonConvert.DeserializeObject<T>(x);
-                    result.Add(value);
+                    result.Add(ConvertObj<T>(x));
                 });
             }
             return result;
@@ -690,69 +694,7 @@ namespace Banana.Utility.Redis
 
         #endregion
 
-        #region 内部辅助方法
-
-        /// <summary>
-        /// 将对象转换成string字符串
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public static string ConvertJson<T>(T value)
-        {
-            string result = value is string ? value.ToString() :
-                JsonConvert.SerializeObject(value, Formatting.None);
-            return result;
-        }
-        /// <summary>
-        /// 获取指定Key中最大Score值,
-        /// </summary>
-        /// <param name="key">key名称，注意要先添加上Key前缀</param>
-        /// <returns></returns>
-        private static double _GetScore(string key, IDatabase db)
-        {
-            double dValue = 0;
-            var rValue = db.SortedSetRangeByRankWithScores(key, 0, 0, Order.Descending).FirstOrDefault();
-            dValue = rValue != null ? rValue.Score : 0;
-            return dValue + 1;
-        }
-
-        /// <summary>
-        /// 将值集合转换成RedisValue集合
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="redisValues"></param>
-        /// <returns></returns>
-        private static RedisValue[] ConvertRedisValue<T>(params T[] redisValues) => redisValues.Select(o => (RedisValue)ConvertJson<T>(o)).ToArray();
-
-        /// <summary>
-        /// 将值反系列化成对象集合
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="values"></param>
-        /// <returns></returns>
-        public static List<T> ConvetList<T>(RedisValue[] values)
-        {
-            List<T> result = new List<T>();
-            foreach (var item in values)
-            {
-                var model = ConvertObj<T>(item);
-                result.Add(model);
-            }
-            return result;
-        }
-
-        /// <summary>
-        /// 将值反系列化成对象
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public static T ConvertObj<T>(RedisValue value)
-        {
-            return value.IsNullOrEmpty ? default(T) : JsonConvert.DeserializeObject<T>(value);
-        }
-
+        #region private method
         /// <summary>
         /// 获取几个集合的交叉并集合,并保存到一个新Key中
         /// </summary>
@@ -775,8 +717,300 @@ namespace Banana.Utility.Redis
         /// <param name="redisKeys"></param>
         /// <returns></returns>
         private static RedisKey[] ConvertRedisKeysAddSysCustomKey(params string[] redisKeys) => redisKeys.Select(redisKey => (RedisKey)redisKey).ToArray();
+
+        /// <summary>
+        /// 获取指定Key中最大Score值,
+        /// </summary>
+        /// <param name="key">key名称，注意要先添加上Key前缀</param>
+        /// <returns></returns>
+        private static double _GetScore(string key, IDatabase db)
+        {
+            double dValue = 0;
+            var rValue = db.SortedSetRangeByRankWithScores(key, 0, 0, Order.Descending).FirstOrDefault();
+            dValue = rValue != null ? rValue.Score : 0;
+            return dValue + 1;
+        }
         #endregion
 
+        #endregion
+
+        #region SET
+
+        /// <summary>
+        ///   Add the specified member to the set stored at key. Specified members that are  already a member of this set are ignored. If key does not exist, a new set is created before adding the specified members.
+        /// </summary>
+        /// <param name="dbIndex"></param>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static bool SetAdd<T>(int dbIndex, string key, T value)
+        {
+            var db = Instance.GetDatabase(dbIndex);
+            return db.SetAdd(key, ConvertJson(value));
+        }
+
+        /// <summary>
+        ///   Add the specified member to the set stored at key. Specified members that are  already a member of this set are ignored. If key does not exist, a new set is created before adding the specified members.
+        /// </summary>
+        /// <param name="dbIndex"></param>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static async Task<bool> SetAddAsync<T>(int dbIndex, string key, T value)
+        {
+            var db = Instance.GetDatabase(dbIndex);
+            return await db.SetAddAsync(key, ConvertJson(value));
+        }
+
+        /// <summary>
+        /// Returns the members of the set resulting from the specified operation against the given sets.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="dbIndex"></param>
+        /// <param name="operation"></param>
+        /// <param name="firstKey"></param>
+        /// <param name="secondKey"></param>
+        /// <returns></returns>
+        public static string[] SetCombine(int dbIndex, SetOperation operation, string firstKey, string secondKey)
+        {
+            var db = Instance.GetDatabase(dbIndex);
+            var array = db.SetCombine(operation, firstKey, secondKey); 
+            return array.ToStringArray();
+        }
+
+        /// <summary>
+        /// Returns the members of the set resulting from the specified operation against the given sets.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="dbIndex"></param>
+        /// <param name="operation"></param>
+        /// <param name="firstKey"></param>
+        /// <param name="secondKey"></param>
+        /// <returns></returns>
+        public static async Task<string[]> SetCombineAsync(int dbIndex, SetOperation operation, string firstKey, string secondKey)
+        {
+            var db = Instance.GetDatabase(dbIndex);
+            var array = await db.SetCombineAsync(operation, firstKey, secondKey);
+            return array.ToStringArray();
+        }
+
+        /// <summary>
+        /// Returns if member is a member of the set stored at key.
+        /// </summary>
+        /// <param name="dbIndex"></param>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <returns>Returns if member is a member of the set stored at key.</returns>
+        public static bool SetContains<T>(int dbIndex, string key, T value)
+        {
+            var db = Instance.GetDatabase(dbIndex);
+            return db.SetContains(key, ConvertJson(value));
+        }
+
+        /// <summary>
+        /// Returns if member is a member of the set stored at key.
+        /// </summary>
+        /// <param name="dbIndex"></param>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <returns>Returns if member is a member of the set stored at key.</returns>
+        public static async Task<bool> SetContainsAsync<T>(int dbIndex, string key, T value)
+        {
+            var db = Instance.GetDatabase(dbIndex);
+            return await db.SetContainsAsync(key, ConvertJson(value));
+        }
+
+        /// <summary>
+        /// 返回对应键值集合的长度|Returns the set cardinality (number of elements) of the set stored at key.
+        /// </summary>
+        /// <param name="dbIndex"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public static long SetLength(int dbIndex, string key)
+        {
+            var db = Instance.GetDatabase(dbIndex);
+            return db.SetLength(key);
+        }
+
+        /// <summary>
+        /// 返回对应键值集合的长度|Returns the set cardinality (number of elements) of the set stored at key.
+        /// </summary>
+        /// <param name="dbIndex"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public static async Task<long> SetLengthAsync(int dbIndex, string key)
+        {
+            var db = Instance.GetDatabase(dbIndex);
+            return await db.SetLengthAsync(key);
+        }
+
+        /// <summary>
+        /// 返回存储在键的集合值的所有成员|Returns all the members of the set value stored at key.
+        /// </summary>
+        /// <param name="dbIndex"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public static List<T> SetMembers<T>(int dbIndex, string key)
+        {
+            var db = Instance.GetDatabase(dbIndex);
+            var array = db.SetMembers(key);
+            return ConvetList<T>(array);
+        }
+
+        /// <summary>
+        /// 返回存储在键的集合值的所有成员|Returns all the members of the set value stored at key.
+        /// </summary>
+        /// <param name="dbIndex"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public static async Task<List<T>> SetMembersAsync<T>(int dbIndex, string key)
+        {
+            var db = Instance.GetDatabase(dbIndex);
+            var array = await db.SetMembersAsync(key);
+            return ConvetList<T>(array);
+        }
+
+        /// <summary>
+        /// Move member from the set at source to the set at destination. This operation is atomic. In every given moment the element will appear to be a member of source or destination for other clients. When the specified element already exists in the destination set, it is only removed from the source set.
+        /// </summary>
+        /// <param name="dbIndex"></param>
+        /// <param name="sourceKey"></param>
+        /// <param name="destinationKey"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static bool SetMove<T>(int dbIndex, string sourceKey, string destinationKey, T value)
+        {
+            var db = Instance.GetDatabase(dbIndex);
+            return db.SetMove(sourceKey, destinationKey, ConvertJson(value));
+        }
+
+        /// <summary>
+        /// Move member from the set at source to the set at destination. This operation is atomic. In every given moment the element will appear to be a member of source or destination for other clients. When the specified element already exists in the destination set, it is only removed from the source set.
+        /// </summary>
+        /// <param name="dbIndex"></param>
+        /// <param name="sourceKey"></param>
+        /// <param name="destinationKey"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static async Task<bool> SetMoveAsync<T>(int dbIndex, string sourceKey, string destinationKey, T value)
+        {
+            var db = Instance.GetDatabase(dbIndex);
+            return await db.SetMoveAsync(sourceKey, destinationKey, ConvertJson(value));
+        }
+
+        /// <summary>
+        /// Removes and returns a random element from the set value stored at key.
+        /// </summary>
+        /// <param name="dbIndex"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public static T SetPop<T>(int dbIndex, string key)
+        {
+            var db = Instance.GetDatabase(dbIndex);
+            var value = db.SetPop(key);
+            return ConvertObj<T>(value);
+        }
+
+        /// <summary>
+        /// Removes and returns a random element from the set value stored at key.
+        /// </summary>
+        /// <param name="dbIndex"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public static async Task<T> SetPopAsync<T>(int dbIndex, string key)
+        {
+            var db = Instance.GetDatabase(dbIndex);
+            var value = await db.SetPopAsync(key);
+            return ConvertObj<T>(value);
+        }
+
+        /// <summary>
+        /// Return a random element from the set value stored at key.
+        /// </summary>
+        /// <param name="dbIndex"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public static T SetRandomMember<T>(int dbIndex, string key)
+        {
+            var db = Instance.GetDatabase(dbIndex);
+            var value = db.SetRandomMember(key);
+            return ConvertObj<T>(value);
+        }
+
+        /// <summary>
+        /// Return a random element from the set value stored at key.
+        /// </summary>
+        /// <param name="dbIndex"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public static async Task<T> SetRandomMemberAsync<T>(int dbIndex, string key)
+        {
+            var db = Instance.GetDatabase(dbIndex); 
+            var value = await db.SetRandomMemberAsync(key);
+            return ConvertObj<T>(value);
+        }
+
+        /// <summary>
+        /// Return an array of count distinct elements if count is positive. If called with a negative count the behavior changes and the command is allowed to return the same element multiple times. In this case the numer of returned elements is the absolute value of the specified count.
+        /// </summary>
+        /// <param name="dbIndex"></param>
+        /// <param name="key"></param>
+        /// <param name="count"></param>
+        /// <returns></returns>
+        public static string[] SetRandomMember(int dbIndex, string key, long count)
+        {
+            var db = Instance.GetDatabase(dbIndex);
+            return db.SetRandomMembers(key, count).ToStringArray();
+        }
+
+        /// <summary>
+        /// Return an array of count distinct elements if count is positive. If called with a negative count the behavior changes and the command is allowed to return the same element multiple times. In this case the numer of returned elements is the absolute value of the specified count.
+        /// </summary>
+        /// <param name="dbIndex"></param>
+        /// <param name="key"></param>
+        /// <param name="count"></param>
+        /// <returns></returns>
+        public static async Task<string[]> SetRandomMembersAsync(int dbIndex, string key, long count)
+        {
+            var db = Instance.GetDatabase(dbIndex);
+            var array = await db.SetRandomMembersAsync(key, count);
+            return array.ToStringArray();
+        }
+
+        /// <summary>
+        /// Remove the specified member from the set stored at key. Specified members that  are not a member of this set are ignored.
+        /// </summary>
+        /// <param name="dbIndex"></param>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        public static bool SetRemove(int dbIndex, string key, string value)
+        {
+            var db = Instance.GetDatabase(dbIndex);
+            return db.SetRemove(key, value);
+        }
+
+        /// <summary>
+        /// Remove the specified member from the set stored at key. Specified members that  are not a member of this set are ignored.
+        /// </summary>
+        /// <param name="dbIndex"></param>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        public static async Task<bool> SetRemoveAsync(int dbIndex, string key, string value)
+        {
+            var db = Instance.GetDatabase(dbIndex);
+            return await db.SetRemoveAsync(key, value);
+        }
+
+        /// <summary>
+        /// The SSCAN command is used to incrementally iterate over set; note: to resume an iteration via cursor, cast the original enumerable or enumerator to IScanningCursor.
+        /// </summary>
+        /// <param name="dbIndex"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public static IEnumerable<RedisValue> SetScan(int dbIndex, string key)
+        {
+           return Instance.GetDatabase(dbIndex).SetScan(key);
+        }
         #endregion
 
         #region  当作消息代理中间件使用 一般使用更专业的消息队列来处理这种业务场景
@@ -856,7 +1090,62 @@ namespace Banana.Utility.Redis
         /// <param name="e"></param>
         private static void MuxerInternalError(object sender, InternalErrorEventArgs e)
         {
-        } 
+        }
+        #endregion
+
+        #region 内部辅助方法
+
+        /// <summary>
+        /// 将对象转换成string字符串
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static string ConvertJson<T>(T value)
+        {
+            string result = value is string ? value.ToString() :
+                JsonConvert.SerializeObject(value, Formatting.None);
+            return result;
+        }
+       
+        /// <summary>
+        /// 将值集合转换成RedisValue集合
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="redisValues"></param>
+        /// <returns></returns>
+        private static RedisValue[] ConvertRedisValue<T>(params T[] redisValues) => redisValues.Select(o => (RedisValue)ConvertJson<T>(o)).ToArray();
+
+        /// <summary>
+        /// 将值反系列化成对象集合
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="values"></param>
+        /// <returns></returns>
+        public static List<T> ConvetList<T>(RedisValue[] values)
+        {
+            List<T> result = new List<T>();
+            foreach (var item in values)
+            {
+                var model = ConvertObj<T>(item);
+                result.Add(model);
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// 将值反系列化成对象
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static T ConvertObj<T>(RedisValue value)
+        {
+            return value.IsNullOrEmpty ? default(T) : JsonConvert.DeserializeObject<T>(value);
+        }
+
+       
+
         #endregion
     }
 }
