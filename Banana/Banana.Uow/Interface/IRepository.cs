@@ -17,6 +17,7 @@ namespace Banana.Uow.Interface
 {
     /// <summary>
     /// 仓储接口|The interface for all CURD operations 
+    /// </summary> 
     public interface IRepository<T> where T : class, IEntity
     {
         #region Sync

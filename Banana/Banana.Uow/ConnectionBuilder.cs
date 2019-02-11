@@ -5,6 +5,7 @@
  * Last Update：
  * 2019-01-07  1. GetAdapter(connection)
  * 2019-01-21  1.增加同时多数据库支持
+ * 2019-02-11  1.rename dbkey 
  **********************************/
 
 using Banana.Uow.Interface;
@@ -22,8 +23,7 @@ using System.Collections.Concurrent;
 namespace Banana.Uow
 {
     /// <summary>
-    /// 创建基础链接|
-    /// Creating database links
+    /// 创建基础链接| Creating database links
     /// </summary>
     public class ConnectionBuilder
     {
@@ -31,60 +31,57 @@ namespace Banana.Uow
         /// <summary>
         /// Default key Name
         /// </summary>
-        public const string DefaultKeyName = "Banana's read&wirte db connection key";
+        public const string DefaultAliase = "Banana-ORM";
 
         /// <summary>
-        /// 注册链接|
-        /// Register database links
+        /// 注册链接|Register database links
         /// </summary>
         /// <param name="strConn">connection string</param>
         /// <param name="dBType">type of database</param>
-        /// <param name="dbKey">Multiple databases can be injected depending on the key</param>
-        public static void ConfigRegist(string strConn, DBType dBType = DBType.SqlServer, string dbKey = DefaultKeyName)
+        /// <param name="dbAliase">Multiple databases can be injected depending on the key</param>
+        public static void ConfigRegist(string strConn, DBType dBType = DBType.SqlServer, string dbAliase = DefaultAliase)
         {
            var dbSetting = new DBSetting() { ConnectionString = strConn, DBType = dBType };
-            ConfigRegist(dbSetting, dbKey);
+            ConfigRegist(dbSetting, dbAliase);
         }
 
         /// <summary>
-        /// 注册链接|
-        /// Register database links
+        /// 注册链接|Register database links
         /// </summary>
         /// <param name="db">connection model</param>
-        /// <param name="dbKey">Multiple databases can be injected depending on the key</param>
-        public static void ConfigRegist(DBSetting db, string dbKey = DefaultKeyName)
+        /// <param name="dbAliase">Multiple databases can be injected depending on the key</param>
+        public static void ConfigRegist(DBSetting db, string dbAliase = DefaultAliase)
         {
             if (DBSettingDic == null)
             {
                 DBSettingDic = new ConcurrentDictionary<string, DBSetting>();
             }
-            if (string.IsNullOrEmpty(dbKey))
+            if (string.IsNullOrEmpty(dbAliase))
             {
-                dbKey = DefaultKeyName;
+                dbAliase = DefaultAliase;
             }
-            if (DBSettingDic.ContainsKey(dbKey))
+            if (DBSettingDic.ContainsKey(dbAliase))
             {
-                throw new Exception("The same key already exists:" + dbKey);
+                throw new Exception("The same key already exists:" + dbAliase);
             }
-            DBSettingDic[dbKey] = db;
+            DBSettingDic[dbAliase] = db;
         }
 
         /// <summary>
-        /// 创建连接串|
-        /// create database connection
+        /// 创建连接串|Create database connection
         /// </summary>
-        public static IDbConnection CreateConnection(string dbKey = DefaultKeyName)
+        public static IDbConnection CreateConnection(string dbAliase = DefaultAliase)
         {
             try
             {
-                if (string.IsNullOrEmpty(dbKey))
+                if (string.IsNullOrEmpty(dbAliase))
                 {
-                    dbKey = DefaultKeyName;
+                    dbAliase = DefaultAliase;
                 }
                 DBSetting dBSetting;
-                if (!DBSettingDic.TryGetValue(dbKey, out dBSetting))
+                if (!DBSettingDic.TryGetValue(dbAliase, out dBSetting))
                 {
-                    throw new Exception("The key doesn't exist:" + dbKey);
+                    throw new Exception("The key doesn't exist:" + dbAliase);
                 }
                 var conn = dBSetting.ConnectionString;
                 switch (dBSetting.DBType)
@@ -110,14 +107,19 @@ namespace Banana.Uow
             }
         }
 
-        public static DBSetting GetDBSetting(string dbKey = DefaultKeyName)
+        /// <summary>
+        /// Get DB Option
+        /// </summary>
+        /// <param name="dbAliase">DB alias</param>
+        /// <returns></returns>
+        public static DBSetting GetDBSetting(string dbAliase = DefaultAliase)
         {
-            if (string.IsNullOrEmpty(dbKey))
-                dbKey = DefaultKeyName;
+            if (string.IsNullOrEmpty(dbAliase))
+                dbAliase = DefaultAliase;
             DBSetting dBSetting;
-            if (!DBSettingDic.TryGetValue(dbKey, out dBSetting))
+            if (!DBSettingDic.TryGetValue(dbAliase, out dBSetting))
             {
-                throw new Exception("The key doesn't exist:" + dbKey);
+                throw new Exception("The key doesn't exist:" + dbAliase);
             }
             return dBSetting;
         }

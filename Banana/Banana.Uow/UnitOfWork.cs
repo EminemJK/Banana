@@ -4,7 +4,7 @@
  * 
  * Last Update：
  * 2019-01-07  1.Add this.context.State != ConnectionState.Connecting
- * 2019-01-21  1.Add UnitOfWork(string dbKey = "")
+ * 2019-01-21  1.Add UnitOfWork(string dbAliase = "")
  **********************************/
 
 using Banana.Uow.Models;
@@ -72,9 +72,9 @@ namespace Banana.Uow
         /// 工作单元基类|
         /// Base UnitOfWork
         /// </summary>
-        public UnitOfWork(string dbKey = "")
+        public UnitOfWork(string dbAliase = "")
         {
-            this.context = ConnectionBuilder.CreateConnection(dbKey);
+            this.context = ConnectionBuilder.CreateConnection(dbAliase);
             this.context.Open();
             this.transaction = this.context.BeginTransaction();
         }

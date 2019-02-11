@@ -109,7 +109,7 @@ namespace Banana.Uow.Extension
 
         public SqlBuilder Where(string sql, params object[] args)
         {
-            sql = RevomeFlag(sql, "WHERE");
+            sql = sql.RevomeThePrefix("WHERE");
             return Append(new SqlBuilder("WHERE " + sql, args));
         }
 
@@ -158,7 +158,7 @@ namespace Banana.Uow.Extension
 
         public static string GetArgsString(string dbKeywordFix, string prefix = "", params object[] args)
         {
-            return string.Join(", ", (from x in args select prefix + RevomeFlag(x.ToString(), dbKeywordFix)).ToArray());
+            return string.Join(", ", (from x in args select prefix + x.ToString().RevomeThePrefix(dbKeywordFix)).ToArray());
         }
         
         private static readonly Regex rxParams = new Regex(@"(?<!@)@\w+|(?<!:):\w+", RegexOptions.Compiled); 
@@ -222,15 +222,6 @@ namespace Banana.Uow.Extension
                 return m.Value;
             }
             );
-        }
-
-        public static string RevomeFlag(string OldString, string prefix)
-        { 
-            if (OldString.TrimStart().StartsWith(prefix, StringComparison.InvariantCultureIgnoreCase))
-            {
-                return OldString.Substring(prefix.Length);
-            }
-            return OldString;
         }
     }
 }

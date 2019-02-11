@@ -30,9 +30,9 @@ namespace Banana.Uow
         /// <summary>
         /// 仓储基类| Base Repository
         /// </summary>
-        public Repository(string dbKey ="")
+        public Repository(string dbAliase ="")
         {
-            this.dbkey = dbKey;
+            this.dbAliase = dbAliase;
         }
 
 
@@ -46,12 +46,12 @@ namespace Banana.Uow
         }
 
         #region Field & method
-        private string dbkey;
+        private string dbAliase;
 
         /// <summary>
         /// CurrentDB Setting
         /// </summary>
-        public DBSetting CurrentDBSetting => ConnectionBuilder.GetDBSetting(dbkey);
+        public DBSetting CurrentDBSetting => ConnectionBuilder.GetDBSetting(dbAliase);
 
         private IDbConnection _dbConnection;
         /// <summary>
@@ -63,7 +63,7 @@ namespace Banana.Uow
             {
                 if (_dbConnection == null)
                 {
-                    _dbConnection = ConnectionBuilder.CreateConnection(dbkey);
+                    _dbConnection = ConnectionBuilder.CreateConnection(dbAliase);
                 }
                 if (_dbConnection.State == ConnectionState.Closed && _dbConnection.State!= ConnectionState.Connecting)
                 {

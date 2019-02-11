@@ -49,19 +49,20 @@ using Banana.Uow.Models;
 * Write：指定列是否可写
 * Column：指定列名
 #### 3. 仓储使用
+#### 3.2 增删改查
 ``` csharp
-   var repo = new Repository<Student>();
-   //查询单个
-   var model = repo.Query(7);
+    var repo = new Repository<Student>();
+    //查询单个
+    var model = repo.Query(7);
 
-   //查询列表
-   var list = repo.QueryList("Name like @Name", new { Name = "%EminemJK%" });
+    //查询列表
+    var list = repo.QueryList("Name like @Name", new { Name = "%EminemJK%" });
 
-   //分页查询
-   var page1 = repo.QueryList(1,5);
-   var page2 = repo.QueryList(2,5);
-   … …
-   var page0 = repo.QueryList(1, 10, "ID>@Id", new { Id = 2 }, "id", false);
+    //分页查询
+    var page1 = repo.QueryList(1,5);
+    var page2 = repo.QueryList(2,5);
+    … …
+    var page0 = repo.QueryList(1, 10, "ID>@Id", new { Id = 2 }, "id", false);
 
     //删除
     boo b = repo.Delete(model);
@@ -81,11 +82,13 @@ using Banana.Uow.Models;
 ```
 #### 3.2 多数据库时
 ``` csharp
-    ConnectionBuilder.ConfigRegist("strConnA", DBType.SqlServer2012, "readKey");
-    ConnectionBuilder.ConfigRegist("strConnB", DBType.SqlServer2012, "wirteKey");
+    var dbA = "dbStoreA";
+    var dbB = "dbStoreA";
+    ConnectionBuilder.ConfigRegist("strConnA", DBType.SqlServer2012, dbA);
+    ConnectionBuilder.ConfigRegist("strConnB", DBType.SqlServer2012, dbB);
     
-    var userInfo_ReadRepo = new Repository<Student>(readKey); 
-    var userInfo_WirteRepo = new Repository<Student>(wirteKey);
+    var userInfo_ReadRepo = new Repository<Student>(dbA); 
+    var userInfo_WirteRepo = new Repository<Student>(dbA);
     Your code ……
 ```
 ### 二、工作单元
