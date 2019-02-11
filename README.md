@@ -49,7 +49,7 @@ using Banana.Uow.Models;
 * Write：指定列是否可写
 * Column：指定列名
 #### 3. 仓储使用
-#### 3.2 增删改查
+#### 3.1 增删改查
 ``` csharp
     var repo = new Repository<Student>();
     //查询单个
