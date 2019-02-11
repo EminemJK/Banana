@@ -91,7 +91,7 @@ using Banana.Uow.Models;
     var userInfo_WirteRepo = new Repository<Student>(dbA);
     Your code ……
 ```
-### 二、工作单元
+#### 4. 工作单元
 ``` csharp
 using (UnitOfWork uow = new UnitOfWork())
 {
