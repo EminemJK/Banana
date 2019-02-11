@@ -6,10 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Spire.PDF" Version="5.1.16" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Banana.Uow\Banana.Uow.csproj" />
     <ProjectReference Include="..\Banana.Utility\Banana.Utility.csproj" />
   </ItemGroup>
