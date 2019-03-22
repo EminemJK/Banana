@@ -8,6 +8,8 @@
  *             2.GetAdapter(_dbConnection)
  * 2019-01-11  1.Query(int) => Query(obj)
  * 2019-01-21  1.Current DB Setting
+ * 2019-03-22  1.优化QueryListAsync
+ *             2.InsertBatch Add open transaction's param
  **********************************/
 
 using System;
@@ -82,7 +84,7 @@ namespace Banana.Uow
         {
             get
             { 
-                return SqlMapperExtensions.GetTableName(typeof(T));
+                return SqlMapperExtensions.GetTableName(EntityType);
             }
         }
 
@@ -251,32 +253,40 @@ namespace Banana.Uow
         /// </summary>
         /// <param name="sql">SQL</param>
         /// <param name="entities">entityList</param>
+        /// <param name="openTransaction"></param>
         /// <returns>受影响的行数|The number of rows affected.</returns>
-        public virtual bool InsertBatch(string sql, IEnumerable<T> entities)
+        public virtual bool InsertBatch(string sql, IEnumerable<T> entities, bool openTransaction = true)
         {
-            using (IDbTransaction trans = OpenTransaction())
+            if (openTransaction)
             {
-                try
+                using (IDbTransaction trans = OpenTransaction())
                 {
-                    int res = Execute(sql, entities);
-                    TrancationState = ETrancationState.Closed;
-                    if (res > 0)
+                    try
                     {
-                        trans.Commit();
-                        return true;
+                        int res = Execute(sql, entities);
+                        TrancationState = ETrancationState.Closed;
+                        if (res > 0)
+                        {
+                            trans.Commit();
+                            return true;
+                        }
+                        else
+                        {
+                            trans.Rollback();
+                            return false;
+                        }
                     }
-                    else
+                    catch (Exception ex)
                     {
                         trans.Rollback();
-                        return false;
+                        TrancationState = ETrancationState.Closed;
+                        throw ex;
                     }
                 }
-                catch (Exception ex)
-                {
-                    trans.Rollback();
-                    TrancationState = ETrancationState.Closed;
-                    throw ex;
-                }
+            }
+            else
+            {
+                return Execute(sql, entities) > 0;
             }
         }
 
@@ -409,15 +419,14 @@ namespace Banana.Uow
         /// <returns>返回分页数据|returning the paging data typed as T</returns>
         public async Task<IPage<T>> QueryListAsync(int pageNum, int pageSize, string whereString = null, object param = null, string order = null, bool asc = false)
         {
-            return await Task.Run(() =>
-            {
-                IPage<T> paging = new Paging<T>(pageNum, pageSize);
-                ISqlAdapter adapter = ConnectionBuilder.GetAdapter(this.DBConnection);
-                var sqlbuilder = adapter.GetPageList(this, pageNum, pageSize, whereString, param, order, asc);
-                paging.data = DBConnection.Query<T>(sqlbuilder.SQL, sqlbuilder.Arguments).ToList();
-                paging.dataCount = QueryCount(whereString, param);
-                return paging;
-            }); ;
+            IPage<T> paging = new Paging<T>(pageNum, pageSize);
+            ISqlAdapter adapter = ConnectionBuilder.GetAdapter(this.DBConnection);
+            var sqlbuilder = adapter.GetPageList(this, pageNum, pageSize, whereString, param, order, asc);
+            var data = await DBConnection.QueryAsync<T>(sqlbuilder.SQL, sqlbuilder.Arguments);
+            var dataCount = await QueryCountAsync(whereString, param);
+            paging.data = data.ToList();
+            paging.dataCount = dataCount;
+            return paging;
         }
 
         /// <summary>

@@ -34,7 +34,9 @@ namespace DotNetCore_TestApp
 
             //TestBCPStore();
 
-            TestMultipleDatabases();
+            //TestMultipleDatabases();
+
+            Test();
             Console.WriteLine("Hello World!");
             Console.ReadKey();
         } 
@@ -554,6 +556,11 @@ namespace DotNetCore_TestApp
             };
             int id = (int)repoUserInfo.Insert(newUser);
 
+        }
+
+        static void Test()
+        {
+            var str = nameof(Student.Name); 
         }
     }
 }
