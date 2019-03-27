@@ -7,7 +7,7 @@
     <Description>Banana tools</Description>
     <Authors>Lio.Huang</Authors>
     <TargetFrameworks>net461;netstandard2.0</TargetFrameworks>
-    <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0.html</PackageLicenseUrl>
+    <PackageLicenseUrl>https://github.com/EminemJK/Banana/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl></PackageProjectUrl>
     <PackageIconUrl>https://www.cnblogs.com/images/cnblogs_com/EminemJK/1345488/o_banana.uow.png</PackageIconUrl>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>

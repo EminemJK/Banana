@@ -144,4 +144,4 @@ using (UnitOfWork uow = new UnitOfWork("dbKey"))
 -------
 License
 -------
-[MIT](https://github.com/EminemJK/Banana/master/LICENSE)
+[MIT](https://github.com/EminemJK/Banana/blob/master/LICENSE)
