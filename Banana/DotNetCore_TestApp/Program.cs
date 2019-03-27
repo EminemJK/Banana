@@ -560,7 +560,7 @@ namespace DotNetCore_TestApp
 
         static void Test()
         {
-            var str = nameof(Student.Name); 
+              
         }
     }
 }

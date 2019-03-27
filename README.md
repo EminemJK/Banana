@@ -142,4 +142,6 @@ using (UnitOfWork uow = new UnitOfWork("dbKey"))
 👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍
 
 -------
-[Apache License](http://www.apache.org/licenses/)
+License
+-------
+[MIT](https://github.com/EminemJK/Banana/master/LICENSE)
