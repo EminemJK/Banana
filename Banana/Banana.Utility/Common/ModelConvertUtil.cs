@@ -59,13 +59,7 @@ namespace Banana.Utility.Common
         /// </summary>
         public static List<TOut> ModelCopy(List<TIn> sList)
         {
-            List<TOut> list = new List<TOut>();
-            foreach (var sModel in sList)
-            {
-                var t = ModelCopy(sModel);
-                list.Add(t);
-            }
-            return list;
+            return sList.Select(ModelCopy).ToList();
         }
     }
 }
