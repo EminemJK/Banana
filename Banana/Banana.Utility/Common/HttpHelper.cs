@@ -15,12 +15,11 @@ namespace Banana.Utility.Common
     /// </summary>
     public static class HttpHelper
     {
-        private static HttpClient instance = null;
+        private static HttpClient _instance = null;
         public static HttpClient GetClient()
         {
-            if (instance == null)
-                instance = new HttpClient();
-            return instance;
+            _instance = _instance ?? new HttpClient();
+            return _instance;
         }
 
         /// <summary>
@@ -44,7 +43,7 @@ namespace Banana.Utility.Common
             }
             catch
             {
-                instance = new HttpClient();
+                _instance = new HttpClient();
                 return default(T);
             }
         }
@@ -70,7 +69,7 @@ namespace Banana.Utility.Common
             }
             catch
             {
-                instance = new HttpClient();
+                _instance = new HttpClient();
                 return default(T);
             }
         }
