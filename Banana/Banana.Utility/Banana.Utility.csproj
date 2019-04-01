@@ -11,8 +11,8 @@
     <PackageProjectUrl></PackageProjectUrl>
     <PackageIconUrl>https://www.cnblogs.com/images/cnblogs_com/EminemJK/1345488/o_banana.uow.png</PackageIconUrl>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.1.1</Version>
-    <PackageReleaseNotes>Redis : Add Set method</PackageReleaseNotes>
+    <Version>1.1.2</Version>
+    <PackageReleaseNotes>Performance improvement</PackageReleaseNotes>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <RepositoryUrl>https://github.com/EminemJK/Banana.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
