@@ -270,7 +270,8 @@ namespace Banana.Uow.Extension
             var allProperties = TypePropertiesCache(type);
             keyProperties.AddRange(explicitKeyProperties);
             var computedProperties = ComputedPropertiesCache(type);
-            var nonIdProps = allProperties.Except(keyProperties.Union(computedProperties)).ToList();
+            var exceptUpdateProperties = ExceptUpdatePropertiesCache(type);
+            var nonIdProps = allProperties.Except(keyProperties.Union(computedProperties).Union(exceptUpdateProperties)).ToList();
 
             var adapter = GetFormatter(connection);
 

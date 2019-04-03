@@ -7,6 +7,7 @@
  *             2.更新Get、GetAll中的Select *  => Select {ColumnList}
  * 2019-01-03  1.新增对别名列的解析GetColumnName
  * 2019-01-04  1.更新Get，根据ID获取
+ * 2019-04-03  1.增加排除update的特性过滤
  **********************************/
 
 using System;
@@ -75,6 +76,7 @@ namespace Banana.Uow.Extension
         private static readonly ConcurrentDictionary<RuntimeTypeHandle, IEnumerable<PropertyInfo>> ExplicitKeyProperties = new ConcurrentDictionary<RuntimeTypeHandle, IEnumerable<PropertyInfo>>();
         private static readonly ConcurrentDictionary<RuntimeTypeHandle, IEnumerable<PropertyInfo>> TypeProperties = new ConcurrentDictionary<RuntimeTypeHandle, IEnumerable<PropertyInfo>>();
         private static readonly ConcurrentDictionary<RuntimeTypeHandle, IEnumerable<PropertyInfo>> ComputedProperties = new ConcurrentDictionary<RuntimeTypeHandle, IEnumerable<PropertyInfo>>();
+        private static readonly ConcurrentDictionary<RuntimeTypeHandle, IEnumerable<PropertyInfo>> ExceptUpdateProperties = new ConcurrentDictionary<RuntimeTypeHandle, IEnumerable<PropertyInfo>>();
         private static readonly ConcurrentDictionary<RuntimeTypeHandle, string> GetQueries = new ConcurrentDictionary<RuntimeTypeHandle, string>();
         private static readonly ConcurrentDictionary<RuntimeTypeHandle, string> TypeTableName = new ConcurrentDictionary<RuntimeTypeHandle, string>();
 
@@ -102,6 +104,19 @@ namespace Banana.Uow.Extension
 
             ComputedProperties[type.TypeHandle] = computedProperties;
             return computedProperties;
+        }
+
+        internal static List<PropertyInfo> ExceptUpdatePropertiesCache(Type type)
+        {
+            if (ExceptUpdateProperties.TryGetValue(type.TypeHandle, out IEnumerable<PropertyInfo> pi))
+            {
+                return pi.ToList();
+            }
+
+            var exceptUpdateProperties = TypePropertiesCache(type).Where(p => p.GetCustomAttributes(true).Any(a => a is ExceptUpdateAttribute)).ToList();
+
+            ExceptUpdateProperties[type.TypeHandle] = exceptUpdateProperties;
+            return exceptUpdateProperties;
         }
 
         internal static List<PropertyInfo> ExplicitKeyPropertiesCache(Type type)
@@ -474,7 +489,8 @@ namespace Banana.Uow.Extension
             var allProperties = TypePropertiesCache(type);
             keyProperties.AddRange(explicitKeyProperties);
             var computedProperties = ComputedPropertiesCache(type);
-            var nonIdProps = allProperties.Except(keyProperties.Union(computedProperties)).ToList();
+            var exceptUpdateProperties = ExceptUpdatePropertiesCache(type); 
+            var nonIdProps = allProperties.Except(keyProperties.Union(computedProperties).Union(exceptUpdateProperties)).ToList();
 
             var adapter = GetFormatter(connection);
 

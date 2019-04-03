@@ -48,6 +48,7 @@ using Banana.Uow.Models;
 * Computed：计算属性，此列不作为更新
 * Write：指定列是否可写
 * Column：指定列名
+* ExceptUpdate: 指定该列不需要Update操作
 #### 3. 仓储使用
 #### 3.1 增删改查
 ``` csharp

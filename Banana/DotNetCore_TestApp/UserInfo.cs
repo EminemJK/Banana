@@ -23,6 +23,7 @@ namespace DotNetCore_TestApp
 
         public int Enable { get; set; }
 
+        [ExceptUpdate]
         public DateTime CreateTime { get; set; }
 
         public override string ToString()
