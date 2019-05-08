@@ -95,7 +95,8 @@ namespace Banana.Uow
         /// </summary>
         public IDbTransaction OpenTransaction()
         {
-            _dbTransaction = DBConnection.BeginTransaction();
+            if (TrancationState == ETrancationState.Closed)
+                _dbTransaction = DBConnection.BeginTransaction();
             TrancationState = ETrancationState.Opened;
             return _dbTransaction;
         }
