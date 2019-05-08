@@ -138,6 +138,7 @@ using (UnitOfWork uow = new UnitOfWork("dbKey"))
 | PagingUtil | 分页 |
 | HttpHelper | easy Get & Post |
 | EnumDescription | 枚举特性说明 |
+| Encryption | 常用加密解密，DES/MD5/RSA |
 
 ## To Be Continued
 👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍
