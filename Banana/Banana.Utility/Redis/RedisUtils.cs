@@ -4,6 +4,7 @@
  * 
  * Last Update：2018-12-24
  * 2019-01-31 1.Add Set method
+ * 2019-07-19 1.Use Lazy
  **********************************/
 
 using System;
@@ -15,6 +16,9 @@ using System.Threading.Tasks;
 
 namespace Banana.Utility.Redis
 {
+    /// <summary>
+    /// Redis Base Utils
+    /// </summary>
     public class RedisUtils
     {
         /// <summary>  
@@ -31,8 +35,6 @@ namespace Banana.Utility.Redis
             RedisPath = redisPath;
         }
 
-
-        private static object _locker = new Object();
         private static ConnectionMultiplexer _instance = null;
 
         /// <summary>
@@ -42,25 +44,47 @@ namespace Banana.Utility.Redis
         {
             get
             {
-                //if (_instance == null)
-                //{
-                //    lock (_locker)
-                //    {
-                        if (_instance == null || !_instance.IsConnected)
-                        {
-                            _instance = ConnectionMultiplexer.Connect(RedisPath);
-                            //注册如下事件
-                            _instance.ConnectionFailed += MuxerConnectionFailed;
-                            _instance.ConnectionRestored += MuxerConnectionRestored;
-                            _instance.ErrorMessage += MuxerErrorMessage;
-                            _instance.HashSlotMoved += MuxerHashSlotMoved;
-                            _instance.InternalError += MuxerInternalError;
-                        }
-                //    }
-                //}
-                return _instance;
+                return conn.Value;
             }
         }
+
+        //public static ConnectionMultiplexer Instance
+        //{
+        //    get
+        //    {
+        //        //if (_instance == null)
+        //        //{
+        //        //    lock (_locker)
+        //        //    {
+        //        if (_instance == null || !_instance.IsConnected)
+        //        {
+        //            _instance = ConnectionMultiplexer.Connect(RedisPath);
+        //            //注册如下事件
+        //            _instance.ConnectionFailed += MuxerConnectionFailed;
+        //            _instance.ConnectionRestored += MuxerConnectionRestored;
+        //            _instance.ErrorMessage += MuxerErrorMessage;
+        //            _instance.HashSlotMoved += MuxerHashSlotMoved;
+        //            _instance.InternalError += MuxerInternalError;
+        //        }
+        //        //    }
+        //        //}
+        //        return _instance;
+        //    }
+        //}
+
+        private static Lazy<ConnectionMultiplexer> conn = new Lazy<ConnectionMultiplexer>(
+        () =>
+        {
+            _instance = ConnectionMultiplexer.Connect(RedisPath);
+            //注册如下事件
+            _instance.ConnectionFailed += MuxerConnectionFailed;
+            _instance.ConnectionRestored += MuxerConnectionRestored;
+            _instance.ErrorMessage += MuxerErrorMessage;
+            _instance.HashSlotMoved += MuxerHashSlotMoved;
+            _instance.InternalError += MuxerInternalError;
+            return _instance;
+        }
+        );
 
         #region Keys
         /// <summary>
