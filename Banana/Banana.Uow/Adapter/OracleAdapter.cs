@@ -26,7 +26,7 @@ namespace Banana.Uow.Adapter
     /// <summary>
     /// The Oracle adapter.
     /// </summary>
-    public partial class OracleAdapter : ISqlAdapter
+    internal partial class OracleAdapter : ISqlAdapter
     {
         /// <summary>
         /// Inserts <paramref name="entityToInsert"/> into the database, returning the Id of the row created.
