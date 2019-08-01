@@ -181,13 +181,16 @@ namespace Banana.Uow.Adapter
                 }
                 string orderSql = "";
                 if (order == null)
-                { 
+                {
                     var type = typeof(T);
                     var keys = SqlMapperExtensions.KeyPropertiesCache(type);
-                    orderSql = keys.Count > 0 ? SqlMapperExtensions.GetColumnName(keys[0]) : "ID";  
+                    orderSql = keys.Count > 0 ? SqlMapperExtensions.GetColumnName(keys[0]) : "ID";
                 }
-                orderSql = SqlBuilder.GetArgsString("ORDER BY", args: order);
-
+                else
+                {
+                    orderSql = SqlBuilder.GetArgsString("ORDER BY", args: order);
+                }
+               
                 if (repository.CurrentDBSetting.DBType == DBType.SqlServer2012)
                 {
                     sqlBuilder.From(repository.TableName);

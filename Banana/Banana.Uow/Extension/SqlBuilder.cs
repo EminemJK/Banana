@@ -3,6 +3,7 @@
  * Date：2018-11-20
  * 
  * Last Update：2018-12-18
+ * 2019-08-01  1.允许同名参数
  **********************************/
 
 using Banana.Uow.Interface;
@@ -177,11 +178,10 @@ namespace Banana.Uow.Extension
                     var pi = o.GetType().GetProperty(param);
                     if (pi != null)
                     {
-                        if (temp.ContainsKey(pi.Name))
+                        if (!temp.ContainsKey(pi.Name))
                         {
-                            throw new ArgumentOutOfRangeException("参数重名|parameter has same name：" + pi.Name);
+                            temp.Add(pi.Name, pi.GetValue(o, null));
                         }
-                        temp.Add(pi.Name, pi.GetValue(o, null));
                         found = true; 
                     } 
                 }
@@ -194,7 +194,8 @@ namespace Banana.Uow.Extension
                         {
                             if (temp.ContainsKey(pi.Name))
                             {
-                                throw new ArgumentOutOfRangeException("参数重名|parameter has same name：" + pi.Name);
+                                found = true;
+                                continue;
                             }
                             temp.Add(pi.Name, pi.GetValue(o, null));
                             found = true;
@@ -207,10 +208,12 @@ namespace Banana.Uow.Extension
                             {
                                 if (temp.ContainsKey(key))
                                 {
-                                    throw new ArgumentOutOfRangeException("参数重名|parameter has same name：" + key);
+                                    found = true;
+                                    continue;
                                 }
                                 found = true;
                                 temp.Add(key, dic[key]);
+                                break;
                             } 
                             break;
                         }

@@ -26,7 +26,7 @@ namespace Banana.Uow.Adapter
     /// <summary>
     /// The Oracle adapter.
     /// </summary>
-    internal partial class OracleAdapter : ISqlAdapter
+    public partial class OracleAdapter : ISqlAdapter
     {
         /// <summary>
         /// Inserts <paramref name="entityToInsert"/> into the database, returning the Id of the row created.
@@ -203,7 +203,10 @@ namespace Banana.Uow.Adapter
                     var keys = SqlMapperExtensions.KeyPropertiesCache(type);
                     orderSql = keys.Count > 0 ? SqlMapperExtensions.GetColumnName(keys[0]) : "ID";
                 }
-                orderSql = SqlBuilder.GetArgsString("ORDER BY", args: order);
+                else
+                {
+                    orderSql = SqlBuilder.GetArgsString("ORDER BY", args: order);
+                }
 
                 sqlBuilderRows.Select(args: $"SELECT ROW_NUMBER() OVER(ORDER BY { orderSql}  {ascSql} ) AS row_id,{repository.TableName}.*");
                 sqlBuilderRows.From(repository.TableName);
