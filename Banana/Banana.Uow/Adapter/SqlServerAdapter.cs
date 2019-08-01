@@ -7,6 +7,7 @@
  * 2019-01-03  1.更新GetPageList中的property.Name => SqlMapperExtensions.GetColumnAlias(property)
  *             2.更新AppendColumnName、AppendColumnNameEqualsValue 新增别名
  * 2019-01-09  1.Fix bug => sqlBuilder.Where(whereString, param);
+ * 2019-08-01  1.Fix bug Issues#8
  **********************************/
 
 using Banana.Uow.Extension;
@@ -178,11 +179,14 @@ namespace Banana.Uow.Adapter
                 {
                     ascSql = " desc";
                 }
-                string orderSql = "ID";
-                if (order != null)
-                {
-                    orderSql = SqlBuilder.GetArgsString("ORDER BY", args: order);
-                } 
+                string orderSql = "";
+                if (order == null)
+                { 
+                    var type = typeof(T);
+                    var keys = SqlMapperExtensions.KeyPropertiesCache(type);
+                    orderSql = keys.Count > 0 ? SqlMapperExtensions.GetColumnName(keys[0]) : "ID";  
+                }
+                orderSql = SqlBuilder.GetArgsString("ORDER BY", args: order);
 
                 if (repository.CurrentDBSetting.DBType == DBType.SqlServer2012)
                 {

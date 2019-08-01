@@ -114,7 +114,7 @@ namespace Banana.Uow
                 var repositoryInstance = Activator.CreateInstance(repositoryType.MakeGenericType(typeof(T)), context, transaction);
                 repositories.Add(type, repositoryInstance);
             } 
-            return (Repository<T>)repositories[type];
+            return (IRepository<T>)repositories[type];
         }
 
     }
