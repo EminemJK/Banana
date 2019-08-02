@@ -199,9 +199,8 @@ namespace Banana.Uow.Adapter
                 string orderSql = "";
                 if (order == null)
                 {
-                    var type = typeof(T);
-                    var keys = SqlMapperExtensions.KeyPropertiesCache(type);
-                    orderSql = keys.Count > 0 ? SqlMapperExtensions.GetColumnName(keys[0]) : "ID";
+                    var key = SqlMapperExtensions.GetSingleKey<T>(nameof(GetPageList));
+                    orderSql = SqlMapperExtensions.GetColumnName(key);
                 }
                 else
                 {
