@@ -48,30 +48,6 @@ namespace Banana.Utility.Redis
             }
         }
 
-        //public static ConnectionMultiplexer Instance
-        //{
-        //    get
-        //    {
-        //        //if (_instance == null)
-        //        //{
-        //        //    lock (_locker)
-        //        //    {
-        //        if (_instance == null || !_instance.IsConnected)
-        //        {
-        //            _instance = ConnectionMultiplexer.Connect(RedisPath);
-        //            //注册如下事件
-        //            _instance.ConnectionFailed += MuxerConnectionFailed;
-        //            _instance.ConnectionRestored += MuxerConnectionRestored;
-        //            _instance.ErrorMessage += MuxerErrorMessage;
-        //            _instance.HashSlotMoved += MuxerHashSlotMoved;
-        //            _instance.InternalError += MuxerInternalError;
-        //        }
-        //        //    }
-        //        //}
-        //        return _instance;
-        //    }
-        //}
-
         private static Lazy<ConnectionMultiplexer> conn = new Lazy<ConnectionMultiplexer>(
         () =>
         {
