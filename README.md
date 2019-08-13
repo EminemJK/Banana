@@ -112,9 +112,6 @@ using (UnitOfWork uow = new UnitOfWork())
        }
 }
 ```
-#### 5.日志记录
-[MiniProfiler](https://github.com/MiniProfiler/dotnet)
-
 
 多数据库时
 ``` csharp
@@ -130,6 +127,9 @@ using (UnitOfWork uow = new UnitOfWork("dbKey"))
       Your code
 }
 ```
+#### 5.日志记录
+[MiniProfiler](https://github.com/MiniProfiler/dotnet)
+
 # Banana.Utility
 ### 公用库 Utility
 
