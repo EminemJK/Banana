@@ -111,6 +111,10 @@ using (UnitOfWork uow = new UnitOfWork())
             uow.Rollback();
        }
 }
+
+#### 5.日志记录
+[MiniProfiler](https://github.com/MiniProfiler/dotnet)
+
 ```
 多数据库时
 ``` csharp
