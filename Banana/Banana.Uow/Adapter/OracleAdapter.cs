@@ -7,6 +7,7 @@
  * 2019-01-03  1.更新GetPageList中的property.Name => SqlMapperExtensions.GetColumnAlias(property)
  *             2.更新AppendColumnName、AppendColumnNameEqualsValue 新增别名
  * 2019-08-01  1.Fix bug Issues#8
+ * 2019-08-19  1.Fix bug Issues#9
  **********************************/
 
 using Banana.Uow.Extension;
@@ -43,7 +44,8 @@ namespace Banana.Uow.Adapter
         public async Task<int> InsertAsync(IDbConnection connection, IDbTransaction transaction, int? commandTimeout, string tableName, string columnList, string parameterList, IEnumerable<PropertyInfo> keyProperties, object entityToInsert, bool isList)
         { 
             var propertyInfos = keyProperties as PropertyInfo[] ?? keyProperties.ToArray();
-            string oracleSequence =""; 
+            string oracleSequence ="";
+            bool isStringKey = false; 
             for(int i = 0; i < propertyInfos.Length; i++)
             {
                 var sequencePropertyDescriptor = propertyInfos[i].GetCustomAttribute<KeyAttribute>();
@@ -52,11 +54,15 @@ namespace Banana.Uow.Adapter
                     oracleSequence = sequencePropertyDescriptor.OracleSequence;
                     break;
                 }
+                else
+                {
+                    isStringKey = propertyInfos[i].GetCustomAttribute<ExplicitKeyAttribute>() != null;
+                }
             }
 
             string cmd = "";
             dynamic id = 0;
-            if (propertyInfos.Length == 0)
+            if (propertyInfos.Length == 0 || isStringKey)
             {
                 cmd = $"insert into {tableName} ({columnList}) values ({parameterList})";
             }
