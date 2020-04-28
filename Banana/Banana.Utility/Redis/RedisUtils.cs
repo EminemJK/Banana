@@ -5,6 +5,7 @@
  * Last Update：2018-12-24
  * 2019-01-31 1.Add Set method
  * 2019-07-19 1.Use Lazy
+ * 2020-04-28 1.Fix bug HashExists
  **********************************/
 
 using System;
@@ -204,7 +205,7 @@ namespace Banana.Utility.Redis
         public static bool HashExists(int dbIndex, string hashId, string key)
         {
             var db = Instance.GetDatabase(dbIndex);
-            return db.HashExists(key, hashId);
+            return db.HashExists(hashId, key);
         }
 
         /// <summary>
