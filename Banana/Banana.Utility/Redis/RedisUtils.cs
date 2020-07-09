@@ -6,6 +6,7 @@
  * 2019-01-31 1.Add Set method
  * 2019-07-19 1.Use Lazy
  * 2020-04-28 1.Fix bug HashExists
+ * 2020-07-09 1.Add Sync
  **********************************/
 
 using System;
@@ -115,6 +116,18 @@ namespace Banana.Utility.Redis
         }
 
         /// <summary>
+        ///  删除键
+        /// </summary>
+        /// <param name="dbIndex">数据库</param>
+        /// <param name="key">键</param>
+        /// <returns></returns>
+        public static async Task<bool> KeyDeleteAsync(int dbIndex, string key)
+        {
+            var db = Instance.GetDatabase(dbIndex);
+            return await db.KeyDeleteAsync(key);
+        }
+
+        /// <summary>
         ///  键重命名
         /// </summary>
         /// <param name="dbIndex">数据库</param>
@@ -125,6 +138,19 @@ namespace Banana.Utility.Redis
         {
             var db = Instance.GetDatabase(dbIndex);
             return db.KeyRename(oldKey, newKey);
+        }
+
+        /// <summary>
+        ///  键重命名
+        /// </summary>
+        /// <param name="dbIndex">数据库</param>
+        /// <param name="oldKey">旧值</param>
+        /// <param name="newKey">新值</param>
+        /// <returns></returns>
+        public static async Task<bool> KeyRenameAsync(int dbIndex, string oldKey, string newKey)
+        {
+            var db = Instance.GetDatabase(dbIndex);
+            return await db.KeyRenameAsync(oldKey, newKey);
         }
         #endregion
 
@@ -191,6 +217,39 @@ namespace Banana.Utility.Redis
             }
             var db = Instance.GetDatabase(dbIndex);
             return db.StringSet(key, ConvertJson(value), expiry);
+        }
+
+        /// <summary>
+        /// 获取对象类型数据
+        /// </summary>
+        /// <param name="dbIndex">数据库</param>
+        /// <param name="key">键</param>
+        public static async Task<T> StringGetAsync<T>(int dbIndex, string key) where T : class
+        {
+            T data = default(T);
+            var db = Instance.GetDatabase(dbIndex);
+            if (db != null)
+            {
+                var value = await db.StringGetAsync(key);
+                return ConvertObj<T>(value);
+            }
+            return data;
+        }
+
+        /// <summary>
+        /// 设置值类型的值
+        /// </summary>
+        /// <param name="dbIndex">数据库</param>
+        /// <param name="key">键</param>
+        /// <param name="value">值</param>
+        public static async Task<bool> StringSetAsync<T>(int dbIndex, string key, T value, TimeSpan? expiry) where T : class
+        {
+            if (value == default(T))
+            {
+                return false;
+            }
+            var db = Instance.GetDatabase(dbIndex);
+            return await db.StringSetAsync(key, ConvertJson(value), expiry);
         }
         #endregion
 
