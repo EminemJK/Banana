@@ -7,6 +7,7 @@
  * 2019-07-19 1.Use Lazy
  * 2020-04-28 1.Fix bug HashExists
  * 2020-07-09 1.Add Sync
+ * 2021-01-21 1. high concurrency 
  **********************************/
 
 using System;
@@ -15,6 +16,7 @@ using System.Linq;
 using StackExchange.Redis;
 using Newtonsoft.Json;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace Banana.Utility.Redis
 {
@@ -26,7 +28,7 @@ namespace Banana.Utility.Redis
         /// <summary>  
         /// redis配置文件信息  
         /// </summary>  
-        public static string RedisPath = "172.16.3.82:6379";
+        public static string RedisPath = "127.0.0.1:6379";
 
         /// <summary>
         /// 注册地址
@@ -64,6 +66,47 @@ namespace Banana.Utility.Redis
         }
         );
 
+        private static readonly SemaphoreSlim _connectionLock = new SemaphoreSlim(initialCount: 1, maxCount: 1);
+        private static ConnectionMultiplexer _instanceAsync = null;
+        public async static Task<ConnectionMultiplexer> InstanceAsync()
+        {
+            if (_instance != null)
+            {
+                return _instance;
+            }
+            await _connectionLock.WaitAsync();
+            try
+            {
+                if (_instance == null)
+                {
+                    _instance = await ConnectionMultiplexer.ConnectAsync(RedisPath);
+                    //注册如下事件
+                    _instance.ConnectionFailed += MuxerConnectionFailed;
+                    _instance.ConnectionRestored += MuxerConnectionRestored;
+                    _instance.ErrorMessage += MuxerErrorMessage;
+                    _instance.HashSlotMoved += MuxerHashSlotMoved;
+                    _instance.InternalError += MuxerInternalError;
+                }
+            }
+            finally
+            {
+                _connectionLock.Release();
+            }
+            return _instance;
+        }
+
+        public static IDatabase GetDatabase(int dbIndex)
+        {
+            return Instance.GetDatabase(dbIndex);
+        }
+
+        public async static Task<IDatabase> GetDatabaseAsync(int dbIndex)
+        {
+            var conn = await InstanceAsync();
+            return conn.GetDatabase(dbIndex);
+        }
+
+
         #region Keys
         /// <summary>
         /// 判断键是否存在
@@ -73,7 +116,7 @@ namespace Banana.Utility.Redis
         /// <returns></returns>
         public static bool KeyExists(int dbIndex, string key)
         {
-            var db = Instance.GetDatabase(dbIndex);
+            var db = GetDatabase(dbIndex);
             return db.KeyExists(key);
         }
 
@@ -86,7 +129,7 @@ namespace Banana.Utility.Redis
         /// <returns></returns>
         public static bool SetExpire(int dbIndex, string key, TimeSpan? expiry)
         {
-            var db = Instance.GetDatabase(dbIndex);
+            var db = GetDatabase(dbIndex);
             return db.KeyExpire(key, expiry);
         }
 
@@ -99,7 +142,7 @@ namespace Banana.Utility.Redis
         /// <returns></returns>
         public static bool SetExpire(int dbIndex, string key, int timeout = 0)
         {
-            var db = Instance.GetDatabase(dbIndex);
+            var db = GetDatabase(dbIndex);
             return db.KeyExpire(key, DateTime.Now.AddSeconds(timeout));
         }
 
@@ -111,20 +154,28 @@ namespace Banana.Utility.Redis
         /// <returns></returns>
         public static bool KeyDelete(int dbIndex, string key)
         {
-            var db = Instance.GetDatabase(dbIndex);
+            var db = GetDatabase(dbIndex);
             return db.KeyDelete(key);
         }
 
-        /// <summary>
-        ///  删除键
-        /// </summary>
-        /// <param name="dbIndex">数据库</param>
-        /// <param name="key">键</param>
-        /// <returns></returns>
         public static async Task<bool> KeyDeleteAsync(int dbIndex, string key)
         {
-            var db = Instance.GetDatabase(dbIndex);
+            var db = await GetDatabaseAsync(dbIndex);
             return await db.KeyDeleteAsync(key);
+        }
+
+        /// <summary>
+        /// 模糊删除键
+        /// </summary>
+        /// <param name="dbIndex"></param>
+        /// <param name="pattern">*key*</param>
+        public static void KeyDeleteByPattern(int dbIndex, string pattern)
+        {
+            var server = Instance.GetServer(Instance.GetEndPoints()[0]);
+            var keys = server.Keys(database: dbIndex, pattern: pattern);
+            var db = GetDatabase(dbIndex);
+            if (keys.Count() > 0)
+                db.KeyDelete(keys.ToArray());
         }
 
         /// <summary>
@@ -136,20 +187,13 @@ namespace Banana.Utility.Redis
         /// <returns></returns>
         public static bool KeyRename(int dbIndex, string oldKey, string newKey)
         {
-            var db = Instance.GetDatabase(dbIndex);
+            var db = GetDatabase(dbIndex);
             return db.KeyRename(oldKey, newKey);
         }
 
-        /// <summary>
-        ///  键重命名
-        /// </summary>
-        /// <param name="dbIndex">数据库</param>
-        /// <param name="oldKey">旧值</param>
-        /// <param name="newKey">新值</param>
-        /// <returns></returns>
         public static async Task<bool> KeyRenameAsync(int dbIndex, string oldKey, string newKey)
         {
-            var db = Instance.GetDatabase(dbIndex);
+            var db = await GetDatabaseAsync(dbIndex);
             return await db.KeyRenameAsync(oldKey, newKey);
         }
         #endregion
@@ -164,10 +208,20 @@ namespace Banana.Utility.Redis
         /// <returns></returns>
         public static string StringGet(int dbIndex, string key)
         {
-            var db = Instance.GetDatabase(dbIndex);
+            var db = GetDatabase(dbIndex);
             if (db != null)
             {
                 return db.StringGet(key);
+            }
+            return string.Empty;
+        }
+
+        public static async Task<string> StringGetAsync(int dbIndex, string key)
+        {
+            var db = await GetDatabaseAsync(dbIndex);
+            if (db != null)
+            {
+                return await db.StringGetAsync(key);
             }
             return string.Empty;
         }
@@ -182,7 +236,7 @@ namespace Banana.Utility.Redis
         public static T StringGet<T>(int dbIndex, string key) where T : class
         {
             T data = default(T);
-            var db = Instance.GetDatabase(dbIndex);
+            var db = GetDatabase(dbIndex);
             if (db != null)
             {
                 var value = db.StringGet(key);
@@ -191,43 +245,10 @@ namespace Banana.Utility.Redis
             return data;
         }
 
-        /// <summary>
-        /// 设置值类型的值
-        /// </summary>
-        /// <param name="dbIndex">数据库</param>
-        /// <param name="key">键</param>
-        /// <param name="value">值</param>
-        public static bool StringSet(int dbIndex, string key, RedisValue value, TimeSpan? expiry)
-        {
-            var db = Instance.GetDatabase(dbIndex);
-            return db.StringSet(key, value, expiry);
-        }
-
-        /// <summary>
-        /// 设置对象类型的值
-        /// </summary>
-        /// <param name="dbIndex">数据库</param>
-        /// <param name="key">键</param>
-        /// <param name="value">值</param>
-        public static bool StringSet<T>(int dbIndex, string key, T value, TimeSpan? expiry) where T : class
-        {
-            if (value == default(T))
-            {
-                return false;
-            }
-            var db = Instance.GetDatabase(dbIndex);
-            return db.StringSet(key, ConvertJson(value), expiry);
-        }
-
-        /// <summary>
-        /// 获取对象类型数据
-        /// </summary>
-        /// <param name="dbIndex">数据库</param>
-        /// <param name="key">键</param>
         public static async Task<T> StringGetAsync<T>(int dbIndex, string key) where T : class
         {
             T data = default(T);
-            var db = Instance.GetDatabase(dbIndex);
+            var db = await GetDatabaseAsync(dbIndex);
             if (db != null)
             {
                 var value = await db.StringGetAsync(key);
@@ -242,13 +263,41 @@ namespace Banana.Utility.Redis
         /// <param name="dbIndex">数据库</param>
         /// <param name="key">键</param>
         /// <param name="value">值</param>
+        public static bool StringSet(int dbIndex, string key, RedisValue value, TimeSpan? expiry)
+        {
+            var db = GetDatabase(dbIndex);
+            return db.StringSet(key, value, expiry);
+        }
+
+        public static async Task<bool> StringSetAsync(int dbIndex, string key, RedisValue value, TimeSpan? expiry)
+        {
+            var db = await GetDatabaseAsync(dbIndex);
+            return await db.StringSetAsync(key, value, expiry);
+        }
+
+        /// <summary>
+        /// 设置对象类型的值
+        /// </summary>
+        /// <param name="dbIndex">数据库</param>
+        /// <param name="key">键</param>
+        /// <param name="value">值</param>
+        public static bool StringSet<T>(int dbIndex, string key, T value, TimeSpan? expiry) where T : class
+        {
+            if (value == default(T))
+            {
+                return false;
+            }
+            var db = GetDatabase(dbIndex);
+            return db.StringSet(key, ConvertJson(value), expiry);
+        }
+
         public static async Task<bool> StringSetAsync<T>(int dbIndex, string key, T value, TimeSpan? expiry) where T : class
         {
             if (value == default(T))
             {
                 return false;
             }
-            var db = Instance.GetDatabase(dbIndex);
+            var db = await GetDatabaseAsync(dbIndex);
             return await db.StringSetAsync(key, ConvertJson(value), expiry);
         }
         #endregion
@@ -263,7 +312,7 @@ namespace Banana.Utility.Redis
         /// <returns></returns>
         public static bool HashExists(int dbIndex, string hashId, string key)
         {
-            var db = Instance.GetDatabase(dbIndex);
+            var db = GetDatabase(dbIndex);
             return db.HashExists(hashId, key);
         }
 
@@ -275,7 +324,7 @@ namespace Banana.Utility.Redis
         /// <returns></returns>
         public static long HashLength(int dbIndex, string hashId)
         {
-            var db = Instance.GetDatabase(dbIndex);
+            var db = GetDatabase(dbIndex);
             var length = db.HashLength(hashId);
             return length;
         }
@@ -291,7 +340,7 @@ namespace Banana.Utility.Redis
         /// <returns></returns>
         public static bool HashSet<T>(int dbIndex, string hashId, string key, T t)
         {
-            var db = Instance.GetDatabase(dbIndex);
+            var db = GetDatabase(dbIndex);
             return db.HashSet(hashId, key, ConvertJson(t));
         }
 
@@ -305,7 +354,7 @@ namespace Banana.Utility.Redis
         /// <returns></returns>
         public static T HashGet<T>(int dbIndex, string hashId, string key)
         {
-            var db = Instance.GetDatabase(dbIndex);
+            var db = GetDatabase(dbIndex);
             string value = db.HashGet(hashId, key);
             if (string.IsNullOrWhiteSpace(value))
                 return default(T);
@@ -321,7 +370,7 @@ namespace Banana.Utility.Redis
         /// <returns></returns>
         public static string HashGet(int dbIndex, string hashId, string key)
         {
-            var db = Instance.GetDatabase(dbIndex); 
+            var db = GetDatabase(dbIndex);
             return db.HashGet(hashId, key).ToString();
         }
 
@@ -333,7 +382,7 @@ namespace Banana.Utility.Redis
         /// <returns></returns>
         public static List<string> HashKeys(int dbIndex, string hashId)
         {
-            var db = Instance.GetDatabase(dbIndex);
+            var db = GetDatabase(dbIndex);
             var result = new List<string>();
             var list = db.HashKeys(hashId).ToList();
             if (list.Count > 0)
@@ -355,7 +404,7 @@ namespace Banana.Utility.Redis
         /// <returns></returns>
         public static List<T> HashGetAll<T>(int dbIndex, string hashId)
         {
-            var db = Instance.GetDatabase(dbIndex);
+            var db = GetDatabase(dbIndex);
             var result = new List<T>();
             var list = db.HashGetAll(hashId).ToList();
             if (list.Count > 0)
@@ -377,7 +426,7 @@ namespace Banana.Utility.Redis
         /// <returns></returns>
         public static bool HashDelete(int dbIndex, string hashId, string key)
         {
-            var db = Instance.GetDatabase(dbIndex);
+            var db = GetDatabase(dbIndex);
             return db.HashDelete(hashId, key);
         }
         #endregion
@@ -391,7 +440,7 @@ namespace Banana.Utility.Redis
         /// <returns></returns>
         public static long ListLength(int dbIndex, string listId)
         {
-            var db = Instance.GetDatabase(dbIndex);
+            var db = GetDatabase(dbIndex);
             return db.ListLength(listId);
         }
 
@@ -405,7 +454,7 @@ namespace Banana.Utility.Redis
         /// <returns></returns>
         public static long AddList<T>(int dbIndex, string listId, List<T> list)
         {
-            var db = Instance.GetDatabase(dbIndex);
+            var db = GetDatabase(dbIndex);
             if (list != null && list.Count > 0)
             {
                 foreach (var item in list)
@@ -427,7 +476,7 @@ namespace Banana.Utility.Redis
         /// <returns></returns>
         public static List<T> GetList<T>(int dbIndex, string listId, long start = 0, long stop = -1)
         {
-            var db = Instance.GetDatabase(dbIndex);
+            var db = GetDatabase(dbIndex);
             var result = new List<T>();
             var list = db.ListRange(listId, start, stop).ToList();
             if (list.Count > 0)
@@ -456,7 +505,7 @@ namespace Banana.Utility.Redis
         /// <returns></returns>
         public static bool SortedSetAdd<T>(int dbIndex, string key, T value, double? score = null)
         {
-            var db = Instance.GetDatabase(dbIndex);
+            var db = GetDatabase(dbIndex);
             double scoreNum = score ?? _GetScore(key, db);
             return db.SortedSetAdd(key, ConvertJson<T>(value), scoreNum);
         }
@@ -472,7 +521,7 @@ namespace Banana.Utility.Redis
         /// <returns></returns>
         public static long SortedSetAdd<T>(int dbIndex, string key, List<T> value, double? score = null)
         {
-            var db = Instance.GetDatabase(dbIndex);
+            var db = GetDatabase(dbIndex);
             double scoreNum = score ?? _GetScore(key, db);
             SortedSetEntry[] rValue = value.Select(o => new SortedSetEntry(ConvertJson<T>(o), scoreNum++)).ToArray();
             return db.SortedSetAdd(key, rValue);
@@ -484,9 +533,9 @@ namespace Banana.Utility.Redis
         /// <param name="dbIndex">数据库</param>
         /// <param name="key"></param>
         /// <returns></returns>
-        public static long SortedSetLength(int dbIndex,string key)
+        public static long SortedSetLength(int dbIndex, string key)
         {
-            var db = Instance.GetDatabase(dbIndex);
+            var db = GetDatabase(dbIndex);
             return db.SortedSetLength(key);
         }
 
@@ -501,7 +550,7 @@ namespace Banana.Utility.Redis
         /// <returns></returns>
         public static long SortedSetLengthByValue<T>(int dbIndex, string key, T startValue, T endValue)
         {
-            var db = Instance.GetDatabase(dbIndex);
+            var db = GetDatabase(dbIndex);
             var sValue = ConvertJson<T>(startValue);
             var eValue = ConvertJson<T>(endValue);
             return db.SortedSetLengthByValue(key, sValue, eValue);
@@ -517,7 +566,7 @@ namespace Banana.Utility.Redis
         /// <returns></returns>
         public static double? SortedSetScore<T>(int dbIndex, string key, T value)
         {
-            var db = Instance.GetDatabase(dbIndex);
+            var db = GetDatabase(dbIndex);
             var rValue = ConvertJson<T>(value);
             return db.SortedSetScore(key, rValue);
         }
@@ -530,7 +579,7 @@ namespace Banana.Utility.Redis
         /// <returns></returns>
         public static double SortedSetMinScore(int dbIndex, string key)
         {
-            var db = Instance.GetDatabase(dbIndex);
+            var db = GetDatabase(dbIndex);
             double dValue = 0;
             var rValue = db.SortedSetRangeByRankWithScores(key, 0, 0, Order.Ascending).FirstOrDefault();
             dValue = rValue != null ? rValue.Score : 0;
@@ -545,7 +594,7 @@ namespace Banana.Utility.Redis
         /// <returns></returns>
         public static double SortedSetMaxScore(int dbIndex, string key)
         {
-            var db = Instance.GetDatabase(dbIndex);
+            var db = GetDatabase(dbIndex);
             double dValue = 0;
             var rValue = db.SortedSetRangeByRankWithScores(key, 0, 0, Order.Descending).FirstOrDefault();
             dValue = rValue != null ? rValue.Score : 0;
@@ -560,7 +609,7 @@ namespace Banana.Utility.Redis
         /// <param name="value"></param>
         public static long SortedSetRemove<T>(int dbIndex, string key, params T[] value)
         {
-            var db = Instance.GetDatabase(dbIndex);
+            var db = GetDatabase(dbIndex);
             var rValue = ConvertRedisValue<T>(value);
             return db.SortedSetRemove(key, rValue);
         }
@@ -576,7 +625,7 @@ namespace Banana.Utility.Redis
         /// <returns></returns>
         public static long SortedSetRemoveRangeByValue<T>(int dbIndex, string key, T startValue, T endValue)
         {
-            var db = Instance.GetDatabase(dbIndex);
+            var db = GetDatabase(dbIndex);
             var sValue = ConvertJson<T>(startValue);
             var eValue = ConvertJson<T>(endValue);
             return db.SortedSetRemoveRangeByValue(key, sValue, eValue);
@@ -592,7 +641,7 @@ namespace Banana.Utility.Redis
         /// <returns></returns>
         public static long SortedSetRemoveRangeByRank(int dbIndex, string key, long start, long stop)
         {
-            var db = Instance.GetDatabase(dbIndex);
+            var db = GetDatabase(dbIndex);
             return db.SortedSetRemoveRangeByRank(key, start, stop);
         }
 
@@ -606,7 +655,7 @@ namespace Banana.Utility.Redis
         /// <returns></returns>
         public static long SortedSetRemoveRangeByScore(int dbIndex, string key, double start, double stop)
         {
-            var db = Instance.GetDatabase(dbIndex);
+            var db = GetDatabase(dbIndex);
             return db.SortedSetRemoveRangeByScore(key, start, stop);
         }
 
@@ -622,7 +671,7 @@ namespace Banana.Utility.Redis
         /// <returns></returns>
         public static List<T> SortedSetRangeByRank<T>(int dbIndex, string key, long start = 0, long stop = -1, bool desc = false)
         {
-            var db = Instance.GetDatabase(dbIndex);
+            var db = GetDatabase(dbIndex);
             Order orderBy = desc ? Order.Descending : Order.Ascending;
             var rValue = db.SortedSetRangeByRank(key, start, stop, orderBy);
             return ConvetList<T>(rValue);
@@ -642,7 +691,7 @@ namespace Banana.Utility.Redis
         /// <returns></returns>
         public static async Task<bool> SortedSetAddAsync<T>(int dbIndex, string key, T value, double? score = null)
         {
-            var db = Instance.GetDatabase(dbIndex);
+            var db = await GetDatabaseAsync(dbIndex);
             double scoreNum = score ?? _GetScore(key, db);
             return await db.SortedSetAddAsync(key, ConvertJson<T>(value), scoreNum);
         }
@@ -658,7 +707,7 @@ namespace Banana.Utility.Redis
         /// <returns></returns>
         public static async Task<long> SortedSetAddAsync<T>(int dbIndex, string key, List<T> value, double? score = null)
         {
-            var db = Instance.GetDatabase(dbIndex);
+            var db = GetDatabase(dbIndex);
             double scoreNum = score ?? _GetScore(key, db);
             SortedSetEntry[] rValue = value.Select(o => new SortedSetEntry(ConvertJson<T>(o), scoreNum++)).ToArray();
             return await db.SortedSetAddAsync(key, rValue);
@@ -672,7 +721,7 @@ namespace Banana.Utility.Redis
         /// <returns></returns>
         public static async Task<long> SortedSetLengthAsync(int dbIndex, string key)
         {
-            var db = Instance.GetDatabase(dbIndex);
+            var db = await GetDatabaseAsync(dbIndex);
             return await db.SortedSetLengthAsync(key);
         }
 
@@ -687,7 +736,7 @@ namespace Banana.Utility.Redis
         /// <returns></returns>
         public static async Task<long> SortedSetLengthByValueAsync<T>(int dbIndex, string key, T startValue, T endValue)
         {
-            var db = Instance.GetDatabase(dbIndex);
+            var db = await GetDatabaseAsync(dbIndex);
             var sValue = ConvertJson<T>(startValue);
             var eValue = ConvertJson<T>(endValue);
             return await db.SortedSetLengthByValueAsync(key, sValue, eValue);
@@ -701,7 +750,7 @@ namespace Banana.Utility.Redis
         /// <returns></returns>
         public static async Task<double> SortedSetMaxScoreAsync(int dbIndex, string key)
         {
-            var db = Instance.GetDatabase(dbIndex);
+            var db = await GetDatabaseAsync(dbIndex);
             double dValue = 0;
             var rValue = (await db.SortedSetRangeByRankWithScoresAsync(key, 0, 0, Order.Descending)).FirstOrDefault();
             dValue = rValue != null ? rValue.Score : 0;
@@ -716,7 +765,7 @@ namespace Banana.Utility.Redis
         /// <param name="value"></param>
         public static async Task<long> SortedSetRemoveAsync<T>(int dbIndex, string key, params T[] value)
         {
-            var db = Instance.GetDatabase(dbIndex);
+            var db = await GetDatabaseAsync(dbIndex);
             var rValue = ConvertRedisValue<T>(value);
             return await db.SortedSetRemoveAsync(key, rValue);
         }
@@ -732,7 +781,7 @@ namespace Banana.Utility.Redis
         /// <returns></returns>
         public static async Task<long> SortedSetRemoveRangeByValueAsync<T>(int dbIndex, string key, T startValue, T endValue)
         {
-            var db = Instance.GetDatabase(dbIndex);
+            var db = await GetDatabaseAsync(dbIndex);
             var sValue = ConvertJson<T>(startValue);
             var eValue = ConvertJson<T>(endValue);
             return await db.SortedSetRemoveRangeByValueAsync(key, sValue, eValue);
@@ -748,7 +797,7 @@ namespace Banana.Utility.Redis
         /// <returns></returns>
         public static async Task<long> SortedSetRemoveRangeByRankAsync(int dbIndex, string key, long start, long stop)
         {
-            var db = Instance.GetDatabase(dbIndex);
+            var db = await GetDatabaseAsync(dbIndex);
             return await db.SortedSetRemoveRangeByRankAsync(key, start, stop);
         }
 
@@ -805,7 +854,7 @@ namespace Banana.Utility.Redis
         /// <returns></returns>
         public static bool SetAdd<T>(int dbIndex, string key, T value)
         {
-            var db = Instance.GetDatabase(dbIndex);
+            var db = GetDatabase(dbIndex);
             return db.SetAdd(key, ConvertJson(value));
         }
 
@@ -818,7 +867,7 @@ namespace Banana.Utility.Redis
         /// <returns></returns>
         public static async Task<bool> SetAddAsync<T>(int dbIndex, string key, T value)
         {
-            var db = Instance.GetDatabase(dbIndex);
+            var db = GetDatabase(dbIndex);
             return await db.SetAddAsync(key, ConvertJson(value));
         }
 
@@ -833,8 +882,8 @@ namespace Banana.Utility.Redis
         /// <returns></returns>
         public static string[] SetCombine(int dbIndex, SetOperation operation, string firstKey, string secondKey)
         {
-            var db = Instance.GetDatabase(dbIndex);
-            var array = db.SetCombine(operation, firstKey, secondKey); 
+            var db = GetDatabase(dbIndex);
+            var array = db.SetCombine(operation, firstKey, secondKey);
             return array.ToStringArray();
         }
 
@@ -849,7 +898,7 @@ namespace Banana.Utility.Redis
         /// <returns></returns>
         public static async Task<string[]> SetCombineAsync(int dbIndex, SetOperation operation, string firstKey, string secondKey)
         {
-            var db = Instance.GetDatabase(dbIndex);
+            var db = GetDatabase(dbIndex);
             var array = await db.SetCombineAsync(operation, firstKey, secondKey);
             return array.ToStringArray();
         }
@@ -863,7 +912,7 @@ namespace Banana.Utility.Redis
         /// <returns>Returns if member is a member of the set stored at key.</returns>
         public static bool SetContains<T>(int dbIndex, string key, T value)
         {
-            var db = Instance.GetDatabase(dbIndex);
+            var db = GetDatabase(dbIndex);
             return db.SetContains(key, ConvertJson(value));
         }
 
@@ -876,7 +925,7 @@ namespace Banana.Utility.Redis
         /// <returns>Returns if member is a member of the set stored at key.</returns>
         public static async Task<bool> SetContainsAsync<T>(int dbIndex, string key, T value)
         {
-            var db = Instance.GetDatabase(dbIndex);
+            var db = GetDatabase(dbIndex);
             return await db.SetContainsAsync(key, ConvertJson(value));
         }
 
@@ -888,7 +937,7 @@ namespace Banana.Utility.Redis
         /// <returns></returns>
         public static long SetLength(int dbIndex, string key)
         {
-            var db = Instance.GetDatabase(dbIndex);
+            var db = GetDatabase(dbIndex);
             return db.SetLength(key);
         }
 
@@ -900,7 +949,7 @@ namespace Banana.Utility.Redis
         /// <returns></returns>
         public static async Task<long> SetLengthAsync(int dbIndex, string key)
         {
-            var db = Instance.GetDatabase(dbIndex);
+            var db = GetDatabase(dbIndex);
             return await db.SetLengthAsync(key);
         }
 
@@ -912,7 +961,7 @@ namespace Banana.Utility.Redis
         /// <returns></returns>
         public static List<T> SetMembers<T>(int dbIndex, string key)
         {
-            var db = Instance.GetDatabase(dbIndex);
+            var db = GetDatabase(dbIndex);
             var array = db.SetMembers(key);
             return ConvetList<T>(array);
         }
@@ -925,7 +974,7 @@ namespace Banana.Utility.Redis
         /// <returns></returns>
         public static async Task<List<T>> SetMembersAsync<T>(int dbIndex, string key)
         {
-            var db = Instance.GetDatabase(dbIndex);
+            var db = GetDatabase(dbIndex);
             var array = await db.SetMembersAsync(key);
             return ConvetList<T>(array);
         }
@@ -940,7 +989,7 @@ namespace Banana.Utility.Redis
         /// <returns></returns>
         public static bool SetMove<T>(int dbIndex, string sourceKey, string destinationKey, T value)
         {
-            var db = Instance.GetDatabase(dbIndex);
+            var db = GetDatabase(dbIndex);
             return db.SetMove(sourceKey, destinationKey, ConvertJson(value));
         }
 
@@ -954,7 +1003,7 @@ namespace Banana.Utility.Redis
         /// <returns></returns>
         public static async Task<bool> SetMoveAsync<T>(int dbIndex, string sourceKey, string destinationKey, T value)
         {
-            var db = Instance.GetDatabase(dbIndex);
+            var db = GetDatabase(dbIndex);
             return await db.SetMoveAsync(sourceKey, destinationKey, ConvertJson(value));
         }
 
@@ -966,7 +1015,7 @@ namespace Banana.Utility.Redis
         /// <returns></returns>
         public static T SetPop<T>(int dbIndex, string key)
         {
-            var db = Instance.GetDatabase(dbIndex);
+            var db = GetDatabase(dbIndex);
             var value = db.SetPop(key);
             return ConvertObj<T>(value);
         }
@@ -979,7 +1028,7 @@ namespace Banana.Utility.Redis
         /// <returns></returns>
         public static async Task<T> SetPopAsync<T>(int dbIndex, string key)
         {
-            var db = Instance.GetDatabase(dbIndex);
+            var db = GetDatabase(dbIndex);
             var value = await db.SetPopAsync(key);
             return ConvertObj<T>(value);
         }
@@ -992,7 +1041,7 @@ namespace Banana.Utility.Redis
         /// <returns></returns>
         public static T SetRandomMember<T>(int dbIndex, string key)
         {
-            var db = Instance.GetDatabase(dbIndex);
+            var db = GetDatabase(dbIndex);
             var value = db.SetRandomMember(key);
             return ConvertObj<T>(value);
         }
@@ -1005,7 +1054,7 @@ namespace Banana.Utility.Redis
         /// <returns></returns>
         public static async Task<T> SetRandomMemberAsync<T>(int dbIndex, string key)
         {
-            var db = Instance.GetDatabase(dbIndex); 
+            var db = GetDatabase(dbIndex);
             var value = await db.SetRandomMemberAsync(key);
             return ConvertObj<T>(value);
         }
@@ -1019,7 +1068,7 @@ namespace Banana.Utility.Redis
         /// <returns></returns>
         public static string[] SetRandomMember(int dbIndex, string key, long count)
         {
-            var db = Instance.GetDatabase(dbIndex);
+            var db = GetDatabase(dbIndex);
             return db.SetRandomMembers(key, count).ToStringArray();
         }
 
@@ -1032,7 +1081,7 @@ namespace Banana.Utility.Redis
         /// <returns></returns>
         public static async Task<string[]> SetRandomMembersAsync(int dbIndex, string key, long count)
         {
-            var db = Instance.GetDatabase(dbIndex);
+            var db = GetDatabase(dbIndex);
             var array = await db.SetRandomMembersAsync(key, count);
             return array.ToStringArray();
         }
@@ -1045,7 +1094,7 @@ namespace Banana.Utility.Redis
         /// <param name="value"></param>
         public static bool SetRemove(int dbIndex, string key, string value)
         {
-            var db = Instance.GetDatabase(dbIndex);
+            var db = GetDatabase(dbIndex);
             return db.SetRemove(key, value);
         }
 
@@ -1057,7 +1106,7 @@ namespace Banana.Utility.Redis
         /// <param name="value"></param>
         public static async Task<bool> SetRemoveAsync(int dbIndex, string key, string value)
         {
-            var db = Instance.GetDatabase(dbIndex);
+            var db = GetDatabase(dbIndex);
             return await db.SetRemoveAsync(key, value);
         }
 
@@ -1069,7 +1118,7 @@ namespace Banana.Utility.Redis
         /// <returns></returns>
         public static IEnumerable<RedisValue> SetScan(int dbIndex, string key)
         {
-           return Instance.GetDatabase(dbIndex).SetScan(key);
+            return GetDatabase(dbIndex).SetScan(key);
         }
         #endregion
 
@@ -1167,7 +1216,7 @@ namespace Banana.Utility.Redis
                 JsonConvert.SerializeObject(value, Formatting.None);
             return result;
         }
-       
+
         /// <summary>
         /// 将值集合转换成RedisValue集合
         /// </summary>
@@ -1200,11 +1249,12 @@ namespace Banana.Utility.Redis
         /// <param name="value"></param>
         /// <returns></returns>
         public static T ConvertObj<T>(RedisValue value)
+
         {
-            return value.IsNullOrEmpty ? default(T) : JsonConvert.DeserializeObject<T>(value);
+            return value.IsNullOrEmpty ? default(T) : JsonConvert.DeserializeObject<T>(value.ToString());
         }
 
-       
+
 
         #endregion
     }
