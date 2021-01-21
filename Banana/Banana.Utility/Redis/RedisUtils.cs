@@ -67,7 +67,7 @@ namespace Banana.Utility.Redis
         );
 
         private static readonly SemaphoreSlim _connectionLock = new SemaphoreSlim(initialCount: 1, maxCount: 1);
-        private static ConnectionMultiplexer _instanceAsync = null;
+
         public async static Task<ConnectionMultiplexer> InstanceAsync()
         {
             if (_instance != null)
