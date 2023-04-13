@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <PackageId>Banana.Uow</PackageId>
     <PackageTags>orm;sql;micro-orm;Dapper;UnitOfWork;Repository</PackageTags>
@@ -34,7 +34,7 @@
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
     <PackageReference Include="Oracle.ManagedDataAccess.Core">
-      <Version>2.18.6</Version>
+      <Version>3.21.90</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net452'">
